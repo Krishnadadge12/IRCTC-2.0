@@ -1,0 +1,79 @@
+.container{
+    margin: auto;
+}
+h1{
+    text-align: center;
+    margin-top: 20px;
+    color: blue;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+}
+#quota{
+    width: 40%;
+    display: block;
+}
+.r1{
+    display: flex;
+    justify-content: space-evenly;
+}
+.r2{
+    display: flex;
+    margin-left: 90px; 
+}
+
+.tag{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+}
+.date-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.wrapper input {
+  width: 75px;
+  padding: 10px;
+  font-size: 16px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.wrapper input:focus {
+  border-color: #007bff;
+}
+
+.wrapper label {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #666;
+}
+
+.calendar-btn {
+  border: none;
+  margin-bottom: 20px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.hr{
+    width: 90%;
+    margin: auto;
+}
+.h4{
+    margin-left: 80px;
+}
+.save{
+    width: 70%;
+}
