@@ -1,0 +1,120 @@
+.booking-container {
+  max-width: 960px;
+  margin: 24px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* Train Banner */
+.train-banner {
+  width: 100%;
+  height: 350px;      /* adjust height */
+  object-fit: cover;  /* zoom & crop for design */
+  border-radius: 14px;
+}
+
+
+/* Classy Heading */
+.booking-title {
+  font-family: 'Playfair Display', serif !important;
+  font-size: 38px;
+  font-weight: 700;
+  text-align: center;
+  color: #1a3365;
+  margin-bottom: 28px;
+}
+
+/* Layout */
+.r1 {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.r2 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.quota-field {
+  flex: 1 1 45%;
+  min-width: 260px;
+}
+
+/* Date Styling */
+.date-input {
+  display: flex;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.wrapper input {
+  width: 80px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+}
+
+.calendar-btn {
+  border: 1px solid #dcdcdc;
+  padding: 8px 12px;
+  font-size: 20px;
+  border-radius: 8px;
+  background: white;
+}
+
+/* Passenger Card */
+.passenger-card {
+  background: #f8fbff;
+  border: 1px solid rgba(13,110,253,0.15);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+
+.passenger-header {
+  color: #0b5ed7;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+/* Buttons Sec*/
+.btndanger{
+
+    margin-left: 20px;
+}
+
+.save{
+width: 70%;
+  background-color: #ff911b !important;  /* bright orange */
+  border: none !important;
+  color: white !important;
+  padding: 12px;
+  font-size: 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: 0.2s ease;
+  
+}
+.save:hover {
+  background-color: #c87004 !important; /* darker orange for hover */
+  transform: translateY(-2px);
+}
+.save-row{
+
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
