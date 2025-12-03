@@ -24,7 +24,9 @@ function BookingConfirmation() {
 
 
     return (
-        <div className="container confirmation-container">
+        <div className="confirmation-bg">
+            <div className="bg-overlay" />
+            <div className="container confirmation-container">
             <h1 className="confirm-title">Booking Review</h1>
 
             {/* Journey Details */}
@@ -136,6 +138,7 @@ function BookingConfirmation() {
                 </button>
             </div>
 
+            </div>
         </div>
     );
 }

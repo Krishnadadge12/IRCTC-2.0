@@ -1,29 +1,118 @@
-.booking-container {
-  max-width: 960px;
-  margin: 24px auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+/* Background wrapper using the provided image (place image in public/images/booking-bg.jpg) */
+.booking-bg {
+  position: relative;
+  padding: 48px 20px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* try the high-res jpg (if you copy your attached image here), otherwise fall back to the SVG placeholder */
+  background-image: url('/images/booking-bg.jpg'), url('/images/booking-bg.svg');
+  background-size: cover;
+  background-position: center center;
 }
 
-/* Train Banner */
-.train-banner {
-  width: 100%;
-  height: 350px;      /* adjust height */
-  object-fit: cover;  /* zoom & crop for design */
-  border-radius: 14px;
+.bg-overlay {
+  position: absolute;
+  inset: 0;
+  /* subtle tri-color tint matching the image: left orange, center white transparent, right green/blue */
+  background: linear-gradient(90deg, rgba(255,115,0,0.28) 0%, rgba(255,255,255,0.12) 45%, rgba(12,150,130,0.26) 100%);
+  backdrop-filter: blur(2px) saturate(1.05);
 }
+
+.booking-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(10,20,40,0.18);
+  position: relative; /* sit above overlay */
+  z-index: 2;
+}
+
+/* (Banner image removed — using background image instead) */
+
 
 
 /* Classy Heading */
 .booking-title {
   font-family: 'Playfair Display', serif !important;
-  font-size: 38px;
+  font-size: 36px;
   font-weight: 700;
   text-align: center;
-  color: #1a3365;
-  margin-bottom: 28px;
+  /* gradient clipped text for an aesthetic look */
+  background: linear-gradient(90deg,#07305f 0%, #0b61a8 45%, #0ca085 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 24px;
+  letter-spacing: 1px;
+}
+
+.booking-subtitle {
+  text-align: center;
+  color: rgba(8,32,63,0.85);
+  margin-top: -6px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+}
+
+/* decorative rule under heading */
+.booking-title + .booking-subtitle::before {
+  content: '';
+  display: block;
+  width: 88px;
+  height: 4px;
+  margin: 12px auto 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg,#ff7a00,#ffb347,#0ca085);
+  box-shadow: 0 6px 16px rgba(12,120,80,0.08);
+}
+
+/* Train slide animation used during page transition */
+/* removed old in-React train-anim styles (portal used instead) */
+
+/* Persistent portal animation (used across route change) */
+.train-portal {
+  /* full-screen portal container */
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+}
+.train-portal .train-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(6,18,40,0.0);
+  transition: background 2.6s ease;
+}
+.train-portal.show .train-overlay {
+  background: rgba(6,18,40,0.28);
+}
+.train-portal .train-slide {
+  position: absolute;
+  top: 30%;
+  left: -60vw;
+  width: 60vw;
+  max-width: 980px;
+  transition: left 2.6s cubic-bezier(.2,.8,.2,1);
+}
+.train-portal .train-slide.enter {
+  left: 120vw;
+}
+.train-portal .train-slide img { display:block; width:100%; height:auto; filter: drop-shadow(0 18px 36px rgba(6,16,36,0.28)); }
+.train-anim img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 18px 28px rgba(4,20,48,0.28));
+}
+
+@media (max-width: 640px) {
+  .train-anim { top: 42%; width: 72vw; }
 }
 
 /* Layout */
@@ -76,12 +165,12 @@
 
 /* Passenger Card */
 .passenger-card {
-  background: #f8fbff;
-  border: 1px solid rgba(13,110,253,0.15);
+  background: rgba(248,251,255,0.95);
+  border: 1px solid rgba(10,90,200,0.08);
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 18px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  box-shadow: 0 6px 18px rgba(6,18,56,0.06);
 }
 
 .passenger-header {
@@ -97,20 +186,19 @@
 }
 
 .save{
-width: 70%;
-  background-color: #ff911b !important;  /* bright orange */
+  width: 72%;
+  background: linear-gradient(90deg,#ff7a00,#ffb347) !important;
   border: none !important;
   color: white !important;
   padding: 12px;
   font-size: 18px;
   border-radius: 10px;
-  font-weight: 600;
-  transition: 0.2s ease;
-  
+  font-weight: 700;
+  transition: transform .16s ease, box-shadow .16s ease;
 }
 .save:hover {
-  background-color: #c87004 !important; /* darker orange for hover */
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(255,120,20,0.18);
 }
 .save-row{
 

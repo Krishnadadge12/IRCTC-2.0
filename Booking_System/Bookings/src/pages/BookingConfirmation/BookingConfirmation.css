@@ -4,6 +4,39 @@
   padding: 20px;
 }
 
+/* Page background wrapper using same project image; adjust brightness via overlay */
+.confirmation-bg {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  /* try jpg first, fallback to svg placeholder */
+  background-image: url('/images/booking-bg.jpg'), url('/images/booking-bg.svg');
+  background-size: cover;
+  background-position: center center;
+}
+
+.confirmation-bg .bg-overlay {
+  position: absolute;
+  inset: 0;
+  /* subtle tri-color tint matching the image: left orange, center white transparent, right green/blue */
+  background: linear-gradient(90deg, rgba(255,115,0,0.28) 0%, rgba(255,255,255,0.12) 45%, rgba(12,150,130,0.26) 100%);
+  backdrop-filter: blur(2px) saturate(1.05);
+}
+
+.confirmation-bg .confirmation-container {
+  position: relative;
+  z-index: 2;
+  /* slightly translucent white to integrate with background */
+  background: rgba(255,255,255,0.92);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(6,18,40,0.12);
+  padding: 28px;
+  max-width: 980px;
+}
+
 .confirm-title {
   text-align: center;
   font-size: 36px;

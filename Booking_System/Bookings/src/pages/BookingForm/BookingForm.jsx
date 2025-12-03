@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./BookingForm.css";
-import trainimage from "../../../images/Railways.webp";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,6 +17,10 @@ function RailTicketBookingForm() {
   const [journeyFrom, setJourneyFrom] = useState("");
   const [journeyTo, setJourneyTo] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
+  const[departureTime,setDepartureTime]=useState(null);
+  const [agreed, setAgreed] = useState(false);
+  const animTimerRef = React.useRef(null);
+  const portalRef = React.useRef(null);
 
 
   const navigate = useNavigate();
@@ -157,26 +160,90 @@ function RailTicketBookingForm() {
       passengers,
     };
 
+    // Require agreement to terms
+    if (!agreed) {
+      return toast.error("Please accept terms & conditions before proceeding!");
+    }
 
-    // Navigate to confirmation page with state
-    navigate("/confirm", { state: bookingData });
+    // Create a persistent portal node and animate the train across the screen,
+    // then navigate immediately so the route changes while the train continues.
+    try {
+      // create portal wrapper
+      const wrapper = document.createElement('div');
+      wrapper.className = 'train-portal';
+      wrapper.setAttribute('aria-hidden', 'true');
+
+      // build portal DOM: overlay + sliding train so animation persists across route
+      const overlay = document.createElement('div');
+      overlay.className = 'train-overlay';
+
+      const slideWrap = document.createElement('div');
+      slideWrap.className = 'train-slide';
+      const img = document.createElement('img');
+      // prefer GIF if present (you can drop a bullet-train GIF here),
+      // otherwise fallback to the SVG version
+      img.src = '/images/train-slide.gif';
+      img.alt = '';
+      img.onerror = () => {
+        img.onerror = null;
+        img.src = '/images/train-slide.svg';
+      };
+      slideWrap.appendChild(img);
+
+      wrapper.appendChild(overlay);
+      wrapper.appendChild(slideWrap);
+
+      document.body.appendChild(wrapper);
+      // force reflow then start transitions: show overlay and slide the train
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      wrapper.getBoundingClientRect();
+      requestAnimationFrame(() => {
+        wrapper.classList.add('show');
+        slideWrap.classList.add('enter');
+      });
+
+      portalRef.current = wrapper;
+
+      // give the browser a moment to paint the portal and start the CSS transition,
+      // then navigate so the animation continues on the next route
+      setTimeout(() => {
+        navigate('/confirm', { state: bookingData });
+      }, 220);
+
+      // schedule cleanup after animation completes (match CSS: 2600ms)
+      animTimerRef.current = setTimeout(() => {
+        if (portalRef.current && portalRef.current.parentNode) {
+          portalRef.current.parentNode.removeChild(portalRef.current);
+          portalRef.current = null;
+        }
+      }, 2900);
+    } catch (err) {
+      // fallback: if any error, navigate immediately
+      navigate('/confirm', { state: bookingData });
+    }
   };
+
+  React.useEffect(() => {
+    return () => {
+      if (animTimerRef.current) clearTimeout(animTimerRef.current);
+      if (portalRef.current && portalRef.current.parentNode) {
+        portalRef.current.parentNode.removeChild(portalRef.current);
+        portalRef.current = null;
+      }
+    };
+  }, []);
 
 
 
 
   return (
-    <div className="container booking-container ">
+    <div className="booking-bg">
+      <div className="bg-overlay" />
+      <div className="container booking-container">
 
-      {/* Train Banner */}
-      <img
-        src={trainimage}
-        alt="Train Banner"
-        className="train-banner"
-      />
-
-      {/* Classy Title */}
-      <h1 className="booking-title">RAIL TICKET BOOKING FORM</h1>
+        {/* Classy Title */}
+        <h1 className="booking-title">RAIL TICKET BOOKING FORM</h1>
+        <p className="booking-subtitle">Book your journey — fast, safe & reliable</p>
 
       <form onSubmit={handleSave}>
 
@@ -187,10 +254,12 @@ function RailTicketBookingForm() {
             <select className="form-select"
               value={reservationQuota}
               onChange={(e) => setReservationQuota(e.target.value)}>
-              <option defaultValue>Select Reservation Quota</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+              <option value="">Select Reservation Quota</option>
+              <option value="General">General</option>
+              <option value="Tatkal">Tatkal</option>
+              <option value="Senior">Senior Citizen</option>
+              <option value="PWD">Physically Disabled</option>
+              <option value="Ladies">Ladies</option>
             </select>
           </div>
 
@@ -404,7 +473,13 @@ function RailTicketBookingForm() {
         {/* TERMS */}
         <div className="r2 terms-row">
           <div className="form-check">
-            <input type="checkbox" className="form-check-input" id="terms" />
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="terms"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+            />
             <label className="form-check-label" htmlFor="terms">
               I agree to <a href="">terms & conditions</a>
             </label>
@@ -416,6 +491,10 @@ function RailTicketBookingForm() {
           <button className="btn  save" type="submit">SAVE</button>
         </div>
       </form>
+      <ToastContainer position="top-right" />
+
+      {/* old in-React train element removed — portal-based animation is created dynamically on submit */}
+    </div>
     </div>
   );
 }
