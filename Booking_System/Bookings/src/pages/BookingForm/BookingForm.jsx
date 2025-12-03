@@ -258,29 +258,6 @@ function RailTicketBookingForm() {
 
       // append portal to the document so it stays across navigation
       document.body.appendChild(wrapper);
-      // DEBUG: add a visible outline and a small label so we can confirm the portal is present
-      try {
-        wrapper.style.outline = '3px dashed rgba(255,0,128,0.85)';
-        wrapper.style.outlineOffset = '6px';
-        wrapper.style.pointerEvents = 'none';
-        const debugLabel = document.createElement('div');
-        debugLabel.textContent = 'TRAIN-PORTAL (debug)';
-        debugLabel.style.position = 'fixed';
-        debugLabel.style.top = '8px';
-        debugLabel.style.right = '8px';
-        debugLabel.style.zIndex = '100000';
-        debugLabel.style.background = 'rgba(255,255,255,0.9)';
-        debugLabel.style.color = '#000';
-        debugLabel.style.fontSize = '12px';
-        debugLabel.style.padding = '6px 8px';
-        debugLabel.style.borderRadius = '6px';
-        debugLabel.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
-        debugLabel.className = 'train-portal-debug-label';
-        document.body.appendChild(debugLabel);
-      } catch (e) {
-        // ignore styling errors in older browsers
-      }
-      console.log('train portal appended to document.body', wrapper);
       // force reflow then start transitions: show overlay and slide the train
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       wrapper.getBoundingClientRect();
@@ -320,9 +297,6 @@ function RailTicketBookingForm() {
           portalRef.current.parentNode.removeChild(portalRef.current);
           portalRef.current = null;
         }
-        // remove debug label if present
-        const lbl = document.querySelector('.train-portal-debug-label');
-        if (lbl && lbl.parentNode) lbl.parentNode.removeChild(lbl);
       }, 6400);
     } catch (err) {
       // fallback: if any error, navigate immediately

@@ -39,10 +39,13 @@
 
 .confirm-title {
   text-align: center;
-  font-size: 36px;
+  font-size: 52px;
   font-weight: 700;
-  color: #1a3c6e;
-  font-family: 'Playfair Display', serif;
+  background: linear-gradient(90deg,#07305f 0%, #0b61a8 45%, #0ca085 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: 'Century Gothic', 'Futura', sans-serif;
   margin-bottom: 24px;
 }
 
