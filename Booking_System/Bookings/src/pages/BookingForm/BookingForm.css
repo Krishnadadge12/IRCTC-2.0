@@ -1,4 +1,4 @@
-/* Background wrapper using the provided image (place image in public/images/booking-bg.jpg) */
+/* ================= BACKGROUND ================== */
 .booking-bg {
   position: relative;
   padding: 48px 20px;
@@ -6,7 +6,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* try the high-res jpg (if you copy your attached image here), otherwise fall back to the SVG placeholder */
   background-image: url('/images/booking-bg.jpg'), url('/images/booking-bg.svg');
   background-size: cover;
   background-position: center center;
@@ -15,8 +14,12 @@
 .bg-overlay {
   position: absolute;
   inset: 0;
-  /* subtle tri-color tint matching the image: left orange, center white transparent, right green/blue */
-  background: linear-gradient(90deg, rgba(255,115,0,0.28) 0%, rgba(255,255,255,0.12) 45%, rgba(12,150,130,0.26) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255,115,0,0.28) 0%,
+    rgba(255,255,255,0.12) 45%,
+    rgba(12,150,130,0.26) 100%
+  );
   backdrop-filter: blur(2px) saturate(1.05);
 }
 
@@ -27,21 +30,16 @@
   background: rgba(255,255,255,0.85);
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(10,20,40,0.18);
-  position: relative; /* sit above overlay */
+  position: relative;
   z-index: 2;
 }
 
-/* (Banner image removed — using background image instead) */
-
-
-
-/* Classy Heading */
+/* ================= TITLE ================== */
 .booking-title {
   font-family: 'Playfair Display', serif !important;
   font-size: 36px;
   font-weight: 700;
   text-align: center;
-  /* gradient clipped text for an aesthetic look */
   background: linear-gradient(90deg,#07305f 0%, #0b61a8 45%, #0ca085 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -60,7 +58,6 @@
   letter-spacing: 0.6px;
 }
 
-/* decorative rule under heading */
 .booking-title + .booking-subtitle::before {
   content: '';
   display: block;
@@ -72,50 +69,75 @@
   box-shadow: 0 6px 16px rgba(12,120,80,0.08);
 }
 
-/* Train slide animation used during page transition */
-/* removed old in-React train-anim styles (portal used instead) */
+/* ================= TRAIN PAGE TRANSITION (FIXED) ================= */
 
-/* Persistent portal animation (used across route change) */
 .train-portal {
-  /* full-screen portal container */
   position: fixed;
   inset: 0;
   z-index: 99999;
   pointer-events: none;
+  overflow: hidden;
 }
+
+/* Overlay */
 .train-portal .train-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(6,18,40,0.0);
-  transition: background 2.6s ease;
+  background: rgba(6,18,40,0);
+  transition: background 0.6s ease;
 }
+
 .train-portal.show .train-overlay {
-  background: rgba(6,18,40,0.28);
+  background: rgba(6,18,40,0.35);
 }
+
+/* CENTERED TRAIN WRAPPER (NO TRANSFORM CONFLICT) */
 .train-portal .train-slide {
-  position: absolute;
-  top: 30%;
-  left: -60vw;
-  width: 60vw;
-  max-width: 980px;
-  transition: left 2.6s cubic-bezier(.2,.8,.2,1);
+  position: fixed;
+  top: 50%;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
 }
-.train-portal .train-slide.enter {
-  left: 120vw;
-}
-.train-portal .train-slide img { display:block; width:100%; height:auto; filter: drop-shadow(0 18px 36px rgba(6,16,36,0.28)); }
-.train-anim img {
-  width: 100%;
+
+/* TRAIN IMAGE */
+.train-portal .train-slide img {
+  width: 320px;
   height: auto;
-  display: block;
-  filter: drop-shadow(0 18px 28px rgba(4,20,48,0.28));
+  filter: drop-shadow(0 14px 28px rgba(6,16,36,0.35));
 }
 
+/* START ANIMATION */
+.train-portal .train-slide.enter {
+  animation: train-slide-center 4.5s cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+/* SLIDE FROM LEFT → CENTER → RIGHT */
+@keyframes train-slide-center {
+  0% {
+    transform: translate(-350px, -50%);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(50vw, -50%);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(150vw, -50%);
+    opacity: 0;
+  }
+}
+
+/* MOBILE SCALE */
 @media (max-width: 640px) {
-  .train-anim { top: 42%; width: 72vw; }
+  .train-portal .train-slide img {
+    width: 200px;
+  }
 }
 
-/* Layout */
+/* ================= FORM LAYOUT ================= */
 .r1 {
   display: flex;
   gap: 20px;
@@ -134,7 +156,7 @@
   min-width: 260px;
 }
 
-/* Date Styling */
+/* ================= DATE ================= */
 .date-input {
   display: flex;
   gap: 14px;
@@ -163,7 +185,7 @@
   background: white;
 }
 
-/* Passenger Card */
+/* ================= PASSENGER CARD ================= */
 .passenger-card {
   background: rgba(248,251,255,0.95);
   border: 1px solid rgba(10,90,200,0.08);
@@ -179,13 +201,12 @@
   margin-bottom: 14px;
 }
 
-/* Buttons Sec*/
-.btndanger{
-
-    margin-left: 20px;
+/* ================= BUTTONS ================= */
+.btndanger {
+  margin-left: 20px;
 }
 
-.save{
+.save {
   width: 72%;
   background: linear-gradient(90deg,#ff7a00,#ffb347) !important;
   border: none !important;
@@ -196,12 +217,13 @@
   font-weight: 700;
   transition: transform .16s ease, box-shadow .16s ease;
 }
+
 .save:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 24px rgba(255,120,20,0.18);
 }
-.save-row{
 
+.save-row {
   display: flex;
   justify-content: center;
   margin-top: 20px;

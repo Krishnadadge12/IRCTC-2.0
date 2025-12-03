@@ -180,26 +180,129 @@ function RailTicketBookingForm() {
       const slideWrap = document.createElement('div');
       slideWrap.className = 'train-slide';
       const img = document.createElement('img');
-      // prefer GIF if present (you can drop a bullet-train GIF here),
-      // otherwise fallback to the SVG version
-      img.src = '/images/train-slide.gif';
       img.alt = '';
-      img.onerror = () => {
-        img.onerror = null;
-        img.src = '/images/train-slide.svg';
+
+      // create a guaranteed inline SVG placeholder so the animation is visible
+      const inlineSVGData = `data:image/svg+xml;utf8,${encodeURIComponent(`
+        <svg xmlns='http://www.w3.org/2000/svg' width='220' height='90' viewBox='0 0 220 90'>
+          <rect width='220' height='90' rx='12' fill='%23f3eef4'/>
+          <g transform='translate(8,8)'>
+            <rect x='0' y='12' width='140' height='46' rx='10' fill='%2341414f'/>
+            <rect x='120' y='6' width='80' height='36' rx='10' fill='%23707a83'/>
+            <circle cx='56' cy='64' r='10' fill='%23323a45'/>
+            <circle cx='104' cy='64' r='10' fill='%23323a45'/>
+          </g>
+        </svg>
+      `)}`;
+      const placeholderImg = document.createElement('img');
+      placeholderImg.src = inlineSVGData;
+      placeholderImg.alt = '';
+      placeholderImg.style.width = '220px';
+      placeholderImg.style.height = 'auto';
+      placeholderImg.style.display = 'block';
+      placeholderImg.style.pointerEvents = 'none';
+      // hide the actual img until it loads
+      img.style.display = 'none';
+
+      // try a small set of likely filenames so your attached GIF/PNG will be used
+      const sources = ['/images/train-slide.jpg'];
+
+      let srcIndex = 0;
+
+      const setNextSrc = () => {
+        if (srcIndex < sources.length) {
+          img.src = sources[srcIndex];
+        }
       };
+
+      img.onerror = function () {
+        srcIndex += 1;
+        if (srcIndex < sources.length) {
+          setNextSrc();
+          return;
+        }
+
+        // final fallback: inject a simple inline SVG so the animation is always visible
+        const inlineSVG = `data:image/svg+xml;utf8,${encodeURIComponent(`
+          <svg xmlns='http://www.w3.org/2000/svg' width='220' height='90' viewBox='0 0 220 90'>
+            <rect width='220' height='90' rx='12' fill='%23f3eef4'/>
+            <g transform='translate(8,8)'>
+              <rect x='0' y='12' width='140' height='46' rx='10' fill='%2341414f'/>
+              <rect x='120' y='6' width='80' height='36' rx='10' fill='%23707a83'/>
+              <circle cx='56' cy='64' r='10' fill='%23323a45'/>
+              <circle cx='104' cy='64' r='10' fill='%23323a45'/>
+            </g>
+          </svg>
+        `)}`;
+
+        // replace img with inline svg image
+        img.onerror = null;
+        img.src = inlineSVG;
+      };
+
+      // set initial source and append placeholder first so it's visible immediately
+      slideWrap.appendChild(placeholderImg);
       slideWrap.appendChild(img);
+      setNextSrc();
+
+      // when the external image finishes loading, hide placeholder and show image
+      img.onload = () => {
+        try {
+          placeholderImg.style.display = 'none';
+          img.style.display = 'block';
+        } catch (e) {}
+      };
 
       wrapper.appendChild(overlay);
       wrapper.appendChild(slideWrap);
 
+      // append portal to the document so it stays across navigation
       document.body.appendChild(wrapper);
+      // DEBUG: add a visible outline and a small label so we can confirm the portal is present
+      try {
+        wrapper.style.outline = '3px dashed rgba(255,0,128,0.85)';
+        wrapper.style.outlineOffset = '6px';
+        wrapper.style.pointerEvents = 'none';
+        const debugLabel = document.createElement('div');
+        debugLabel.textContent = 'TRAIN-PORTAL (debug)';
+        debugLabel.style.position = 'fixed';
+        debugLabel.style.top = '8px';
+        debugLabel.style.right = '8px';
+        debugLabel.style.zIndex = '100000';
+        debugLabel.style.background = 'rgba(255,255,255,0.9)';
+        debugLabel.style.color = '#000';
+        debugLabel.style.fontSize = '12px';
+        debugLabel.style.padding = '6px 8px';
+        debugLabel.style.borderRadius = '6px';
+        debugLabel.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+        debugLabel.className = 'train-portal-debug-label';
+        document.body.appendChild(debugLabel);
+      } catch (e) {
+        // ignore styling errors in older browsers
+      }
+      console.log('train portal appended to document.body', wrapper);
       // force reflow then start transitions: show overlay and slide the train
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       wrapper.getBoundingClientRect();
       requestAnimationFrame(() => {
+        // add classes (CSS-driven) and also apply inline styles as a fallback
         wrapper.classList.add('show');
         slideWrap.classList.add('enter');
+
+        console.log('train portal: classes added (show, enter)');
+
+        // ensure overlay becomes visible even if CSS failed to load
+        try {
+          overlay.style.transition = 'background 0.4s ease';
+          overlay.style.background = 'rgba(6,18,40,0.28)';
+        } catch (e) {}
+
+        // fallback: set inline animation if CSS keyframes aren't applied
+        try {
+          slideWrap.style.willChange = 'transform, opacity, filter';
+          slideWrap.style.animation = 'train-slide-center 4.5s cubic-bezier(.2,.8,.2,1) forwards';
+
+        } catch (e) {}
       });
 
       portalRef.current = wrapper;
@@ -208,15 +311,19 @@ function RailTicketBookingForm() {
       // then navigate so the animation continues on the next route
       setTimeout(() => {
         navigate('/confirm', { state: bookingData });
-      }, 220);
+      }, 700);
 
-      // schedule cleanup after animation completes (match CSS: 2600ms)
+      // schedule cleanup after animation completes (match CSS: 5200ms)
+      // give a small buffer so the portal is removed after the visual finishes
       animTimerRef.current = setTimeout(() => {
         if (portalRef.current && portalRef.current.parentNode) {
           portalRef.current.parentNode.removeChild(portalRef.current);
           portalRef.current = null;
         }
-      }, 2900);
+        // remove debug label if present
+        const lbl = document.querySelector('.train-portal-debug-label');
+        if (lbl && lbl.parentNode) lbl.parentNode.removeChild(lbl);
+      }, 6400);
     } catch (err) {
       // fallback: if any error, navigate immediately
       navigate('/confirm', { state: bookingData });
