@@ -16,6 +16,8 @@
 
 body, html {
   font-family: var(--fw-sans);
+  background: linear-gradient(135deg, #d4791a 0%, #e8a65f 25%, #f5d5b8 50%, #fffbf5 75%, #4a7c59 100%);
+  min-height: 100vh;
 }
 
 .container {
