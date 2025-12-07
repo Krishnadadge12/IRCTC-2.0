@@ -1,0 +1,122 @@
+/* Creative train listing matching SearchTrain.css theme */
+:root{
+  --bg-a: #071029;
+  --bg-b: #07263d;
+  --card-bg: rgba(255,255,255,0.98);
+  --glass: rgba(255,255,255,0.06);
+  --accent: #0a6be0;
+  --accent-2: #07448f;
+  --muted: #8ea0b8;
+  --shadow: rgba(2,6,23,0.25);
+  --radius: 10px;
+  --fw-sans: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* no trains message */
+.no-trains {
+  text-align: center;
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: 1rem;
+  font-family: var(--fw-sans);
+}
+
+/* list group container */
+.list-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* individual train card */
+.train-item {
+  background: linear-gradient(180deg, var(--card-bg), rgba(250,250,250,0.98));
+  border: 1px solid rgba(4,22,38,0.06);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  box-shadow: 0 6px 18px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* hover effect */
+.train-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(10,107,224,0.16);
+  border-color: var(--accent);
+}
+
+/* active state */
+.train-item:active {
+  transform: translateY(-2px);
+}
+
+/* train name (h5) */
+.train-item h5 {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: transparent;
+  background: linear-gradient(90deg, #0b355f, var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* route paragraph */
+.train-item p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #2d3e4f;
+  line-height: 1.4;
+  font-family: var(--fw-sans);
+}
+
+/* first paragraph - route & timing */
+.train-item p:nth-of-type(1) {
+  color: #1a2f42;
+  font-weight: 500;
+}
+
+/* second paragraph - class, quota, seats, fare */
+.train-item p:nth-of-type(2) {
+  color: #556b7a;
+  font-size: 0.9rem;
+}
+
+/* availability badge / status indicators */
+.train-item .badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: white;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+/* responsive adjustments */
+@media (max-width: 600px) {
+  .train-item {
+    padding: 12px 14px;
+  }
+  
+  .train-item h5 {
+    font-size: 0.95rem;
+  }
+  
+  .train-item p {
+    font-size: 0.9rem;
+  }
+}
+
+/* accessibility */
+.train-item:focus-visible {
+  outline: 3px solid rgba(10,107,224,0.16);
+  outline-offset: 2px;
+}

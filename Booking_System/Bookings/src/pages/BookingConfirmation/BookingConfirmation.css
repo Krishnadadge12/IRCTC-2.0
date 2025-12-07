@@ -12,9 +12,9 @@
   align-items: center;
   justify-content: center;
   padding: 40px 16px;
-  /* try jpg first, fallback to svg placeholder */
-  background-image: url('/images/booking-bg.jpg'), url('/images/booking-bg.svg');
-  background-size: cover;
+  /* use the unified background image */
+  background-image: url('/images/background_img.jpeg'), url('/images/booking-bg.svg');
+  background-size: cover, contain;
   background-position: center center;
 }
 

@@ -6,8 +6,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('/images/train3.jpg'), url('/images/booking-bg.svg');
-  background-size: 110%;
+  /* use global background image for visual consistency */
+  background-image: url('/images/background_img.jpeg'), url('/images/booking-bg.svg');
+  background-size: cover, contain;
   background-position: center center;
 }
 
