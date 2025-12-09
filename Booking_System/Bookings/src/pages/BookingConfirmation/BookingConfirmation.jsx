@@ -125,7 +125,7 @@ function BookingConfirmation() {
             <div style={{ marginTop: "20px", display: "flex", gap: "15px" }}>
                 <button
                     className="btn btn-secondary"
-                    onClick={() => navigate("/", { state })}
+                    onClick={() => navigate("/booking", { state })}
                 >
                     Back to Booking
                 </button>

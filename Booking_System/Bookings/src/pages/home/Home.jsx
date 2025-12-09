@@ -10,7 +10,7 @@ function Home() {
       <Hero />
       <FAQ />
       <QuerySection />
-      <About />
+      {/* <About /> */}
     </div>
   )
 }
