@@ -1,0 +1,197 @@
+.confirmation-container {
+  margin-top: 20px;
+  max-width: 900px;
+  padding: 20px;
+}
+
+/* Page background wrapper using same project image; adjust brightness via overlay */
+.confirmation-bg {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  /* use the unified background image */
+  background-image: url('/images/background_img.jpeg'), url('/images/booking-bg.svg');
+  background-size: cover, contain;
+  background-position: center center;
+}
+
+.confirmation-bg .bg-overlay {
+  position: absolute;
+  inset: 0;
+  /* subtle tri-color tint matching the image: left orange, center white transparent, right green/blue */
+  background: linear-gradient(90deg, rgba(255,115,0,0.28) 0%, rgba(255,255,255,0.12) 45%, rgba(12,150,130,0.26) 100%);
+  backdrop-filter: blur(2px) saturate(1.05);
+}
+
+.confirmation-bg .confirmation-container {
+  position: relative;
+  z-index: 2;
+  /* slightly translucent white to integrate with background */
+  background: rgba(255,255,255,0.92);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(6,18,40,0.12);
+  padding: 28px;
+  max-width: 980px;
+}
+
+.confirm-title {
+  text-align: center;
+  font-size: 52px;
+  font-weight: 700;
+  background: linear-gradient(90deg,#07305f 0%, #0b61a8 45%, #0ca085 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-family: 'Century Gothic', 'Futura', sans-serif;
+  margin-bottom: 24px;
+}
+
+.section-card {
+  background: #f8fbff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(13, 110, 253, 0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.passenger-review {
+  margin-bottom: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.payment-info {
+  background: #FFF4E3;
+  border-left: 5px solid #F4A34D;
+}
+/* PASSENGER CARD */
+.passenger-card-confirm {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+/* Header with badge */
+.passenger-header-confirm {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.badge-number {
+  background: #F4A34D;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.passenger-header-confirm h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a3c6e;
+}
+
+/* Two-column layout */
+.passenger-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 20px;
+}
+
+/* Field UI */
+.field-box {
+  background: #f8fbff;
+  border: 1px solid rgba(13,110,253,0.15);
+  padding: 12px 16px;
+  border-radius: 10px;
+}
+
+.field-box label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b4b4b;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.field-box p {
+  font-size: 16px;
+  margin: 0;
+  font-weight: 600;
+  color: #2b2b2b;
+}
+/* Clean Journey Card */
+.journey-card-clean {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 26px;
+  margin-bottom: 28px;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Section Heading */
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a3c6e;
+  margin-bottom: 20px;
+}
+
+/* Row style */
+.journey-detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed rgba(0,0,0,0.08);
+}
+
+.journey-detail-row:last-child {
+  border-bottom: none;
+}
+
+/* Label */
+.label {
+  font-weight: 600;
+  color: #444;
+  font-size: 15px;
+}
+
+/* Value */
+.value {
+  font-weight: 600;
+  color: #222;
+  font-size: 15px;
+}
+
+/* Highlight departure date */
+.highlight-row {
+  background: #fff7ed;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 14px;
+}
+
+.highlight-date {
+  color: #F08A23;
+  font-weight: 700;
+  font-size: 17px;
+}
+.highlight-time {
+  color: #F08A23;
+  font-weight: 700;
+}
