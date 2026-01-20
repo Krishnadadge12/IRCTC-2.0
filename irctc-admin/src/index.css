@@ -1,0 +1,44 @@
+.main {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: #143b64;
+  color: white;
+  padding: 20px;
+}
+
+.sidebar button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: #1f4d8a;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  background: #f4f4f4;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  margin-top: 15px;
+}
+
+table, th, td {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  padding: 8px;
+}
