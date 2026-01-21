@@ -20,6 +20,12 @@ function TrainDetails() {
   ];
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }, []);
+  useEffect(() => {
     const { trains, searchParams: initialParams } = (location && location.state) || {};
     if (trains && trains.length > 0) {
       setAllTrains(trains);

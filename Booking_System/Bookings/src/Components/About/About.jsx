@@ -4,12 +4,12 @@ import './About.css';
 const About = () => {
   return (
     <section className="about-section">
-      <div className="about-container">
+      
         <div className="about-grid">
           <div className="about-card">
-            <h3>About IRCTC</h3>
+            <h3 >About MRC</h3>
             <p className="about-description">
-             Your trusted platform for secure, fast, and reliable train ticket booking.
+             Maharashtra Railways Corporation provides safe, reliable, and efficient railway services, enhancing passenger convenience through modern infrastructure and digital solutions.
             </p>
           </div>
 
@@ -41,7 +41,7 @@ const About = () => {
               </div>
             </div>
           </div>
-        </div>
+        
       </div>
     </section>
   );

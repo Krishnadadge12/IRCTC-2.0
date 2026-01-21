@@ -19,7 +19,7 @@ const Navbar = () => {
         alt="IRCTC Logo" 
         className="navbar-logo-img"
       />
-      <span className="navbar-logo-text">IRCTC2.0</span>
+      <span className="navbar-logo-text">MRC</span>
        </Link>
       
     </div>
@@ -30,8 +30,8 @@ const Navbar = () => {
           Register </Link>
           <Link className='navbar-link' to={"/search"}>Train Search</Link>
           <Link className='navbar-link' to={"/booking"}>Bookings</Link>
-          <Link className='navbar-link' to={"/bookings"}>Admin</Link>
-          <Link className='navbar-link' to={"/AboutUs"}>About</Link>
+         
+          <Link className='navbar-link' to={"/AboutUs"}>AboutUs</Link>
         </div>
 
         
@@ -74,13 +74,13 @@ const Navbar = () => {
 
               <nav className="navbar-sidebar-nav">
                 <ul className="navbar-sidebar-list">
-                  <li className="navbar-sidebar-item"><button>Login</button></li>
-                  <li className="navbar-sidebar-item"><button>Register</button></li>
-                  <li className="navbar-sidebar-item"><button>Search Train</button></li>
-                  <li className="navbar-sidebar-item"><button>Book Train</button></li>
-                  <li className="navbar-sidebar-item"><button>Cancel Train</button></li>
-                  <li className="navbar-sidebar-item"><button>About</button></li>
-                  <li className="navbar-sidebar-item"><button>Contact Us</button></li>
+                  <li className="navbar-sidebar-item"><Link to="/login">Login</Link></li>
+                  <li className="navbar-sidebar-item"><Link to="/register">Register</Link></li>
+                  <li className="navbar-sidebar-item"><Link to="/search">Search Train</Link></li>
+                  <li className="navbar-sidebar-item"><Link to="/booking">Book Train</Link></li>
+                  <li className="navbar-sidebar-item"><Link to="/cancel">Cancel Train</Link></li>
+                  <li className="navbar-sidebar-item"><Link to="/AboutUs">About</Link></li>
+                  <li className="navbar-sidebar-item"><button onClick={() => setIsSidebarOpen(false)}>Contact Us</button></li>
                 </ul>
 
                 <div className="navbar-sidebar-footer">

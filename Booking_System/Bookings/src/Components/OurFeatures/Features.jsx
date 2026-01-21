@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Hero.css';
+import './Features.css';
 
-const Hero = () => {
+const Features = () => {
   const navigate = useNavigate();
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
@@ -26,7 +26,7 @@ const Hero = () => {
     <div className="hero-content">
       <h1 className="hero-title">Journey to Discover India</h1>
       <p className="hero-subtitle">
-        Book your travel with IRCTC - Your Journey, Just a Tap Away
+        Book your travel with MRC - Your Journey, Just a Tap Away
       </p>
     </div>
 
@@ -120,4 +120,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default Features;

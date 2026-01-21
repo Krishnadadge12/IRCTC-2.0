@@ -18,9 +18,10 @@
 .footer-main {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
+
 
 @media (min-width: 768px) {
   .footer-main {
@@ -32,6 +33,7 @@
   color: #9ca3af;
   font-size: 14px;
   margin-bottom: 16px;
+  text-align: center;
 }
 
 @media (min-width: 768px) {

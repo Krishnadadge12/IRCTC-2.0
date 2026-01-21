@@ -121,13 +121,7 @@ function SearchTrain() {
         </form>
       </div>
 
-      {/* RIGHT SIDE IMAGE */}
-      {/* <div className="right-banner">
-        <div className="banner-text">
-          <h1>INDIAN RAILWAYS</h1>
-          <p>Safety  •  Security  •  Punctuality</p>
-        </div>
-      </div> */}
+     
       </div>
     </div>
   );

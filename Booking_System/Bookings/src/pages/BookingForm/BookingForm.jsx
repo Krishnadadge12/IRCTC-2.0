@@ -19,10 +19,7 @@ function RailTicketBookingForm() {
   const [selectedDate, setSelectedDate] = useState(null);
   const[departureTime,setDepartureTime]=useState(null);
   const [agreed, setAgreed] = useState(false);
-  const animTimerRef = React.useRef(null);
-  const portalRef = React.useRef(null);
-
-
+ 
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -30,7 +27,15 @@ function RailTicketBookingForm() {
   const [passengers, setPassengers] = useState([
     { fullName: "", age: "", sex: "", berth: "", phone: "", email: "" }
   ]);
+React.useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }, []);
+  //changes in form to be set
   React.useEffect(() => {
+    
     if (location.state) {
       const data = location.state;
 
@@ -50,6 +55,7 @@ function RailTicketBookingForm() {
     }
   }, [location.state]);
 
+  //add passenger details
   const addPassenger = () => {
     setPassengers((prev) => [
       ...prev,
@@ -57,9 +63,10 @@ function RailTicketBookingForm() {
     ]);
   };
 
+  //remove passenger details
   const removePassenger = () => {
     if (passengers.length > 1) {
-      setPassengers(passengers.slice(0, -1));
+      setPassengers(passengers.slice(0, -1)); //removes last passenger from the array
     }
   };
 
@@ -70,9 +77,9 @@ function RailTicketBookingForm() {
   };
 
   const handleSave = (e) => {
-    e.preventDefault();
+    e.preventDefault(); //to avoid browser's default behaviour of form submission
 
-    // ===================== DATE VALIDATION ===================== //
+    // ===================== DATE VALIDATIONS ===================== //
     if (!day || !month || !year) {
       return toast.error("Please enter a complete departure date!");
     }
@@ -81,7 +88,7 @@ function RailTicketBookingForm() {
       return toast.error("Date format must be DD-MM-YYYY!");
     }
 
-    const dd = parseInt(day, 10);
+    const dd = parseInt(day, 10); //09->9
     const mm = parseInt(month, 10);
     const yy = parseInt(year, 10);
 
@@ -149,7 +156,7 @@ function RailTicketBookingForm() {
 
     // ============================================================ //
 
-    // If all validations passed → Prepare booking data
+    // If all validations passed then Prepare booking data
     const bookingData = {
       reservationQuota,
       trainNumber,
@@ -165,165 +172,21 @@ function RailTicketBookingForm() {
       return toast.error("Please accept terms & conditions before proceeding!");
     }
 
-    // Create a persistent portal node and animate the train across the screen,
-    // then navigate immediately so the route changes while the train continues.
-    try {
-      // create portal wrapper
-      const wrapper = document.createElement('div');
-      wrapper.className = 'train-portal';
-      wrapper.setAttribute('aria-hidden', 'true');
-
-      // build portal DOM: overlay + sliding train so animation persists across route
-      const overlay = document.createElement('div');
-      overlay.className = 'train-overlay';
-
-      const slideWrap = document.createElement('div');
-      slideWrap.className = 'train-slide';
-      const img = document.createElement('img');
-      img.alt = '';
-
-      // create a guaranteed inline SVG placeholder so the animation is visible
-      const inlineSVGData = `data:image/svg+xml;utf8,${encodeURIComponent(`
-        <svg xmlns='http://www.w3.org/2000/svg' width='220' height='90' viewBox='0 0 220 90'>
-          <rect width='220' height='90' rx='12' fill='%23f3eef4'/>
-          <g transform='translate(8,8)'>
-            <rect x='0' y='12' width='140' height='46' rx='10' fill='%2341414f'/>
-            <rect x='120' y='6' width='80' height='36' rx='10' fill='%23707a83'/>
-            <circle cx='56' cy='64' r='10' fill='%23323a45'/>
-            <circle cx='104' cy='64' r='10' fill='%23323a45'/>
-          </g>
-        </svg>
-      `)}`;
-      const placeholderImg = document.createElement('img');
-      placeholderImg.src = inlineSVGData;
-      placeholderImg.alt = '';
-      placeholderImg.style.width = '220px';
-      placeholderImg.style.height = 'auto';
-      placeholderImg.style.display = 'block';
-      placeholderImg.style.pointerEvents = 'none';
-      // hide the actual img until it loads
-      img.style.display = 'none';
-
-      // try a small set of likely filenames so your attached GIF/PNG will be used
-      const sources = ['/images/train-slide.jpg'];
-
-      let srcIndex = 0;
-
-      const setNextSrc = () => {
-        if (srcIndex < sources.length) {
-          img.src = sources[srcIndex];
-        }
-      };
-
-      img.onerror = function () {
-        srcIndex += 1;
-        if (srcIndex < sources.length) {
-          setNextSrc();
-          return;
-        }
-
-        // final fallback: inject a simple inline SVG so the animation is always visible
-        const inlineSVG = `data:image/svg+xml;utf8,${encodeURIComponent(`
-          <svg xmlns='http://www.w3.org/2000/svg' width='220' height='90' viewBox='0 0 220 90'>
-            <rect width='220' height='90' rx='12' fill='%23f3eef4'/>
-            <g transform='translate(8,8)'>
-              <rect x='0' y='12' width='140' height='46' rx='10' fill='%2341414f'/>
-              <rect x='120' y='6' width='80' height='36' rx='10' fill='%23707a83'/>
-              <circle cx='56' cy='64' r='10' fill='%23323a45'/>
-              <circle cx='104' cy='64' r='10' fill='%23323a45'/>
-            </g>
-          </svg>
-        `)}`;
-
-        // replace img with inline svg image
-        img.onerror = null;
-        img.src = inlineSVG;
-      };
-
-      // set initial source and append placeholder first so it's visible immediately
-      slideWrap.appendChild(placeholderImg);
-      slideWrap.appendChild(img);
-      setNextSrc();
-
-      // when the external image finishes loading, hide placeholder and show image
-      img.onload = () => {
-        try {
-          placeholderImg.style.display = 'none';
-          img.style.display = 'block';
-        } catch (e) {}
-      };
-
-      wrapper.appendChild(overlay);
-      wrapper.appendChild(slideWrap);
-
-      // append portal to the document so it stays across navigation
-      document.body.appendChild(wrapper);
-      // force reflow then start transitions: show overlay and slide the train
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      wrapper.getBoundingClientRect();
-      requestAnimationFrame(() => {
-        // add classes (CSS-driven) and also apply inline styles as a fallback
-        wrapper.classList.add('show');
-        slideWrap.classList.add('enter');
-
-        console.log('train portal: classes added (show, enter)');
-
-        // ensure overlay becomes visible even if CSS failed to load
-        try {
-          overlay.style.transition = 'background 0.4s ease';
-          overlay.style.background = 'rgba(6,18,40,0.28)';
-        } catch (e) {}
-
-        // fallback: set inline animation if CSS keyframes aren't applied
-        try {
-          slideWrap.style.willChange = 'transform, opacity, filter';
-          slideWrap.style.animation = 'train-slide-center 4.5s cubic-bezier(.2,.8,.2,1) forwards';
-
-        } catch (e) {}
-      });
-
-      portalRef.current = wrapper;
-
-      // give the browser a moment to paint the portal and start the CSS transition,
-      // then navigate so the animation continues on the next route
-      setTimeout(() => {
-        navigate('/confirm', { state: bookingData });
-      }, 700);
-
-      // schedule cleanup after animation completes (match CSS: 5200ms)
-      // give a small buffer so the portal is removed after the visual finishes
-      animTimerRef.current = setTimeout(() => {
-        if (portalRef.current && portalRef.current.parentNode) {
-          portalRef.current.parentNode.removeChild(portalRef.current);
-          portalRef.current = null;
-        }
-      }, 6400);
-    } catch (err) {
-      // fallback: if any error, navigate immediately
+    else {
+      // Navigate to confirmation page with booking data
       navigate('/confirm', { state: bookingData });
     }
   };
 
-  React.useEffect(() => {
-    return () => {
-      if (animTimerRef.current) clearTimeout(animTimerRef.current);
-      if (portalRef.current && portalRef.current.parentNode) {
-        portalRef.current.parentNode.removeChild(portalRef.current);
-        portalRef.current = null;
-      }
-    };
-  }, []);
-
-
-
+  
 
   return (
     <div className="booking-bg">
-      <div className="bg-overlay" />
+      <div className="bg-overlay"/>
       <div className="container booking-container">
 
-        {/* Classy Title */}
-        <h1 className="booking-title">RAIL TICKET BOOKING FORM</h1>
+        {/* Title */}
+        <h1 className="booking-title">TICKET BOOKING FORM</h1>
         <p className="booking-subtitle">Book your journey — fast, safe & reliable</p>
 
       <form onSubmit={handleSave}>
@@ -381,7 +244,7 @@ function RailTicketBookingForm() {
             <label className="form-label tag">Departure Date</label>
 
             <div className="date-input">
-              <div className="wrapper">
+              <div className="date-box">
                 <input
                   type="text"
                   maxLength="2"
@@ -392,7 +255,7 @@ function RailTicketBookingForm() {
                 <label>Day</label>
               </div>
 
-              <div className="wrapper">
+              <div className="date-box">
                 <input
                   type="text"
                   maxLength="2"
@@ -403,7 +266,7 @@ function RailTicketBookingForm() {
                 <label>Month</label>
               </div>
 
-              <div className="wrapper">
+              <div className="date-box">
                 <input
                   type="text"
                   maxLength="4"
@@ -539,7 +402,7 @@ function RailTicketBookingForm() {
         ))}
 
         {/* BUTTONS */}
-        <div className="passenger-actions">
+        <div>
           <button type="button" className="btn btn-primary" onClick={addPassenger}>
             + Add Passenger
           </button>
@@ -562,7 +425,7 @@ function RailTicketBookingForm() {
               onChange={(e) => setAgreed(e.target.checked)}
             />
             <label className="form-check-label" htmlFor="terms">
-              I agree to <a href="">terms & conditions</a>
+              I agree to <a href="/terms" target="_blank">terms & conditions</a>
             </label>
           </div>
         </div>

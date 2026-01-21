@@ -25,7 +25,7 @@
 }
 
 .booking-container {
-  max-width: 980px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 28px;
   background: rgba(255,255,255,0.85);
@@ -37,16 +37,11 @@
 
 /* ================= TITLE ================== */
 .booking-title {
-  font-family: 'Century Gothic', 'Futura', sans-serif !important;
-  font-size: 52px;
+  color: #333;
+  font-size: 28px;
   font-weight: 700;
+  margin-bottom: 8px;
   text-align: center;
-  background: linear-gradient(90deg,#07305f 0%, #0b61a8 45%, #0ca085 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin-bottom: 24px;
-  letter-spacing: 1px;
 }
 
 .booking-subtitle {
@@ -70,73 +65,6 @@
   box-shadow: 0 6px 16px rgba(12,120,80,0.08);
 }
 
-/* ================= TRAIN PAGE TRANSITION (FIXED) ================= */
-
-.train-portal {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-/* Overlay */
-.train-portal .train-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(6,18,40,0);
-  transition: background 0.6s ease;
-}
-
-.train-portal.show .train-overlay {
-  background: rgba(6,18,40,0.35);
-}
-
-/* CENTERED TRAIN WRAPPER (NO TRANSFORM CONFLICT) */
-.train-portal .train-slide {
-  position: fixed;
-  top: 50%;
-  left: 0;
-  pointer-events: none;
-  will-change: transform;
-}
-
-/* TRAIN IMAGE */
-.train-portal .train-slide img {
-  width: 320px;
-  height: auto;
-  filter: drop-shadow(0 14px 28px rgba(6,16,36,0.35));
-}
-
-/* START ANIMATION */
-.train-portal .train-slide.enter {
-  animation: train-slide-center 4.5s cubic-bezier(.2,.8,.2,1) forwards;
-}
-
-/* SLIDE FROM LEFT → CENTER → RIGHT */
-@keyframes train-slide-center {
-  0% {
-    transform: translate(-350px, -50%);
-    opacity: 1;
-  }
-
-  50% {
-    transform: translate(50vw, -50%);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(150vw, -50%);
-    opacity: 0;
-  }
-}
-
-/* MOBILE SCALE */
-@media (max-width: 640px) {
-  .train-portal .train-slide img {
-    width: 200px;
-  }
-}
 
 /* ================= FORM LAYOUT ================= */
 .r1 {
@@ -164,22 +92,25 @@
   margin-top: 8px;
 }
 
-.wrapper {
+.date-box {
   display: flex;
   flex-direction: column;
-  text-align: center;
+  align-items: center;
+  width: fit-content;     /*  MOST IMPORTANT */
   border: 2px solid #07305f;
   border-radius: 8px;
-  padding: 8px;
+  padding: 8px 10px;
 }
 
-.wrapper input {
-  width: 80px;
-  padding: 10px;
+.date-box input {
+  width: 72px;
+  padding: 8px;
   font-size: 16px;
-  border-radius: 8px;
   border: none;
+  border-radius: 6px;
+  text-align: center;
 }
+
 
 .calendar-btn {
   border: 2px solid #07305f;

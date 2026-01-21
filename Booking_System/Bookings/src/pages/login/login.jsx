@@ -3,8 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
 import { validateUsername, validateRequired } from '../../utils/validation';
-import FormInput from '../../components/FormInput';
-import FormButton from '../../components/FormButton';
+import FormInput from '../../Components/Form/FormInput';
+import FormButton from '../../Components/Form/FormButton';
 import './login.css';
 
 const Login = () => {

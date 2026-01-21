@@ -9,8 +9,8 @@ import {
   validateFullName,
   validateRequired,
 } from '../../utils/validation';
-import FormInput from '../../components/FormInput';
-import FormButton from '../../components/FormButton';
+import FormInput from '../../Components/Form/FormInput';
+import FormButton from '../../Components/Form/FormButton';
 import './register.css';
 
 const Registration = () => {

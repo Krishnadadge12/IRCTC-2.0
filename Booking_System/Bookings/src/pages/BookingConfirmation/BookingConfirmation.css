@@ -38,15 +38,11 @@
 }
 
 .confirm-title {
-  text-align: center;
-  font-size: 52px;
+  color: #333;
+  font-size: 28px;
   font-weight: 700;
-  background: linear-gradient(90deg,#07305f 0%, #0b61a8 45%, #0ca085 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-family: 'Century Gothic', 'Futura', sans-serif;
-  margin-bottom: 24px;
+  margin-bottom:11px;
+  text-align: center;
 }
 
 .section-card {
@@ -186,11 +182,15 @@
   margin-top: 14px;
 }
 
-.highlight-date {
+.highlight-date-box {
+  background: #fff7ed;
+  padding: 6px 12px;
+  border-radius: 8px;
   color: #F08A23;
   font-weight: 700;
-  font-size: 17px;
+  font-size: 16px;
 }
+
 .highlight-time {
   color: #F08A23;
   font-weight: 700;
