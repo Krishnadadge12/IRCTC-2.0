@@ -87,7 +87,6 @@ function TrainDetails() {
 
   const renderTrainList = () => (
     <div className="page-bg-wrapper train-details">
-      <div className="page-bg-overlay" />
       <div className="container mt-4 two-column-layout page-content-above-overlay">
         <div className="search-bar-container">
           <form className="search-bar-form" onSubmit={handleSearchSubmit}>
@@ -206,11 +205,10 @@ function TrainDetails() {
   const renderTrainDetails = () => {
     if (!selectedTrain) return null;
     return (
-      <div className="page-bg-wrapper train-details">
-        <div className="page-bg-overlay" />
-        <div className="container mt-4 page-content-above-overlay">
+      <div className="train-details-page">
           <button className="btn-back" onClick={handleBackToList}>Back to List</button>
-
+        
+          <div className="container-train-details">
           <div className="card" style={{ marginTop: '20px' }}>
             <div className="detail-header">
               <h2>{selectedTrain.name}</h2>
@@ -249,10 +247,7 @@ function TrainDetails() {
                 </tbody>
               </table>
             </div>
-
-            <hr />
-
-            <div className="detail-section">
+            {/* <div className="detail-section">
               <h3>Stops</h3>
               <div className="stops-list">
                 {selectedTrain.stops && selectedTrain.stops.map((stop, idx) => (
@@ -263,10 +258,7 @@ function TrainDetails() {
                   </div>
                 ))}
               </div>
-            </div>
-
-            <hr />
-
+            </div> */}
             <button className="btn-book" onClick={() => navigate('/booking', { state: { selectedTrain } })}>Book Now</button>
           </div>
         </div>

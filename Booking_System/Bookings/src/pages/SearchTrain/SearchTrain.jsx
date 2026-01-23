@@ -1,7 +1,7 @@
 import "./SearchTrain.css";
 import { useState } from "react";
 import { trains as dummyTrains } from "../../services/dummyTrains";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";  //to navigate to another page
 import { toast } from "react-toastify";
 
 function SearchTrain() {
@@ -13,7 +13,7 @@ function SearchTrain() {
     quota: "All"
   });
 
-  const navigate = useNavigate();
+  const navigate = useNavigate();  //react hook
 
   const maharashtraCities = [
     "Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad",
@@ -53,10 +53,8 @@ function SearchTrain() {
 
   return (
     <div className="page-bg-wrapper register-container search-train-wrapper">
-
-      <div className="full-wrapper page-content-above-overlay">
-      {/* LEFT SIDE FORM */}
-      <div className="left-box">
+      <div className="full-wrapper">
+      <div className="search-box">
         <h2 className="title">SEARCH TRAIN</h2>
 
         <form className="form-area" onSubmit={handleSearch}>

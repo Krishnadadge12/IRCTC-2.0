@@ -14,19 +14,12 @@
   box-sizing: border-box;
 }
 
-body, html {
-  font-family: var(--fw-sans);
-  background: linear-gradient(135deg, #d4791a 0%, #e8a65f 25%, #f5d5b8 50%, #fffbf5 75%, #4a7c59 100%);
-  min-height: 100vh;
-}
-
 /* Page-specific background for TrainDetails views */
 .train-details {
   min-height: 100vh;
   background-image: url('/images/background_img.jpeg');
   background-size: cover;
   background-position: center center;
-  background-repeat: no-repeat;
   padding-top: 24px; /* keep spacing from top sticky search bar */
 }
 
@@ -43,16 +36,15 @@ body, html {
 
 /* SEARCH BAR ON TOP - BLUE FAMILY BACKGROUND */
 .search-bar-container {
-  background: linear-gradient(135deg, #0a6be0 0%, #07448f 100%);
-  border: 1px solid rgba(10, 107, 224, 0.3);
+ background: linear-gradient(135deg, rgba(240, 247, 255, 0.9) 0%, rgba(224, 240, 255, 0.8) 100%);
   border-radius: var(--radius);
   padding: 18px;
-  box-shadow: 0 10px 28px rgba(10, 107, 224, 0.2);
   margin-bottom: 24px;
   position: sticky;
   top: 0;
   z-index: 10;
 }
+
 
 .search-bar-form {
   display: flex;
@@ -64,7 +56,6 @@ body, html {
 .search-bar-input {
   padding: 11px 14px;
   font-size: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.95);
   color: #0b2436;
@@ -82,21 +73,16 @@ body, html {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
 }
 
-.search-bar-input::placeholder {
-  color: #8ea0b8;
-}
-
 .search-bar-btn {
   padding: 11px 22px;
-  background: white;
-  color: var(--accent);
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 700;
   transition: all 160ms ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .search-bar-btn:hover {
@@ -137,7 +123,7 @@ body, html {
 .list-column {
   flex: 1 1 0%;
   min-width: 0;
-  background: linear-gradient(135deg, rgba(224, 240, 255, 0.35) 0%, rgba(240, 247, 255, 0.2) 100%);
+ background: linear-gradient(135deg, rgba(240, 247, 255, 0.9) 0%, rgba(224, 240, 255, 0.8) 100%);
   border: 1px solid rgba(10, 107, 224, 0.1);
   padding: 18px;
   border-radius: 12px;
@@ -146,6 +132,7 @@ body, html {
 
 .list-column h2 {
   color: #0b355f;
+  font-weight: bold;
   margin-top: 0;
   margin-bottom: 12px;
   font-size: 18px;
@@ -195,7 +182,6 @@ body, html {
   font-weight: 700;
   color: transparent;
   background: linear-gradient(90deg, #0b355f, var(--accent));
-  -webkit-background-clip: text;
   background-clip: text;
 }
 
@@ -283,12 +269,10 @@ body, html {
   font-size: 13px;
   font-weight: 700;
   transition: all 160ms ease;
-  box-shadow: 0 4px 12px rgba(10, 107, 224, 0.15);
 }
 
 .view-details-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(10, 107, 224, 0.2);
 }
 
 .view-details-btn:active {
@@ -310,7 +294,6 @@ body, html {
   border: 1px solid rgba(10, 107, 224, 0.15);
   border-radius: 10px;
   padding: 16px;
-  box-shadow: 0 10px 28px rgba(10, 107, 224, 0.08);
   position: sticky;
   top: 100px;
   height: fit-content;
@@ -463,25 +446,31 @@ body, html {
 /* DETAIL PAGES */
 .btn-back,
 .btn-book {
+  margin: 30px;
   padding: 10px 16px;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
   color: white;
-  border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
   transition: transform 160ms ease, box-shadow 160ms ease;
-  box-shadow: 0 6px 18px rgba(10, 107, 224, 0.15);
 }
 
 .btn-back:hover,
 .btn-book:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(10, 107, 224, 0.2);
 }
 
+.container-train-details {
+  max-width: 100%;
+  margin: 10px auto;
+  padding: 20px;
+  font-family: var(--fw-sans);
+}
 .card {
+  margin-left: 25%;
+  width: 50%;
   background: linear-gradient(180deg, #ffffff, #fbfdff);
   border-radius: var(--radius);
   box-shadow: 0 12px 34px var(--shadow);
@@ -514,6 +503,7 @@ body, html {
 }
 
 .detail-section {
+  width: 100%;
   margin-bottom: 20px;
 }
 
@@ -685,3 +675,4 @@ hr {
     flex-direction: column;
   }
 }
+
