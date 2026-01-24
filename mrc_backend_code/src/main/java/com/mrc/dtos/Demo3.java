@@ -1,5 +1,0 @@
-package com.mrc.dtos;
-
-public class Demo3 {
-
-}
