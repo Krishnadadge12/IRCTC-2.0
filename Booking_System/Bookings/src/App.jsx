@@ -4,8 +4,8 @@ import { ToastContainer } from 'react-toastify'
 import { AuthProvider } from './context/AuthContext'
 
 import Layout from './Components/Layout/Layout'
-import Home from './pages/Home/Home'
-import Login from './pages/Login/login'
+import Home from './pages/home/Home'
+import Login from './pages/login/login'
 import Register from './pages/Register/register'
 
 import SearchTrain from './pages/SearchTrain/SearchTrain'

@@ -15,11 +15,11 @@ const Navbar = () => {
       
     <Link className='navbar-logo-link' to={'/home'}>
      <img 
-        src="/images/irctc.png"
-        alt="IRCTC Logo" 
+        src="/images/MRC.png"
+        alt="MRC Logo" 
         className="navbar-logo-img"
       />
-      <span className="navbar-logo-text">MRC</span>
+      <span className="navbar-logo-text"></span>
        </Link>
       
     </div>
