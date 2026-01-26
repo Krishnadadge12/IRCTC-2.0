@@ -25,25 +25,22 @@
   backdrop-filter: blur(2px) saturate(1.05);
 }
 
-#header {
-    color: #333;
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  margin-top: 15px;
+/* ================= HEADER ================== */
+.header {
   width: 100%;
   text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 20px 0 30px 0;
+  color: #333;
 }
 
-
-
-
-
+/* ================= CARD ================== */
 .payment-box {
   width: 90%;
   margin: 25px auto;
   display: flex;
-  flex-wrap: wrap;   /*  allows header to take full row */
+  flex-wrap: wrap;
   background: rgba(255,255,255,0.85);
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(10,20,40,0.18);
@@ -51,8 +48,7 @@
   z-index: 2;
 }
 
-
-/* LEFT SIDE */
+/* ================= LEFT SIDE ================== */
 .left-side {
   width: 28%;
   border-right: 1px solid rgba(10,90,200,0.08);
@@ -81,17 +77,30 @@
   box-shadow: 0 6px 18px rgba(6,18,56,0.06);
 }
 
-/* RIGHT SIDE */
+/* ================= RIGHT SIDE ================== */
 .right-side {
   width: 70%;
   padding: 25px;
+  display: flex;
+  flex-direction: column;
 }
 
-.details-box, .fare-box {
+/* ================= CONTENT BOXES ================== */
+.details-box {
   background: rgba(248,251,255,0.95);
   padding: 20px;
   border-radius: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 45px; /* ⬅️ increased spacing */
+  border: 1px solid rgba(10,90,200,0.08);
+  box-shadow: 0 6px 18px rgba(6,18,56,0.06);
+}
+
+
+.fare-box {
+  background: rgba(248,251,255,0.95);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 25px;
   border: 1px solid rgba(10,90,200,0.08);
   box-shadow: 0 6px 18px rgba(6,18,56,0.06);
 }
@@ -105,6 +114,7 @@
   font-weight: 600;
 }
 
+/* ================= INPUTS & ICONS ================== */
 .upi-apps img {
   width: 60px;
   margin-right: 10px;
@@ -141,7 +151,12 @@
   box-shadow: 0 0 0 3px rgba(11,97,168,0.1);
 }
 
+/* ================= PAY BUTTON ================== */
 .pay-btn {
+  flex-basis: 100%;          /* forces button to next row */
+  align-self: center;        /* centers in flex container */
+  display: inline-block;     /* avoids stretching */
+  margin: 30px auto 10px;    /* centered spacing */
   padding: 12px 30px;
   background: linear-gradient(90deg,#07305f 0%, #0b61a8 45%, #0ca085 100%);
   color: white;
@@ -151,9 +166,11 @@
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.16s ease, box-shadow 0.16s ease;
+  
 }
 
 .pay-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 24px rgba(255,120,20,0.18);
 }
+
