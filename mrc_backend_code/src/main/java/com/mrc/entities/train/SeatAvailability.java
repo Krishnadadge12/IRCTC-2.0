@@ -27,7 +27,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Seat extends BaseEntity {
+public class SeatAvailability extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name="coach_id", nullable=false)

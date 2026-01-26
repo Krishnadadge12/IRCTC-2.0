@@ -3,7 +3,7 @@ package com.mrc.entities;
 import java.time.LocalDateTime;
 
 import com.mrc.entities.train.Coach;
-import com.mrc.entities.train.Seat;
+import com.mrc.entities.train.SeatAvailability;
 import com.mrc.entities.train.SeatPrice;
 import com.mrc.entities.train.TrainEntity;
 import com.mrc.entities.users.UserEntity;
@@ -48,7 +48,7 @@ public class Booking extends BaseEntity {
 	
 	@OneToOne
 	@JoinColumn(name="seat_id", nullable = false)
-	private Seat seat;
+	private SeatAvailability seat;
 	
 	@Column(name="source", length=200)
 	private String source;
