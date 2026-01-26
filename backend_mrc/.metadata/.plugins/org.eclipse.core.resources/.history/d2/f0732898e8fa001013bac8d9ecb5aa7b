@@ -1,0 +1,5 @@
+package com.mrc.controller.admin;
+
+public class UserAdminController {
+
+}

@@ -1,0 +1,27 @@
+package com.mrc.service;
+
+import java.util.List;
+
+import com.mrc.dtos.TrainDTO;
+
+public class TrainServiceImpl implements TrainService {
+
+	@Override
+	public List<TrainDTO> getAllTrains() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TrainDTO updateTrain(Long id, TrainDTO dto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteTrain(Long id) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

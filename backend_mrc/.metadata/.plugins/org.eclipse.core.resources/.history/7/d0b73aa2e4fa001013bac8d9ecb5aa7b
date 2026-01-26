@@ -1,0 +1,43 @@
+package com.mrc.service;
+
+import java.time.LocalDate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.mrc.dtos.DashboardStatsDTO;
+import com.mrc.repository.BookingRepository;
+import com.mrc.repository.CoachRepository;
+import com.mrc.repository.TrainRepository;
+import com.mrc.repository.UserRepository;
+
+@Service
+public class DashboardServiceImpl implements DashboardService {
+
+    @Autowired private TrainRepository trainRepo;
+    @Autowired private UserRepository userRepo;
+    @Autowired private CoachRepository coachRepo;
+    @Autowired private BookingRepository bookingRepo;
+
+   
+    @Override
+    public DashboardStatsDTO getDashboardStats() {
+
+        long totalTrains = trainRepo.count();
+        long totalUsers = userRepo.count();
+        long totalCoaches = coachRepo.count();
+
+        long totalSchedules = 0; // not implemented yet
+
+        long bookingsToday = bookingRepo.countByBookingDate(LocalDate.now());
+
+        return new DashboardStatsDTO(
+                totalTrains,
+                totalUsers,
+                totalSchedules,   // 👈 ADD THIS
+                totalCoaches,
+                bookingsToday
+        );
+    }
+
+}

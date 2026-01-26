@@ -1,0 +1,41 @@
+package com.mrc.controller;
+
+import com.mrc.dtos.LoginRequest;
+import com.mrc.dtos.LoginResponse;
+import com.mrc.entities.users.UserEntity;
+import com.mrc.repository.UserRepository;
+import com.mrc.security.JWTUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.*;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+@CrossOrigin
+public class AuthController {
+
+    private final AuthenticationManager authenticationManager;
+    private final JWTUtils jwtUtils;
+    private final UserRepository userRepository;   // ⭐ ADD THIS
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(), request.getPassword())
+        );
+
+        UserEntity user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String token = jwtUtils.generateToken(
+                user.getEmail(),
+                user.getUserRole().name()   // ROLE_ADMIN
+        );
+
+        return ResponseEntity.ok(new LoginResponse(token));
+    }
+}

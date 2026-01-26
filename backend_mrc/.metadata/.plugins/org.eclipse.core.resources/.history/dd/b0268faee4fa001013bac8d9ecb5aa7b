@@ -1,0 +1,11 @@
+package com.mrc.repository;
+
+import java.time.LocalDate;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.mrc.entities.Booking;
+
+public interface BookingRepository extends JpaRepository<Booking, Long> {
+	 long countByBookingDate(LocalDate bookingDate);
+}

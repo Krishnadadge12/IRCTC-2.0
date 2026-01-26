@@ -1,0 +1,11 @@
+package com.mrc.service;
+
+import java.util.List;
+import com.mrc.dtos.UserDTO;
+
+public interface UserService {
+    List<UserDTO> getAllUsers();
+    UserDTO updateUser(Long id, UserDTO dto);
+    void deleteUser(Long id);
+    void blockUser(Long id);
+}

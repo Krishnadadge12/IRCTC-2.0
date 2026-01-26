@@ -1,0 +1,33 @@
+package com.mrc.service;
+
+import java.util.List;
+
+import com.mrc.dtos.UserDTO;
+
+public class UserServiceImpl implements UserService {
+
+	@Override
+	public List<UserDTO> getAllUsers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public UserDTO updateUser(Long id, UserDTO dto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteUser(Long id) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void blockUser(Long id) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

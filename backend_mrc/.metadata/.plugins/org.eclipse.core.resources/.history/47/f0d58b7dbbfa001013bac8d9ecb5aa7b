@@ -1,0 +1,31 @@
+@RestController
+@RequestMapping("/api/admin/coaches")
+@CrossOrigin("http://localhost:3000")
+public class CoachAdminController {
+
+    @Autowired
+    private CoachService coachService;
+
+    @GetMapping
+    public ResponseEntity<List<CoachDTO>> getAll() {
+        return ResponseEntity.ok(coachService.getAllCoaches());
+    }
+
+    @PostMapping
+    public ResponseEntity<CoachDTO> add(@RequestBody CoachDTO dto) {
+        return ResponseEntity.ok(coachService.addCoach(dto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CoachDTO> update(
+            @PathVariable Long id,
+            @RequestBody CoachDTO dto) {
+        return ResponseEntity.ok(coachService.updateCoach(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        coachService.deleteCoach(id);
+        return ResponseEntity.noContent().build();
+    }
+}

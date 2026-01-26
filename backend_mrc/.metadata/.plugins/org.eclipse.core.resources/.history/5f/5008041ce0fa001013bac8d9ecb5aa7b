@@ -1,0 +1,17 @@
+package com.mrc.dtos;
+
+import com.mrc.entities.train.Tier;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class CoachDTO {
+
+    private Long id;
+    private Tier coachType;
+    private Integer totalSeats;
+    private Integer availableSeats;
+
+    private Long trainId;   // ⭐ VERY IMPORTANT (foreign key)
+}

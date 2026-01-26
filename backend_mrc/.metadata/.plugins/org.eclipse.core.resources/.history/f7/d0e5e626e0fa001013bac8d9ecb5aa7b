@@ -1,0 +1,50 @@
+package com.mrc.entities.train;
+
+import com.mrc.entities.BaseEntity;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+// import jakarta.persistence.GeneratedValue;
+// import jakarta.persistence.GenerationType;
+// import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@Table(name="coaches")
+@AttributeOverride(name="id", column=@Column(name="coach_id"))
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class Coach extends BaseEntity {
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "coach_type")
+    private Tier coachType;
+
+    @Column(name="coach_no", length=2)
+    private String coachNo;
+
+    // ❌ REMOVE @Transient
+    @Column(name="total_seats")
+    private Integer totalSeats;
+
+    @Column(name="available_seats")
+    private Integer availableSeats;
+
+    @ManyToOne
+    @JoinColumn(name="train_id", nullable=false)
+    private TrainEntity train;
+}

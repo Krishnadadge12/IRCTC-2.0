@@ -1,0 +1,5 @@
+package com.mrc.dtos;
+
+public class UserDTO {
+
+}

@@ -1,0 +1,93 @@
+package com.mrc.service;
+
+import java.util.List;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.mrc.dtos.CoachDTO;
+import com.mrc.entities.train.Coach;
+import com.mrc.entities.train.TrainEntity;
+import com.mrc.repository.CoachRepository;
+import com.mrc.repository.TrainRepository;
+
+@Service
+public class CoachServiceImpl implements CoachService {
+
+    @Autowired
+    private CoachRepository coachRepo;
+
+    @Autowired
+    private TrainRepository trainRepo;
+
+    @Autowired
+    private ModelMapper mapper;
+
+    // ✅ ADD COACH
+    @Override
+    public CoachDTO addCoach(CoachDTO dto) {
+
+        // Convert DTO → Entity
+        Coach coach = new Coach();
+        coach.setCoachType(dto.getCoachType());
+        coach.setCoachNo(dto.getCoachNo());
+
+        // 🔥 VERY IMPORTANT: Set Train (Foreign Key)
+        TrainEntity train = trainRepo.findById(dto.getTrainId())
+                .orElseThrow(() -> new RuntimeException("Train not found"));
+        coach.setTrain(train);
+
+        Coach savedCoach = coachRepo.save(coach);
+
+        // Convert back Entity → DTO
+        CoachDTO response = mapper.map(savedCoach, CoachDTO.class);
+        response.setTrainId(train.getId());
+
+        return response;
+    }
+
+    // ✅ GET ALL COACHES
+    @Override
+    public List<CoachDTO> getAllCoaches() {
+        return coachRepo.findAll()
+                .stream()
+                .map(coach -> {
+                    CoachDTO dto = mapper.map(coach, CoachDTO.class);
+                    dto.setTrainId(coach.getTrain().getId());
+                    return dto;
+                })
+                .toList();
+    }
+
+    // ✅ UPDATE COACH
+    @Override
+    public CoachDTO updateCoach(Long id, CoachDTO dto) {
+
+        Coach coach = coachRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
+
+        coach.setCoachType(dto.getCoachType());
+        coach.setCoachNo(dto.getCoachNo());
+
+        // If train is being changed
+        if (dto.getTrainId() != null) {
+            TrainEntity train = trainRepo.findById(dto.getTrainId())
+                    .orElseThrow(() -> new RuntimeException("Train not found"));
+            coach.setTrain(train);
+        }
+
+        Coach updatedCoach = coachRepo.save(coach);
+
+        CoachDTO response = mapper.map(updatedCoach, CoachDTO.class);
+        response.setTrainId(updatedCoach.getTrain().getId());
+
+        return response;
+    }
+
+    // ✅ DELETE COACH
+    @Override
+    public void deleteCoach(Long id) {
+        coachRepo.deleteById(id);
+    }
+}

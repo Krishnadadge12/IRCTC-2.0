@@ -1,0 +1,52 @@
+package com.mrc.service;
+
+import java.util.List;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.mrc.dtos.UserDTO;
+import com.mrc.entities.users;
+import com.mrc.repository.UserRepository;
+
+@Service
+public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
+    private ModelMapper mapper;
+
+    @Override
+    public List<UserDTO> getAllUsers() {
+        return userRepo.findAll()
+                .stream()
+                .map(user -> mapper.map(user, UserDTO.class))
+                .toList();
+    }
+
+    @Override
+    public UserDTO updateUser(Long id, UserDTO dto) {
+        UserEntity user = userRepo.findById(id).orElseThrow();
+
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setStatus(dto.getStatus());
+
+        return mapper.map(userRepo.save(user), UserDTO.class);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        userRepo.deleteById(id);
+    }
+
+    @Override
+    public void blockUser(Long id) {
+        UserEntity user = userRepo.findById(id).orElseThrow();
+        user.setStatus("BLOCKED");
+        userRepo.save(user);
+    }
+}

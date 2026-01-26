@@ -1,0 +1,83 @@
+package com.mrc.service;
+
+import java.util.List;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.mrc.dtos.CoachDTO;
+import com.mrc.entities.train.Coach;
+import com.mrc.repository.CoachRepository;
+import com.mrc.repository.TrainRepository;
+
+@Service
+public class CoachServiceImpl implements CoachService {
+
+    @Autowired
+    private CoachRepository coachRepo;
+    
+    @Autowired
+    private TrainRepository trainRepo;
+
+
+    @Autowired
+    private ModelMapper mapper;
+
+    @Override
+    public CoachDTO addCoach(CoachDTO dto) {
+
+        Coach coach = mapper.map(dto, Coach.class);
+
+        // 🔥 FETCH TRAIN FROM DB USING trainId
+        var train = trainRepo.findById(dto.getTrainId())
+                .orElseThrow(() -> new RuntimeException("Train not found"));
+
+        // 🔥 SET TRAIN INTO COACH (THIS FIXES ERROR)
+        coach.setTrain(train);
+
+        // Optional safety
+        if (coach.getAvailableSeats() == null) {
+            coach.setAvailableSeats(coach.getTotalSeats());
+        }
+
+        Coach savedCoach = coachRepo.save(coach);
+
+        return mapper.map(savedCoach, CoachDTO.class);
+    }
+
+
+    @Override
+    public List<CoachDTO> getAllCoaches() {
+        return coachRepo.findAll()
+                .stream()
+                .map(c -> mapper.map(c, CoachDTO.class))
+                .toList();
+    }
+
+    @Override
+    public CoachDTO updateCoach(Long id, CoachDTO dto) {
+
+        Coach coach = coachRepo.findById(id).orElseThrow();
+
+        coach.setCoachType(dto.getCoachType());
+        coach.setCoachNo(dto.getCoachNo());
+        coach.setTotalSeats(dto.getTotalSeats());
+        coach.setAvailableSeats(dto.getAvailableSeats());
+
+        // Optional if train can change
+        if (dto.getTrainId() != null) {
+            var train = trainRepo.findById(dto.getTrainId())
+                    .orElseThrow(() -> new RuntimeException("Train not found"));
+            coach.setTrain(train);
+        }
+
+        return mapper.map(coachRepo.save(coach), CoachDTO.class);
+    }
+
+
+    @Override
+    public void deleteCoach(Long id) {
+        coachRepo.deleteById(id);
+    }
+}

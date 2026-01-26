@@ -1,0 +1,5 @@
+package com.mrc.service;
+
+public interface DashboardService {
+
+}

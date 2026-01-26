@@ -1,0 +1,5 @@
+package com.mrc.config;
+
+public class DataInitializer {
+
+}
