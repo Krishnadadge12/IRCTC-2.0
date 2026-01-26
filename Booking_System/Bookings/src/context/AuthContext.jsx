@@ -38,15 +38,15 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('currentUser');
   };
 
-  const isAuthenticated = () => {
-    return user !== null;
-  };
+  // const isAuthenticated = () => {
+  //   return user !== null;
+  // };
 
   const value = {
     user,
     login,
     logout,
-    isAuthenticated,
+    isAuthenticated: !!user, 
     isLoading,
   };
 

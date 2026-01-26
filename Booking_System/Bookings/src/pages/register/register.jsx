@@ -151,7 +151,7 @@ const Registration = () => {
       toast.success('Registration successful! Redirecting to login...');
       
       setTimeout(() => {
-        navigate('/login');
+        navigate('/home/login');
       }, 1500);
     } catch (error) {
       toast.error('An error occurred during registration. Please try again.');

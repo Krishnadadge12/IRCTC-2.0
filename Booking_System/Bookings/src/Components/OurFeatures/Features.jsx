@@ -64,7 +64,7 @@ const Features = () => {
           </div>
 
           {/* Search Button */}
-          <button onClick={() => navigate('/search')} className="hero-search-btn">
+          <button onClick={() => navigate('/home/search')} className="hero-search-btn">
             Search
           </button>
 

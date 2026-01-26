@@ -174,7 +174,7 @@ React.useEffect(() => {
 
     else {
       // Navigate to confirmation page with booking data
-      navigate('/confirm', { state: bookingData });
+      navigate('/home/confirm', { state: bookingData });
     }
   };
 

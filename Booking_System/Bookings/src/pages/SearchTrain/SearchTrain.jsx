@@ -43,7 +43,7 @@ function SearchTrain() {
       return;
     }
 
-    navigate("/train-details", { 
+    navigate("/home/train-details", { 
       state: { 
         trains: filtered, 
         searchParams: searchParams 

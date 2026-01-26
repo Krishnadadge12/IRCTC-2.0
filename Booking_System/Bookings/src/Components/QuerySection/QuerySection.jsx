@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './QuerySection.css';
 
+// QuerySection component for user support / contact queries
 const QuerySection = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -10,6 +11,7 @@ const QuerySection = () => {
     query: ''
   });
 
+  // Handles input value changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -18,6 +20,7 @@ const QuerySection = () => {
     }));
   };
 
+  // Handles form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Form submitted:', formData);

@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-toastify';
 import './Navbar.css';
 
 const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
 
-  // Login navigation handled by Link component 
+  const handleLogout = () => {
+    logout();
+    toast.success('Logged out successfully');
+    navigate('/home');
+    setIsSidebarOpen(false);
+  }; 
 
   return (
     <nav className="navbar">
@@ -26,20 +35,26 @@ const Navbar = () => {
 
         {/* Menu Items */}
         <div className="navbar-menu">
-          <Link className='navbar-link' to={"/register"}>
+          <Link className='navbar-link' to={"/home/register"}>
           Register </Link>
-          <Link className='navbar-link' to={"/search"}>Train Search</Link>
-          <Link className='navbar-link' to={"/booking"}>Bookings</Link>
+          <Link className='navbar-link' to={"/home/search"}>Train Search</Link>
+          <Link className='navbar-link' to={"/home/booking"}>Bookings</Link>
          
-          <Link className='navbar-link' to={"/AboutUs"}>AboutUs</Link>
+          <Link className='navbar-link' to={"/home/AboutUs"}>AboutUs</Link>
         </div>
 
         
 
-        {/* Contact, Login & Hamburger */}
+        {/* Contact, Login/Logout & Hamburger */}
         <div className="navbar-actions">
           <button className="navbar-contact-btn">Contact Us</button>
-          <Link to="/login" className="navbar-login-btn">Login</Link>
+          {isAuthenticated ? (
+            <button onClick={handleLogout} className="navbar-login-btn">
+              Logout
+            </button>
+          ) : (
+            <Link to="/home/login" className="navbar-login-btn">Login</Link>
+          )}
 
           {/* small three-line hamburger, placed right of Login */}
           <button
@@ -74,12 +89,27 @@ const Navbar = () => {
 
               <nav className="navbar-sidebar-nav">
                 <ul className="navbar-sidebar-list">
-                  <li className="navbar-sidebar-item"><Link to="/login">Login</Link></li>
-                  <li className="navbar-sidebar-item"><Link to="/register">Register</Link></li>
-                  <li className="navbar-sidebar-item"><Link to="/search">Search Train</Link></li>
-                  <li className="navbar-sidebar-item"><Link to="/booking">Book Train</Link></li>
-                  <li className="navbar-sidebar-item"><Link to="/cancel">Cancel Train</Link></li>
-                  <li className="navbar-sidebar-item"><Link to="/AboutUs">About</Link></li>
+                  {isAuthenticated ? (
+                    <>
+                      <li className="navbar-sidebar-item">
+                        <span style={{ padding: '10px', color: '#4a90e2', fontWeight: 'bold' }}>
+                          {user?.fullname || user?.username || 'User'}
+                        </span>
+                      </li>
+                      <li className="navbar-sidebar-item">
+                        <button onClick={handleLogout}>Logout</button>
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li className="navbar-sidebar-item"><Link to="/home/login" onClick={() => setIsSidebarOpen(false)}>Login</Link></li>
+                      <li className="navbar-sidebar-item"><Link to="/home/register" onClick={() => setIsSidebarOpen(false)}>Register</Link></li>
+                    </>
+                  )}
+                  <li className="navbar-sidebar-item"><Link to="/home/search" onClick={() => setIsSidebarOpen(false)}>Search Train</Link></li>
+                  <li className="navbar-sidebar-item"><Link to="/home/booking" onClick={() => setIsSidebarOpen(false)}>Book Train</Link></li>
+                  <li className="navbar-sidebar-item"><Link to="/home/cancel" onClick={() => setIsSidebarOpen(false)}>Cancel Train</Link></li>
+                  <li className="navbar-sidebar-item"><Link to="/home/AboutUs" onClick={() => setIsSidebarOpen(false)}>About</Link></li>
                   <li className="navbar-sidebar-item"><button onClick={() => setIsSidebarOpen(false)}>Contact Us</button></li>
                 </ul>
 

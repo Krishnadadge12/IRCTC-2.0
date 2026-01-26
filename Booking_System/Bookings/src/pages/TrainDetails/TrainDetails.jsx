@@ -34,7 +34,7 @@ function TrainDetails() {
       setShowDetails(false);
       setExtraFilters({ classes: [], quotas: [], times: [] });
     } else {
-      navigate('/');
+      navigate('/home');
     }
   }, [location, navigate]);
 
@@ -259,7 +259,7 @@ function TrainDetails() {
                 ))}
               </div>
             </div> */}
-            <button className="btn-book" onClick={() => navigate('/booking', { state: { selectedTrain } })}>Book Now</button>
+            <button className="btn-book" onClick={() => navigate('/home/booking', { state: { selectedTrain } })}>Book Now</button>
           </div>
         </div>
       </div>

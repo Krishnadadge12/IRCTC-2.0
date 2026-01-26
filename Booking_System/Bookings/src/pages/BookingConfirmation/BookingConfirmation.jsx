@@ -50,7 +50,7 @@ function BookingConfirmation() {
         bookingData.gst;
 
     const goToPayment = () => {
-        navigate("/payment", { state: bookingData });
+        navigate("/home/payment", { state: bookingData });
     };
 
 
@@ -157,7 +157,7 @@ function BookingConfirmation() {
                 <div style={{ marginTop: "20px", display: "flex", gap: "15px" }}>
                     <button
                         className="btn btn-secondary"
-                        onClick={() => navigate("/booking", { state })}
+                        onClick={() => navigate("/home/booking", { state })}
                     >
                         Back to Booking
                     </button>

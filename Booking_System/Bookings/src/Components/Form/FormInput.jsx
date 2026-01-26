@@ -18,12 +18,15 @@ const FormInput = ({
 }) => {
   return (
     <div className={`form-group ${className}`}>
+       {/* Input Label */}
       {label && (
         <label htmlFor={name} className="form-label">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
+
+       {/* Input Field */}
       <input
         id={name}
         name={name}
@@ -34,6 +37,7 @@ const FormInput = ({
         className={`form-input ${error ? 'input-error' : ''} ${inputClassName}`}
         {...props}
       />
+       {/* Validation Error */}
       {error && (
         <div className="error-message" role="alert">
           {error}

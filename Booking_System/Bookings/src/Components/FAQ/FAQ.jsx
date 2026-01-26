@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import './FAQ.css';
 
+// FAQ component displays frequently asked questions in accordion format
 const FAQ = () => {
+
+   // Stores index of currently opened FAQ (null means all closed)
   const [openIndex, setOpenIndex] = useState(null);
 
+  // Static FAQ data (can be fetched from API later)
   const faqData = [
     {
       question: 'How can I book a train ticket on IRCTC?',
@@ -23,6 +27,7 @@ const FAQ = () => {
     }
   ];
 
+  // Toggles open/close state for FAQ items
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
