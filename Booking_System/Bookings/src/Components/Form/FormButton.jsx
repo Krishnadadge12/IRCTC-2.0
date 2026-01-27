@@ -2,11 +2,13 @@ import React from 'react';
 
 /**
  * Reusable Form Button Component
+ * ✔ Works with form submit
+ * ✔ Loading-safe
+ * ✔ Theme-safe
  */
 const FormButton = ({
-  type = 'button',
+  type = 'submit',            // ✅ default to submit (IMPORTANT)
   children,
-  onClick,
   variant = 'primary',
   disabled = false,
   loading = false,
@@ -14,6 +16,7 @@ const FormButton = ({
   ...props
 }) => {
   const baseClasses = 'form-button';
+
   const variantClasses = {
     primary: 'btn-primary',
     secondary: 'btn-secondary',
@@ -23,16 +26,16 @@ const FormButton = ({
   return (
     <button
       type={type}
-      onClick={onClick}
       disabled={disabled || loading}
       className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+      aria-busy={loading}
       {...props}
     >
       {loading ? (
-        <>
-          <span className="spinner"></span>
-          Loading...
-        </>
+        <span className="button-loading">
+          <span className="spinner" aria-hidden="true"></span>
+          <span className="loading-text">Please wait...</span>
+        </span>
       ) : (
         children
       )}
@@ -41,4 +44,3 @@ const FormButton = ({
 };
 
 export default FormButton;
-

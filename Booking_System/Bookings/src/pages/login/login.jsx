@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
-import { validateUsername, validateRequired } from '../../utils/validation';
+import { validateEmail, validateRequired } from '../../utils/validation';
 import FormInput from '../../Components/Form/FormInput';
 import FormButton from '../../Components/Form/FormButton';
 import './login.css';
@@ -10,10 +10,12 @@ import './login.css';
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+
   const [form, setForm] = useState({
-    username: '',
+    username: '',   // using username key but it stores EMAIL
     password: '',
   });
+
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -21,30 +23,30 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
+
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
-  const validateForm = () => {
-    const newErrors = {};
+ const validateForm = () => {
+  const newErrors = {};
 
-    // Validate username
-    const usernameValidation = validateUsername(form.username);
-    if (!usernameValidation.isValid) {
-      newErrors.username = usernameValidation.message;
-    }
+  // ✅ Email validation (correct for your utils)
+  if (!validateEmail(form.username)) {
+    newErrors.username = 'Please enter a valid email address.';
+  }
 
-    // Validate password
-    const passwordValidation = validateRequired(form.password, 'Password');
-    if (!passwordValidation.isValid) {
-      newErrors.password = passwordValidation.message;
-    }
+  // Password validation
+  const passwordValidation = validateRequired(form.password, 'Password');
+  if (!passwordValidation.isValid) {
+    newErrors.password = passwordValidation.message;
+  }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,36 +59,41 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await fetch('http://localhost:8080/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: form.username,   // ✅ backend expects email
+          password: form.password,
+        }),
+      });
 
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find((u) => u.username === form.username.trim());
-
-      if (!user) {
-        toast.error('User not found. Please register first.');
-        setErrors({ username: 'User not found. Please register first.' });
-        setIsLoading(false);
-        return;
+      if (!response.ok) {
+        throw new Error('Invalid credentials');
       }
 
-      if (user.password !== form.password) {
-        toast.error('Incorrect password. Please try again.');
-        setErrors({ password: 'Incorrect password.' });
-        setIsLoading(false);
-        return;
-      }
+      const data = await response.json();
 
-      // Login successful
-      login(user);
-      toast.success(`Welcome back, ${user.fullname || user.username}!`);
-      
-      // Navigate to home after a short delay
+     
+      // ✅ Save user in AuthContext
+     localStorage.setItem('token', data.jwt);
+
+login({
+  email: form.username,
+  token: data.jwt,
+});
+
+
+      toast.success('Login successful!');
+
       setTimeout(() => {
         navigate('/home');
       }, 500);
+
     } catch (error) {
-      toast.error('An error occurred. Please try again.');
+      toast.error('Invalid email or password');
       setIsLoading(false);
     }
   };
@@ -94,28 +101,35 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-box">
+
         <div className="login-header">
           <h2>Login</h2>
-          <p className="login-subtitle">Welcome back! Please login to your account.</p>
+          <p className="login-subtitle">
+            Welcome back! Please login to your account.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} noValidate className="login-form">
+
+          {/* ✅ EMAIL INPUT */}
           <FormInput
-            label="Username"
+            label="Email"
             name="username"
-            type="text"
+            type="email"
             value={form.username}
             onChange={handleChange}
             error={errors.username}
-            placeholder="Enter your username"
+            placeholder="Enter your email"
             required
-            autoComplete="username"
+            autoComplete="email"
           />
 
+          {/* PASSWORD */}
           <div className="form-group">
             <label htmlFor="password" className="form-label">
               Password <span className="text-red-500 ml-1">*</span>
             </label>
+
             <div className="password-input-wrapper">
               <input
                 id="password"
@@ -136,6 +150,7 @@ const Login = () => {
                 {showPassword ? '👁️' : '👁️‍🗨️'}
               </button>
             </div>
+
             {errors.password && (
               <div className="error-message" role="alert">
                 {errors.password}
@@ -148,6 +163,7 @@ const Login = () => {
               <input type="checkbox" />
               <span>Remember me</span>
             </label>
+
             <Link to="/forgot-password" className="forgot-password-link">
               Forgot Password?
             </Link>
@@ -171,6 +187,7 @@ const Login = () => {
               </Link>
             </p>
           </div>
+
         </form>
       </div>
     </div>

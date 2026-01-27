@@ -4,10 +4,8 @@ import { toast } from 'react-toastify';
 import {
   validateEmail,
   validatePassword,
-  validateUsername,
   validateMobile,
   validateFullName,
-  validateRequired,
 } from '../../utils/validation';
 import FormInput from '../../Components/Form/FormInput';
 import FormButton from '../../Components/Form/FormButton';
@@ -15,90 +13,55 @@ import './register.css';
 
 const Registration = () => {
   const navigate = useNavigate();
+
   const [form, setForm] = useState({
-    username: '',
-    fullname: '',
+    firstName: '',
+    lastName: '',
+    dob: '',
+    gender: 'NOT_SPECIFIED',
+    idProof: 'AADHAR',
+    email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
-    email: '',
-    isd: '+91 - India',
-    mobile: '',
-    captchaInput: '',
   });
+
   const [errors, setErrors] = useState({});
-  const [captcha, setCaptcha] = useState({ q: '', a: '' });
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  useEffect(() => {
-    generateCaptcha();
-  }, []);
-
-  const generateCaptcha = () => {
-    const a = Math.floor(Math.random() * 9) + 1;
-    const b = Math.floor(Math.random() * 9) + 1;
-    setCaptcha({ q: `${a} + ${b} = ?`, a: String(a + b) });
-    setForm((prev) => ({ ...prev, captchaInput: '' }));
-    setErrors((prev) => ({ ...prev, captchaInput: '' }));
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
+    setForm(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    // Validate username
-    const usernameValidation = validateUsername(form.username);
-    if (!usernameValidation.isValid) {
-      newErrors.username = usernameValidation.message;
-    }
+    if (!validateFullName(form.firstName).isValid)
+      newErrors.firstName = 'First name is required';
 
-    // Validate full name
-    const fullnameValidation = validateFullName(form.fullname);
-    if (!fullnameValidation.isValid) {
-      newErrors.fullname = fullnameValidation.message;
-    }
+    if (!validateFullName(form.lastName).isValid)
+      newErrors.lastName = 'Last name is required';
 
-    // Validate password
+    if (!form.dob)
+      newErrors.dob = 'Date of birth is required';
+
+    if (!validateEmail(form.email))
+      newErrors.email = 'Invalid email address';
+
+    const mobileValidation = validateMobile(form.phone);
+    if (!mobileValidation.isValid)
+      newErrors.phone = mobileValidation.message;
+
     const passwordValidation = validatePassword(form.password);
-    if (!passwordValidation.isValid) {
+    if (!passwordValidation.isValid)
       newErrors.password = passwordValidation.message;
-    }
 
-    // Validate confirm password
-    if (!form.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password.';
-    } else if (form.confirmPassword !== form.password) {
-      newErrors.confirmPassword = 'Passwords do not match.';
-    }
-
-    // Validate email
-    if (!form.email.trim()) {
-      newErrors.email = 'Email is required.';
-    } else if (!validateEmail(form.email)) {
-      newErrors.email = 'Please enter a valid email address.';
-    }
-
-    // Validate mobile
-    const mobileValidation = validateMobile(form.mobile);
-    if (!mobileValidation.isValid) {
-      newErrors.mobile = mobileValidation.message;
-    }
-
-    // Validate captcha
-    if (!form.captchaInput.trim()) {
-      newErrors.captchaInput = 'Please solve the captcha.';
-    } else if (form.captchaInput.trim() !== captcha.a) {
-      newErrors.captchaInput = 'Incorrect captcha answer. Please try again.';
-    }
+    if (form.confirmPassword !== form.password)
+      newErrors.confirmPassword = 'Passwords do not match';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -108,53 +71,30 @@ const Registration = () => {
     e.preventDefault();
 
     if (!validateForm()) {
-      toast.error('Please fix all errors before submitting.');
+      toast.error('Please fix the errors in the form');
       return;
     }
 
     setIsLoading(true);
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await fetch('http://localhost:8080/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
 
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-
-      // Check if username already exists
-      if (users.find((u) => u.username === form.username.trim())) {
-        toast.error('Username already exists. Please choose a different one.');
-        setErrors({ username: 'Username already exists.' });
-        setIsLoading(false);
-        return;
+      if (!response.ok) {
+        const err = await response.text();
+        throw new Error(err);
       }
-
-      // Check if email already exists
-      if (users.find((u) => u.email === form.email.trim())) {
-        toast.error('Email already registered. Please use a different email.');
-        setErrors({ email: 'Email already registered.' });
-        setIsLoading(false);
-        return;
-      }
-
-      const user = {
-        username: form.username.trim(),
-        fullname: form.fullname.trim(),
-        password: form.password,
-        email: form.email.trim(),
-        isd: form.isd,
-        mobile: form.mobile.trim(),
-      };
-
-      users.push(user);
-      localStorage.setItem('users', JSON.stringify(users));
 
       toast.success('Registration successful! Redirecting to login...');
-      
-      setTimeout(() => {
-        navigate('/home/login');
-      }, 1500);
-    } catch (error) {
-      toast.error('An error occurred during registration. Please try again.');
+      setTimeout(() => navigate('/home/login'), 1500);
+
+    } catch (err) {
+      toast.error(err.message || 'Registration failed');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -162,204 +102,120 @@ const Registration = () => {
   return (
     <div className="register-container">
       <div className="register-box">
+
+        {/* ✅ CENTERED HEADER */}
         <div className="register-header">
           <h2>Create Account</h2>
-          <p className="register-subtitle">Join us today! Fill in your details to get started.</p>
+          <p className="register-subtitle">
+            Join us today! Fill in your details to get started.
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} noValidate className="register-form">
-          <div className="form-row">
-            <FormInput
-              label="Username"
-              name="username"
-              type="text"
-              value={form.username}
+        <form onSubmit={handleSubmit} className="register-form" noValidate>
+
+          <FormInput
+            label="First Name"
+            name="firstName"
+            value={form.firstName}
+            onChange={handleChange}
+            error={errors.firstName}
+            required
+          />
+
+          <FormInput
+            label="Last Name"
+            name="lastName"
+            value={form.lastName}
+            onChange={handleChange}
+            error={errors.lastName}
+            required
+          />
+
+          <FormInput
+            label="Date of Birth"
+            type="date"
+            name="dob"
+            value={form.dob}
+            onChange={handleChange}
+            error={errors.dob}
+            required
+          />
+
+          <div className="form-group">
+            <label className="form-label">Gender</label>
+            <select
+              name="gender"
+              value={form.gender}
               onChange={handleChange}
-              error={errors.username}
-              placeholder="Enter username"
-              required
-              autoComplete="username"
-            />
+              className="form-input"
+            >
+              <option value="NOT_SPECIFIED">Not Specified</option>
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+            </select>
           </div>
 
-          <div className="form-row">
-            <FormInput
-              label="Full Name"
-              name="fullname"
-              type="text"
-              value={form.fullname}
+          <div className="form-group">
+            <label className="form-label">ID Proof</label>
+            <select
+              name="idProof"
+              value={form.idProof}
               onChange={handleChange}
-              error={errors.fullname}
-              placeholder="Enter your full name"
-              required
-              autoComplete="name"
-            />
+              className="form-input"
+            >
+              <option value="AADHAR">Aadhar</option>
+              <option value="PAN">PAN</option>
+              <option value="DRIVING_LICENSE">Driving License</option>
+            </select>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">
-                Password <span className="text-red-500 ml-1">*</span>
-              </label>
-              <div className="password-input-wrapper">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={form.password}
-                  onChange={handleChange}
-                  placeholder="Enter password (min. 6 characters)"
-                  className={`form-input ${errors.password ? 'input-error' : ''}`}
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
-                </button>
-              </div>
-              {errors.password && (
-                <div className="error-message" role="alert">
-                  {errors.password}
-                </div>
-              )}
-            </div>
-          </div>
+          <FormInput
+            label="Email"
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            error={errors.email}
+            required
+          />
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="confirmPassword" className="form-label">
-                Confirm Password <span className="text-red-500 ml-1">*</span>
-              </label>
-              <div className="password-input-wrapper">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm your password"
-                  className={`form-input ${errors.confirmPassword ? 'input-error' : ''}`}
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <div className="error-message" role="alert">
-                  {errors.confirmPassword}
-                </div>
-              )}
-            </div>
-          </div>
+          <FormInput
+            label="Mobile Number"
+            name="phone"
+            value={form.phone}
+            onChange={handleChange}
+            error={errors.phone}
+            required
+            maxLength="10"
+          />
 
-          <div className="info-box">
-            <span className="info-icon">ℹ️</span>
-            <span>Invalid email ID may lead to deactivation of IRCTC account.</span>
-          </div>
+          <FormInput
+            label="Password"
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            error={errors.password}
+            required
+          />
 
-          <div className="form-row">
-            <FormInput
-              label="Email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              error={errors.email}
-              placeholder="Enter your email"
-              required
-              autoComplete="email"
-            />
-          </div>
+          <FormInput
+            label="Confirm Password"
+            type="password"
+            name="confirmPassword"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            error={errors.confirmPassword}
+            required
+          />
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="isd" className="form-label">
-                Country Code (ISD)
-              </label>
-              <select
-                id="isd"
-                name="isd"
-                value={form.isd}
-                onChange={handleChange}
-                className="form-select"
-              >
-                <option>+91 - India</option>
-                <option>+1 - USA</option>
-                <option>+44 - UK</option>
-                <option>+61 - Australia</option>
-                <option>+971 - UAE</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="info-box">
-            <span className="info-icon">ℹ️</span>
-            <span>Please submit Mobile Number without ISD Code</span>
-          </div>
-
-          <div className="form-row">
-            <FormInput
-              label="Mobile Number"
-              name="mobile"
-              type="tel"
-              value={form.mobile}
-              onChange={handleChange}
-              error={errors.mobile}
-              placeholder="Enter 10-digit mobile number"
-              required
-              maxLength="10"
-            />
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="captchaInput" className="form-label">
-                Captcha: <strong className="captcha-question">{captcha.q}</strong>
-              </label>
-              <div className="captcha-wrapper">
-                <input
-                  id="captchaInput"
-                  name="captchaInput"
-                  type="text"
-                  value={form.captchaInput}
-                  onChange={handleChange}
-                  placeholder="Enter answer"
-                  className={`form-input ${errors.captchaInput ? 'input-error' : ''}`}
-                  maxLength="3"
-                />
-                <button
-                  type="button"
-                  onClick={generateCaptcha}
-                  className="captcha-refresh-btn"
-                  aria-label="Refresh captcha"
-                >
-                  🔄 Refresh
-                </button>
-              </div>
-              {errors.captchaInput && (
-                <div className="error-message" role="alert">
-                  {errors.captchaInput}
-                </div>
-              )}
-            </div>
-          </div>
-
+          {/* ✅ FIXED SUBMIT BUTTON */}
           <FormButton
             type="submit"
             variant="primary"
             loading={isLoading}
-            className="register-submit-btn"
             disabled={isLoading}
+            className="register-submit-btn"
           >
             {isLoading ? 'Registering...' : 'Register'}
           </FormButton>
@@ -367,11 +223,12 @@ const Registration = () => {
           <div className="login-link">
             <p>
               Already have an account?{' '}
-              <Link to="/login" className="login-link-btn">
+              <Link to="/home/login" className="login-link-btn">
                 Login here
               </Link>
             </p>
           </div>
+
         </form>
       </div>
     </div>
