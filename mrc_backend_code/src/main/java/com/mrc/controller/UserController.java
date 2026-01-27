@@ -71,16 +71,16 @@ public class UserController {
 	@PostMapping("/register")
 	public ResponseEntity<?> registerUser(@RequestBody @Valid UserDto dto) {
 
-	    // 1️⃣ Validate password match
+	    // 1️ Validate password match
 	    if (!dto.getPassword().equals(dto.getConfirmPassword())) {
 	        return ResponseEntity.badRequest()
 	                .body("Password and Confirm Password do not match");
 	    }
 
-	    // 2️⃣ Delegate to service layer
+	    // 2️ Delegate to service layer
 	    UserEntity savedUser = userService.registerUser(dto);
 
-	    // 3️⃣ Return response (NO password!)
+	    // 3 Return response (NO password)
 	    return ResponseEntity.ok("User registered successfully with email: " + savedUser.getEmail());
 	}
 	/*

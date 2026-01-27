@@ -35,35 +35,43 @@ public class UserServiceImpl implements UserService
 	}
 	public UserEntity registerUser(UserDto dto) {
 
-        //  Check if email exists
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Email already registered");
-        }
+	    // 1️⃣ Validate password match (IMPORTANT)
+	    if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+	        throw new IllegalArgumentException("Password and Confirm Password do not match");
+	    }
 
-        //  Check if phone exists
-        if (userRepository.existsByPhone(dto.getPhone())) {
-            throw new RuntimeException("Phone already registered");
-        }
+	    // 2️⃣ Check if email exists
+	    if (userRepository.existsByEmail(dto.getEmail())) {
+	        throw new IllegalArgumentException("Email already registered");
+	    }
 
-        //  Create entity
-        UserEntity user = new UserEntity();
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setDob(dto.getDob());
-        user.setEmail(dto.getEmail());
-        user.setPhone(dto.getPhone());
-        user.setGender(dto.getGender());
-        user.setIdProof(dto.getIdProof());
+	    // 3️⃣ Check if phone exists
+	    if (userRepository.existsByPhone(dto.getPhone())) {
+	        throw new IllegalArgumentException("Phone already registered");
+	    }
 
-        // Encrypt password
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+	    // 4️⃣ Create entity
+	    UserEntity user = new UserEntity();
+	    user.setFirstName(dto.getFirstName());
+	    user.setLastName(dto.getLastName());
+	    user.setDob(dto.getDob());                 // nullable ✔
+	    user.setEmail(dto.getEmail());
+	    user.setPhone(dto.getPhone());
 
-        //  Set defaults
-        user.setUserRole(UserRole.ROLE_PASSENGERS);
-        user.setUserStatus(UserStatus.ACTIVE);
+	    // Optional enums – set only if present
+	    user.setGender(dto.getGender());            // nullable ✔
+	    user.setIdProof(dto.getIdProof());          // nullable ✔
 
-        //  Save
-        return userRepository.save(user);
-    }
+	    // 5️⃣ Encrypt password
+	    user.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+	    // 6️⃣ REQUIRED DEFAULTS (CRITICAL)
+	    user.setUserRole(UserRole.ROLE_PASSENGERS);
+	    user.setUserStatus(UserStatus.ACTIVE);
+
+	    // 7️⃣ Save user
+	    return userRepository.save(user);
+	}
+
 
 }
