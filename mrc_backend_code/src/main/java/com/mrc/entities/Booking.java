@@ -1,7 +1,10 @@
 package com.mrc.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.mrc.entities.passenger.Passenger;
 import com.mrc.entities.train.Coach;
 import com.mrc.entities.train.SeatAvailability;
 import com.mrc.entities.train.SeatPrice;
@@ -9,12 +12,14 @@ import com.mrc.entities.train.TrainEntity;
 import com.mrc.entities.users.UserEntity;
 
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -72,4 +77,19 @@ public class Booking extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name="status", nullable = false)
 	private BookingStatus bookingStatus;    //if success-generate the PNR
+	
+	@OneToMany(
+		    mappedBy = "booking",
+		    cascade = CascadeType.ALL,
+		    orphanRemoval = true
+		)
+		private List<Passenger> passengers;
+	@Column(name = "pnr", unique = true, length = 15)
+	private String pnr;
+
+	@Column(name = "journey_date", nullable = false)
+	private LocalDate journeyDate;
+	@Column(name = "waitlist_no")
+	private Integer waitlistNo;
+
 }

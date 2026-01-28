@@ -96,5 +96,25 @@ public class UserEntity extends BaseEntity implements UserDetails{
 		this.password = password;
 		this.phone = phone;
 	}
+	@Override
+	public boolean isAccountNonExpired() {
+	    return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+	    return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+	    return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+	    return this.userStatus == UserStatus.ACTIVE;
+	}
+
 
 }

@@ -16,30 +16,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-//JPA annotations
 @Entity
-@Table(name="seats",
-		uniqueConstraints = @UniqueConstraint(columnNames = {"coach_id", "seat_no"}))
-@AttributeOverride(name="id",column=@Column(name="seat_no"))
-
-//Lombok
+@Table(name = "seats")
+@AttributeOverride(
+    name = "id",
+    column = @Column(name = "seat_no")
+)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class SeatAvailability extends BaseEntity {
 
-	@ManyToOne
-	@JoinColumn(name="coach_id", nullable=false)
-	private Coach coach;
-	
-	@Enumerated(EnumType.STRING)
-	private SeatType type;
-	
-	@Column(name="status")  //booked / vacant
-	private SeatStatus booked;
-	
-	@Enumerated(EnumType.STRING)
-	private TrainQuota quota;
-	
+    @ManyToOne
+    @JoinColumn(name = "coach_id", nullable = false)
+    private Coach coach;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "seat_type", nullable = false)
+    private SeatType type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private SeatStatus booked;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "quota", nullable = false)
+    private TrainQuota quota;
 }

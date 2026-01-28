@@ -6,9 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
-import org.springframework.web.bind.annotation.PatchMapping;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +21,7 @@ import com.mrc.entities.users.UserEntity;
 import com.mrc.security.JWTUtils;
 import com.mrc.service.UserService;
 
-import io.swagger.v3.oas.annotations.Operation;
+
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
@@ -31,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController // to declare a spring bean - containing REST API end point provider
 @RequestMapping("/users")
-@CrossOrigin(origins = "http://localhost:3000") // to set CORS policy on specific origins
+//@CrossOrigin(origins = "http://localhost:3000") // to set CORS policy on specific origins
 @Validated
 @Slf4j
 @RequiredArgsConstructor
@@ -83,21 +81,6 @@ public class UserController {
 	    // 3 Return response (NO password)
 	    return ResponseEntity.ok("User registered successfully with email: " + savedUser.getEmail());
 	}
-	/*
-	 * Encrypt Password of all users	  
-	 * o/p -ApiResp (encrypted!) 
-	 * DB Action - store  encrypted password in the DB 
-	 * URL -http://host:port/users/pwd-encryption 
-	 * Method - PATCH
-	 */
-	@PatchMapping("/pwd-encryption")
-	@Operation(description ="Encrypt Password of all users" )
-	public ResponseEntity<?> encryptUserPassword() {
-		log.info("encrypting users password ");
-		//invoke service layer method
-		return ResponseEntity.ok(userService.encryptPassword());
-
-	}
-
+	
 
 }

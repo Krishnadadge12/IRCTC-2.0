@@ -35,13 +35,7 @@ public class Application {
 		.setPropertyCondition(Conditions.isNotNull());
 		return mapper;//Method rets configured ModelMapper bean to SC
 	}
-	//configure password encoder bean
-	@Bean
-	PasswordEncoder passwordEncoder()
-	{
-		//log.info("***** creating password encoder ******");
-		return new BCryptPasswordEncoder();
-	}
+	
 	
 
 }

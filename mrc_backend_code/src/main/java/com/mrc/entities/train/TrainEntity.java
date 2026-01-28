@@ -1,5 +1,6 @@
 package com.mrc.entities.train;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -63,6 +64,7 @@ public class TrainEntity extends BaseEntity {
 			orphanRemoval = true)   /*if coach is removed, it will be deleted from db automatically. 
 										if false, coach remains in db with train_id=null (creates orphan rows)*/
 	private List<Coach> coaches;
-	
+	@Column(name="schedule_date")
+	private LocalDate scheduleDate;
 	
 }

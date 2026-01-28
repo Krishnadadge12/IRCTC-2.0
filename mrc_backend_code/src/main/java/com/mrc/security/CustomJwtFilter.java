@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.mrc.dtos.JWTDTO;
+import com.mrc.entities.users.UserEntity;
+import com.mrc.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -23,29 +25,73 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class CustomJwtFilter extends OncePerRequestFilter {
-	private final JWTUtils jwtUtils;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		// check if jwt exists in request auth header
-		String headerValue = request.getHeader("Authorization");
-		if (headerValue != null && headerValue.startsWith("Bearer ")) {
-			String jwt = headerValue.substring(7);
-			log.info("jwt found {} ", jwt);
-			Claims claims = jwtUtils.validateJWT(jwt);
-			//store the claims in dto
-			String role = claims.get("role", String.class);
-			JWTDTO dto=new JWTDTO(claims.get("user_id", Long.class),role);
-			//add this in Authetication object
-			UsernamePasswordAuthenticationToken auth=new UsernamePasswordAuthenticationToken(dto, null,List.of(new SimpleGrantedAuthority(role)));
-			//add it under sec ctx holder
-			SecurityContextHolder.getContext().setAuthentication(auth);
-			log.info("add sec ctx ");
-			
-		}
-		filterChain.doFilter(request, response);
+    private final JWTUtils jwtUtils;
+    private final UserRepository userRepository;
 
-	}
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        //  BYPASS JWT FOR PUBLIC ENDPOINTS
+        if (
+            path.startsWith("/users/login") ||
+            path.startsWith("/users/register") ||
+            path.startsWith("/swagger-ui") ||
+            path.startsWith("/v3/api-docs") ||
+            path.startsWith("/actuator")
+        ) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        //  JWT VALIDATION FOR PROTECTED ENDPOINTS
+        String headerValue = request.getHeader("Authorization");
+
+        if (headerValue != null && headerValue.startsWith("Bearer ")) {
+            String jwt = headerValue.substring(7);
+            log.info("JWT found");
+
+            Claims claims = jwtUtils.validateJWT(jwt);
+
+            String role = claims.get("role", String.class);
+            Long userId = claims.get("user_id", Long.class);
+
+         // Load full user from DB
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found from JWT"));
+
+            // principal = UserEntity
+            UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(
+                            user,
+                            null,
+                            List.of(new SimpleGrantedAuthority(role))
+                    );
+
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            log.info("Security context populated");
+        }
+
+        filterChain.doFilter(request, response);
+    }
+    
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+
+        return path.startsWith("/users/login")
+            || path.startsWith("/users/register")
+            || path.startsWith("/swagger-ui")
+            || path.startsWith("/v3/api-docs")
+            || path.startsWith("/actuator");
+    }
 
 }

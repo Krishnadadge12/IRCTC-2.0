@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 public interface UserService {
 
 
-	ApiResponse encryptPassword();
+	
 
 	UserEntity registerUser(@Valid UserDto dto);
 }

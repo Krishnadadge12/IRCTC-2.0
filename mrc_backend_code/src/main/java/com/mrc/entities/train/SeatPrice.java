@@ -44,7 +44,7 @@ public class SeatPrice extends BaseEntity {
     private Tier coachType;
 
     @Enumerated(EnumType.STRING)
-    private SeatType seatType;
+    private TrainQuota quota;
 
     private BigDecimal price;
 }
