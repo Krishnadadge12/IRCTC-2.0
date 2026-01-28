@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { trains as dummyTrains } from '../../services/dummyTrains';
 import './TrainDetails.css';
 
 function TrainDetails() {
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -11,256 +11,399 @@ function TrainDetails() {
   const [displayTrains, setDisplayTrains] = useState([]);
   const [selectedTrain, setSelectedTrain] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
-  const [searchParams, setSearchParams] = useState({ from: '', to: '', date: '' });
 
-  const [extraFilters, setExtraFilters] = useState({ classes: [], quotas: [], times: [] });
+  const [searchParams, setSearchParams] = useState({
+    source: '',
+    destination: '',
+    scheduleDate: ''
+  });
+
+  const [extraFilters, setExtraFilters] = useState({
+    classes: [],
+    quotas: [],
+    times: []
+  });
 
   const maharashtraCities = [
-    'Mumbai','Pune','Nagpur','Nashik','Aurangabad','Solapur','Amravati','Kolhapur','Akola','Jalgaon','Thane','Latur','Satara','Nanded','Chandrapur'
+    'Mumbai','Pune','Nagpur','Nashik','Aurangabad','Solapur',
+    'Amravati','Kolhapur','Akola','Jalgaon','Thane','Latur',
+    'Satara','Nanded','Chandrapur'
   ];
 
+  // Scroll top
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
+
+  // Receive trains from navigation
   useEffect(() => {
-    const { trains, searchParams: initialParams } = (location && location.state) || {};
+
+    const { trains, searchParams: initialParams } =
+      (location && location.state) || {};
+
+    console.log("RECEIVED TRAINS =>", trains);
+
     if (trains && trains.length > 0) {
       setAllTrains(trains);
       setDisplayTrains(trains);
-      if (initialParams) setSearchParams(initialParams);
+
+      if (initialParams) {
+        setSearchParams(initialParams);
+      }
+
       setShowDetails(false);
       setExtraFilters({ classes: [], quotas: [], times: [] });
+
     } else {
       navigate('/home');
     }
+
   }, [location, navigate]);
 
-  const handleSearchChange = (e) => setSearchParams(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleSearchChange = (e) => {
+    setSearchParams(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
 
+  // Filter inside already loaded trains
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    const filtered = dummyTrains.filter(train => (
-      (!searchParams.from || train.from === searchParams.from) &&
-      (!searchParams.to || train.to === searchParams.to) &&
-      (!searchParams.date || train.date === searchParams.date)
+
+    const filtered = allTrains.filter(train => (
+      (!searchParams.source || train.source === searchParams.source) &&
+      (!searchParams.destination || train.destination === searchParams.destination) &&
+      (!searchParams.scheduleDate || train.scheduleDate === searchParams.scheduleDate)
     ));
-    setAllTrains(filtered);
+
     setDisplayTrains(filtered);
     setExtraFilters({ classes: [], quotas: [], times: [] });
     setShowDetails(false);
   };
 
-  const handleViewDetails = (train, e) => { e.stopPropagation(); setSelectedTrain(train); setShowDetails(true); };
-  const handleBackToList = () => { setShowDetails(false); setSelectedTrain(null); };
+  const handleViewDetails = (train, e) => {
+    e.stopPropagation();
+    setSelectedTrain(train);
+    setShowDetails(true);
+  };
 
-  const toggleFilter = (key, value) => setExtraFilters(prev => ({ ...prev, [key]: prev[key].includes(value) ? prev[key].filter(v => v !== value) : [...prev[key], value] }));
+  const handleBackToList = () => {
+    setShowDetails(false);
+    setSelectedTrain(null);
+  };
 
-  const timeToMinutes = (hhmm) => { const [hh, mm] = hhmm.split(':').map(Number); return hh * 60 + mm; };
+  // ---------- Filters ----------
+  const toggleFilter = (key, value) => {
+    setExtraFilters(prev => ({
+      ...prev,
+      [key]: prev[key].includes(value)
+        ? prev[key].filter(v => v !== value)
+        : [...prev[key], value]
+    }));
+  };
+
+  const timeToMinutes = (hhmm) => {
+    const [hh, mm] = hhmm.split(':').map(Number);
+    return hh * 60 + mm;
+  };
+
   const timeMatches = (depTime, selectedTimes) => {
+
     if (!selectedTimes || selectedTimes.length === 0) return true;
+
     const mins = timeToMinutes(depTime);
-    const ranges = { morning: [4*60, 11*60 + 59], afternoon: [12*60, 17*60 + 59], night1: [18*60, 23*60 + 59], night2: [0, 3*60 + 59] };
+
+    const ranges = {
+      morning: [240, 719],
+      afternoon: [720, 1079],
+      night1: [1080, 1439],
+      night2: [0, 239]
+    };
+
     const inMorning = mins >= ranges.morning[0] && mins <= ranges.morning[1];
     const inAfternoon = mins >= ranges.afternoon[0] && mins <= ranges.afternoon[1];
-    const inNight = (mins >= ranges.night1[0] && mins <= ranges.night1[1]) || (mins >= ranges.night2[0] && mins <= ranges.night2[1]);
+    const inNight =
+      (mins >= ranges.night1[0] && mins <= ranges.night1[1]) ||
+      (mins >= ranges.night2[0] && mins <= ranges.night2[1]);
+
     if (selectedTimes.includes('morning') && inMorning) return true;
     if (selectedTimes.includes('afternoon') && inAfternoon) return true;
     if (selectedTimes.includes('night') && inNight) return true;
+
     return false;
   };
 
   const applyExtraFilters = () => {
+
     let filtered = allTrains.slice();
-    if (extraFilters.classes.length > 0) filtered = filtered.filter(train => train.class && train.class.some(c => extraFilters.classes.includes(c)));
-    if (extraFilters.quotas.length > 0) filtered = filtered.filter(train => extraFilters.quotas.includes(train.quota));
-    if (extraFilters.times.length > 0) filtered = filtered.filter(train => timeMatches(train.departureTime, extraFilters.times));
+
+    // Filter by Classes
+    if (extraFilters.classes.length > 0) {
+      filtered = filtered.filter(train => {
+        const trainClasses = train.classes || [];
+        return extraFilters.classes.some(cls => trainClasses.includes(cls));
+      });
+    }
+
+    // Filter by Quotas
+    if (extraFilters.quotas.length > 0) {
+      filtered = filtered.filter(train =>
+        extraFilters.quotas.includes(train.quota)
+      );
+    }
+
+    // Filter by Departure Times
+    if (extraFilters.times.length > 0) {
+      filtered = filtered.filter(train =>
+        timeMatches(train.departureTime, extraFilters.times)
+      );
+    }
+
     setDisplayTrains(filtered);
   };
 
-  const resetExtraFilters = () => { setExtraFilters({ classes: [], quotas: [], times: [] }); setDisplayTrains(allTrains); };
+  const resetExtraFilters = () => {
+    setExtraFilters({ classes: [], quotas: [], times: [] });
+    setDisplayTrains(allTrains);
+  };
 
-  const uniqueClasses = Array.from(new Set(allTrains.flatMap(t => t.class || [])));
-  const uniqueQuotas = Array.from(new Set(allTrains.map(t => t.quota).filter(Boolean)));
-
+  // ---------- LIST PAGE ----------
   const renderTrainList = () => (
+
     <div className="page-bg-wrapper train-details">
+
       <div className="container mt-4 two-column-layout page-content-above-overlay">
+
+        {/* Search Bar */}
         <div className="search-bar-container">
           <form className="search-bar-form" onSubmit={handleSearchSubmit}>
-            <select className="search-bar-input" name="from" value={searchParams.from} onChange={handleSearchChange}>
+
+            <select
+              className="search-bar-input"
+              name="source"
+              value={searchParams.source}
+              onChange={handleSearchChange}
+            >
               <option value="">From</option>
-              {maharashtraCities.map(c => <option key={c} value={c}>{c}</option>)}
+              {maharashtraCities.map(c =>
+                <option key={c} value={c}>{c}</option>
+              )}
             </select>
-            <select className="search-bar-input" name="to" value={searchParams.to} onChange={handleSearchChange}>
+
+            <select
+              className="search-bar-input"
+              name="destination"
+              value={searchParams.destination}
+              onChange={handleSearchChange}
+            >
               <option value="">To</option>
-              {maharashtraCities.map(c => <option key={c} value={c}>{c}</option>)}
+              {maharashtraCities.map(c =>
+                <option key={c} value={c}>{c}</option>
+              )}
             </select>
-            <input type="date" name="date" className="search-bar-input" value={searchParams.date} onChange={handleSearchChange} />
-            <button className="search-bar-btn" type="submit">Search</button>
+
+            <input
+              type="date"
+              name="scheduleDate"
+              className="search-bar-input"
+              value={searchParams.scheduleDate}
+              onChange={handleSearchChange}
+            />
+
+            <button className="search-bar-btn" type="submit">
+              Search
+            </button>
+
           </form>
         </div>
 
+        {/* Filters and List Container */}
         <div className="list-and-filters">
-          <div className="list-column">
-            <h2 style={{ marginTop: '16px', marginBottom: '12px' }}>Available Trains ({displayTrains.length})</h2>
-            <hr />
-            {displayTrains.length === 0 ? (
-              <p className="no-trains">No trains found for your search</p>
-            ) : (
-              <div className="train-list-vertical">
-                {displayTrains.map(train => (
-                  <div key={train.id} className="train-card-vertical">
-                    <div className="train-card-header">
-                      <div className="train-info-left">
-                        <h3 className="train-name">{train.name}</h3>
-                        <p className="train-route">{train.from} <span className="arrow-icon">→</span> {train.to}</p>
-                      </div>
-                      <div className="train-info-right">
-                        <div className="train-timing">
-                          <span className="dep-time">{train.departureTime}</span>
-                          <span className="train-duration">{train.duration}</span>
-                          <span className="arr-time">{train.arrivalTime}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="train-card-footer">
-                      <div className="train-details-mini">
-                        <span>Classes: {train.class ? train.class.join(', ') : '-'}</span>
-                        <span>Quota: {train.quota}</span>
-                      </div>
-                      <div className="train-footer-right">
-                        <button className="view-details-btn" onClick={(e) => handleViewDetails(train, e)}>View Details →</button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+
+        {/* Filters Panel */}
+        <div className="filters-panel">
+          <div className="filters-header">
+            <h3>Filters</h3>
+            <button className="reset-filters-btn" onClick={resetExtraFilters}>
+              Reset
+            </button>
           </div>
 
-          <aside className="filters-panel">
-            <h3>Additional Filters</h3>
-
-            <div className="filter-block">
-              <div className="filter-title">Classes</div>
-              <div className="filter-list">
-                {uniqueClasses.map(cls => (
-                  <label key={cls}>
-                    <input type="checkbox" checked={extraFilters.classes.includes(cls)} onChange={() => toggleFilter('classes', cls)} />
-                    <span>{cls}</span>
-                  </label>
-                ))}
-                {uniqueClasses.length === 0 && <p className="muted">No classes available</p>}
-              </div>
-            </div>
-
-            <div className="filter-block">
-              <div className="filter-title">Quotas</div>
-              <div className="filter-list">
-                {uniqueQuotas.map(q => (
-                  <label key={q}>
-                    <input type="checkbox" checked={extraFilters.quotas.includes(q)} onChange={() => toggleFilter('quotas', q)} />
-                    <span>{q}</span>
-                  </label>
-                ))}
-                {uniqueQuotas.length === 0 && <p className="muted">No quotas available</p>}
-              </div>
-            </div>
-
-            <div className="filter-block">
-              <div className="filter-title">Time range</div>
-              <div className="filter-list">
-                <label>
-                  <input type="checkbox" checked={extraFilters.times.includes('morning')} onChange={() => toggleFilter('times','morning')} />
-                  <span>Morning (04:00 - 11:59)</span>
+          {/* Class/Tier Filter */}
+          <div className="filter-group">
+            <h4>Class (Tier)</h4>
+            <div className="filter-options">
+              {["SLEEPER", "AC1", "AC2", "AC3"].map(tier => (
+                <label key={tier} className="filter-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={extraFilters.classes.includes(tier)}
+                    onChange={() => toggleFilter("classes", tier)}
+                  />
+                  <span>{tier}</span>
                 </label>
-                <label>
-                  <input type="checkbox" checked={extraFilters.times.includes('afternoon')} onChange={() => toggleFilter('times','afternoon')} />
-                  <span>Afternoon (12:00 - 17:59)</span>
-                </label>
-                <label>
-                  <input type="checkbox" checked={extraFilters.times.includes('night')} onChange={() => toggleFilter('times','night')} />
-                  <span>Night (18:00 - 03:59)</span>
-                </label>
-              </div>
+              ))}
             </div>
+          </div>
 
-            <div className="filter-actions">
-              <button className="apply-filters-btn" onClick={applyExtraFilters}>Apply</button>
-              <button className="reset-filters-btn" onClick={resetExtraFilters}>Reset</button>
+          {/* Quota Filter */}
+          <div className="filter-group">
+            <h4>Quota</h4>
+            <div className="filter-options">
+              {["GENERAL", "TATKAL"].map(quota => (
+                <label key={quota} className="filter-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={extraFilters.quotas.includes(quota)}
+                    onChange={() => toggleFilter("quotas", quota)}
+                  />
+                  <span>{quota}</span>
+                </label>
+              ))}
             </div>
+          </div>
 
-            <div style={{ marginTop: 12, fontSize: 13, color: '#556b7a' }}>
-              Note: Top search (from/to/date) controls base list. Use additional filters and click Apply to refine results.
+          {/* Departure Time Filter */}
+          <div className="filter-group">
+            <h4>Departure Time</h4>
+            <div className="filter-options">
+              {["morning", "afternoon", "night"].map(time => (
+                <label key={time} className="filter-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={extraFilters.times.includes(time)}
+                    onChange={() => toggleFilter("times", time)}
+                  />
+                  <span className="time-label">
+                    {time === "morning" && "Morning (04:00 - 12:00)"}
+                    {time === "afternoon" && "Afternoon (12:00 - 18:00)"}
+                    {time === "night" && "Night (18:00 - 23:59 & 00:00 - 04:00)"}
+                  </span>
+                </label>
+              ))}
             </div>
-          </aside>
+          </div>
+
+          <div className="filter-info">
+            Showing {displayTrains.length} of {allTrains.length} trains
+          </div>
+
+          <button className="apply-filters-btn" onClick={applyExtraFilters}>
+            Apply Filters
+          </button>
         </div>
+
+        {/* Trains List */}
+        <div className="list-column">
+
+          <h2>Available Trains ({displayTrains.length})</h2>
+          <hr />
+
+          {displayTrains.length === 0 ? (
+            <p className="no-trains">No trains found</p>
+          ) : (
+            <div className="train-list-vertical">
+
+              {displayTrains.map(train => (
+
+                <div
+                  key={train.trainId}
+                  className="train-card-vertical"
+                >
+
+                  <div className="train-card-header">
+
+                    <div className="train-info-left">
+                      <h3>{train.trainName}</h3>
+                      <p>{train.source} → {train.destination}</p>
+                    </div>
+
+                    <div className="train-info-right">
+                      <span>{train.departureTime}</span>
+                      <span style={{ margin: '0 10px' }}>-</span>
+                      <span>{train.arrivalTime}</span>
+                    </div>
+
+                  </div>
+
+                  <div className="train-card-footer">
+                    <button
+                      className="view-details-btn"
+                      onClick={(e) => handleViewDetails(train, e)}
+                    >
+                      View Details →
+                    </button>
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
+          )}
+
+        </div>
+
+        </div>  {/* End of list-and-filters */}
+
       </div>
+
     </div>
   );
 
+  // ---------- DETAILS PAGE ----------
   const renderTrainDetails = () => {
+
     if (!selectedTrain) return null;
+
     return (
-      <div className="train-details-page">
-          <button className="btn-back" onClick={handleBackToList}>Back to List</button>
-        
-          <div className="container-train-details">
-          <div className="card" style={{ marginTop: '20px' }}>
-            <div className="detail-header">
-              <h2>{selectedTrain.name}</h2>
-              <span className="train-number-detail">Train #{selectedTrain.number}</span>
-            </div>
+      <div className="page-bg-wrapper train-details">
+        <div className="container mt-4 page-content-above-overlay">
+          
+          <div className="train-details-wrapper">
+            <button className="btn-back" onClick={handleBackToList}>
+              ← Back to List
+            </button>
 
-            <hr />
+            <div className="container-train-details">
 
-            <div className="detail-section">
-              <h3>Route & Timing</h3>
-              <div className="detail-row"><strong>From:</strong><span>{selectedTrain.from}</span></div>
-              <div className="detail-row"><strong>To:</strong><span>{selectedTrain.to}</span></div>
-              <div className="detail-row"><strong>Departure:</strong><span>{selectedTrain.departureTime}</span></div>
-              <div className="detail-row"><strong>Arrival:</strong><span>{selectedTrain.arrivalTime}</span></div>
-              <div className="detail-row"><strong>Duration:</strong><span>{selectedTrain.duration}</span></div>
-              <div className="detail-row"><strong>Date:</strong><span>{selectedTrain.date}</span></div>
-            </div>
+              <div className="card">
 
-            <hr />
+                <h2>{selectedTrain.trainName}</h2>
+                <p>Train #{selectedTrain.trainNumber}</p>
 
-            <div className="detail-section">
-              <h3>Availability & Pricing (All Classes & Quotas)</h3>
-              <table className="availability-table">
-                <thead>
-                  <tr><th>Class</th><th>Seats Available</th><th>Price per Seat</th><th>Quota</th></tr>
-                </thead>
-                <tbody>
-                  {selectedTrain.classDetails && selectedTrain.classDetails.map((cls, idx) => (
-                    <tr key={idx}>
-                      <td><strong>{cls.class}</strong></td>
-                      <td>{cls.seatsAvailable}</td>
-                      <td>₹{cls.price}</td>
-                      <td>{cls.quota}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {/* <div className="detail-section">
-              <h3>Stops</h3>
-              <div className="stops-list">
-                {selectedTrain.stops && selectedTrain.stops.map((stop, idx) => (
-                  <div key={idx} className="stop-item">
-                    <div className="stop-station">{stop.station}</div>
-                    <div className="stop-code">Code: {stop.code}</div>
-                    <div className="stop-time">Arr: {stop.arr} | Dep: {stop.dep}</div>
-                  </div>
-                ))}
+                <hr />
+
+                <p><b>From:</b> {selectedTrain.source}</p>
+                <p><b>To:</b> {selectedTrain.destination}</p>
+                <p><b>Departure:</b> {selectedTrain.departureTime}</p>
+                <p><b>Arrival:</b> {selectedTrain.arrivalTime}</p>
+                <p><b>Duration:</b> {selectedTrain.duration}</p>
+                {selectedTrain.scheduleDate && <p><b>Date:</b> {selectedTrain.scheduleDate}</p>}
+                {selectedTrain.classes && selectedTrain.classes.length > 0 && (
+                  <p><b>Classes:</b> {selectedTrain.classes.join(", ")}</p>
+                )}
+                {selectedTrain.quota && (
+                  <p><b>Quota:</b> {selectedTrain.quota}</p>
+                )}
+
+                <button
+                  className="btn-book"
+                  onClick={() =>
+                    navigate('/home/booking', {
+                      state: { selectedTrain }
+                    })
+                  }
+                >
+                  Book Now
+                </button>
+
               </div>
-            </div> */}
-            <button className="btn-book" onClick={() => navigate('/home/booking', { state: { selectedTrain } })}>Book Now</button>
+
+            </div>
           </div>
+
         </div>
       </div>
     );

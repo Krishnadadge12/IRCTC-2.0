@@ -30,6 +30,10 @@ function App() {
 
         {/* ---------- PUBLIC ROUTES (NO SIDEBAR) ---------- */}
         <Route element={<PublicLayout />}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/home/search" element={<SearchTrain />} />
+          <Route path="/home/trains/search" element={<TrainDetails />} />
+          {/*<Route path="/home/train-details" element={<TrainDetails />} />*/}
           <Route path="/home/login" element={<Login />} />
           <Route path="/home/register" element={<Register />} />
           <Route path="/home/terms" element={<TermsAndConditions />} />
@@ -39,9 +43,6 @@ function App() {
         {/* ---------- PRIVATE ROUTES (WITH SIDEBAR) ---------- */}
         <Route element={<ProtectedRoute />}>
           <Route element={<PrivateLayout />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/home/search" element={<SearchTrain />} />
-            <Route path="/home/train-details" element={<TrainDetails />} />
             <Route path="/home/booking" element={<RailTicketBookingForm />} />
             <Route path="/home/confirm" element={<BookingConfirmation />} />
             <Route path="/home/payment" element={<PaymentPage />} />

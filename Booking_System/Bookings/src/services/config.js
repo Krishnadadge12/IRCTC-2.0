@@ -1,5 +1,5 @@
 export const config = {
-    server: 'http://localhost:4000'
+    server: 'http://localhost:8080'
 }
 
 //incase ur url changes, u just need to
