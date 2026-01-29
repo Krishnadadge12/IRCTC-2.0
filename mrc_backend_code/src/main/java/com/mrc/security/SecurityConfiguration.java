@@ -60,7 +60,8 @@ public class SecurityConfiguration {
                     "/users/register",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/actuator/**"
+                    "/actuator/**",
+                    "/trains/search"
                 ).permitAll()
 
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

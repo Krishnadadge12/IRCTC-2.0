@@ -3,6 +3,7 @@ package com.mrc.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import com.mrc.service.TrainService;
 
 import lombok.RequiredArgsConstructor;
 
+@CrossOrigin(origins = "http://localhost:5173")  //so that browser allows request, * only for development purpose
 @RestController   			// to declare a spring bean - containing REST API end point provider
 @RequestMapping("/trains")
 @RequiredArgsConstructor	//
@@ -33,10 +35,12 @@ public class SearchTrainsController {
 	
 	 @GetMapping("/search")
 	    public ResponseEntity<List<TrainSummaryDto>> searchTrains(@ModelAttribute SearchTrainDTO searchDto) {
+		 
+		 System.out.println("SEARCH DTO => " + searchDto);
 		 	List<TrainSummaryDto> trains =trainService.searchTrains(searchDto);
 	        return ResponseEntity.ok(trains);
 	    }
-
+	 
 	/*
 	 * 2.API Desc - Train Details, returns one particular Train
 	 * URI- /trains/{trainId}
@@ -51,17 +55,8 @@ public class SearchTrainsController {
 	 * */
 	 
 	 @GetMapping("/{trainId}")
-	    public ResponseEntity<SearchTrainDTO> getTrainDetails(@PathVariable Long trainId) {
-	        SearchTrainDTO trainDetail = trainService.getTrainDetails(trainId);
+	    public ResponseEntity<TrainSummaryDto> getTrainDetails(@PathVariable Long trainId) {
+	        TrainSummaryDto trainDetail = trainService.getTrainDetails(trainId);
 	        return ResponseEntity.ok(trainDetail);
 	    }
-	 
-	 
-	
-	/*
-	 * NOTE:FrontEnd can show combined data, but keep the backend APIs separate
-	 * 3.API Desc- Seat Availability
-	 * URI-/trains/{trainId}/availability?date=
-	 * Method - GET
-	 * */
 }

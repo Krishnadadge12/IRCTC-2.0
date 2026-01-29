@@ -14,7 +14,5 @@ public interface TrainService {
 	 * */
 	public List<TrainSummaryDto> searchTrains(SearchTrainDTO searchDto);
 
-	public SearchTrainDTO getTrainDetails(Long trainId);
-
-
+	public TrainSummaryDto getTrainDetails(Long trainId);
 }

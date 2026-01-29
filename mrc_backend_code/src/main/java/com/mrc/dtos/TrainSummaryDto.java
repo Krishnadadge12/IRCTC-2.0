@@ -1,5 +1,6 @@
 package com.mrc.dtos;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -21,16 +22,16 @@ public class TrainSummaryDto {
 
     private Long trainId;          // for View Details click
     private String trainName;
+    private Long trainNumber;
     private String source;
     private String destination;
 
     private LocalTime departureTime;
     private LocalTime arrivalTime;
     private String duration;       // "6h 15m"
-
-   // private List<Tier> availableClasses;   // SLEEPER, AC1, AC2
-   //private TrainQuota quota;               // GENERAL
-
+    private LocalDate scheduleDate;
     
+    private List<String> classes;   // 
+    private String quota;            //
 
 }
