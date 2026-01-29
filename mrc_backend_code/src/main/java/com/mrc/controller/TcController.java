@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.mrc.dtos.TcPassengerResponseDto;
 import com.mrc.entities.passenger.Passenger;
 import com.mrc.repository.PassengerRepository;
 import com.mrc.service.BookingService;
+import com.mrc.service.TcService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,24 +18,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TcController {
 
-    private final PassengerRepository passengerRepository;
+	  private final TcService tcService;
+	    private final BookingService bookingService;
 
-    private final BookingService bookingService;
-    
-    // 🔍 View passengers of a train
-    @GetMapping("/train/{trainId}/passengers")
-    public ResponseEntity<?> getPassengersByTrain(
-            @PathVariable Long trainId
-    ) {
-        return ResponseEntity.ok(
-                passengerRepository.findByBookingTrainId(trainId)
-        );
-    }
-    
-    @DeleteMapping("/bookings/{bookingId}/cancel")
-    public ResponseEntity<?> cancelBooking(@PathVariable Long bookingId) {
-        return ResponseEntity.ok(
-            bookingService.cancelByAdmin(bookingId)
-        );
-    }
+	    // TC: View passengers of a train
+	    @GetMapping("/train/{trainId}/passengers")
+	    public ResponseEntity<List<TcPassengerResponseDto>> getPassengersByTrain(
+	            @PathVariable Long trainId
+	    ) {
+	        return ResponseEntity.ok(
+	                tcService.getPassengersByTrain(trainId)
+	        );
+	    }
+
+	    // TC/Admin: Cancel booking
+	    @DeleteMapping("/bookings/{bookingId}/cancel")
+	    public ResponseEntity<?> cancelBooking(@PathVariable Long bookingId) {
+	        return ResponseEntity.ok(
+	                bookingService.cancelByAdmin(bookingId)
+	        );
+	    }
 }

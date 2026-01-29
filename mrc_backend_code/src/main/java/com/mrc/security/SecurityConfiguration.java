@@ -54,7 +54,7 @@ public class SecurityConfiguration {
             )
             .authorizeHttpRequests(auth -> auth
 
-                // ✅ PUBLIC
+                //  PUBLIC
                 .requestMatchers(
                     "/users/login",
                     "/users/register",
@@ -64,6 +64,8 @@ public class SecurityConfiguration {
                 ).permitAll()
 
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                //queries 
+                .requestMatchers(HttpMethod.POST, "/queries").permitAll()
 
                 // BOOKINGS
                 .requestMatchers(HttpMethod.POST, "/bookings/**")

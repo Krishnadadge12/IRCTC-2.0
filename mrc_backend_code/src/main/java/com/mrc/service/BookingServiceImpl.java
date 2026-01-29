@@ -8,6 +8,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mrc.custom_exceptions.ApiException;
+import com.mrc.custom_exceptions.InvalidInputException;
+import com.mrc.custom_exceptions.ResourceNotFoundException;
 import com.mrc.dtos.BookingRequestDto;
 import com.mrc.dtos.BookingResponseDto;
 import com.mrc.dtos.PassengerDto;
@@ -40,17 +43,20 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponseDto createBooking(UserEntity user, BookingRequestDto dto) {
 
+    	if (dto.getJourneyDate().isBefore(LocalDate.now())) {
+            throw new InvalidInputException("Journey date cannot be in the past");
+        }
         TrainEntity train = trainRepository.findById(dto.getTrainId())
-                .orElseThrow(() -> new RuntimeException("Train not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Train not found"));
 
         Coach coach = coachRepository.findById(dto.getCoachId())
-                .orElseThrow(() -> new RuntimeException("Coach not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Coach not found"));
 
         SeatPrice price = seatPriceRepository.findById(dto.getSeatPriceId())
-                .orElseThrow(() -> new RuntimeException("Seat price not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Seat price not found"));
 
         if (!coach.getCoachType().equals(price.getCoachType())) {
-            throw new RuntimeException("Coach type mismatch with fare");
+            throw new InvalidInputException("Coach type mismatch with fare");
         }
 
         SeatAvailability seat = seatRepository
@@ -128,7 +134,7 @@ public class BookingServiceImpl implements BookingService {
         passengerRepository.saveAll(passengerList);
         savedBooking.setPassengers(passengerList);
 
-        // ✅ MAP WHILE TRANSACTION IS OPEN
+        //  MAP WHILE TRANSACTION IS OPEN
         return bookingMapper.toDto(savedBooking);
     }
 
@@ -139,10 +145,10 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = bookingRepository
                 .findByIdAndUser_Id(bookingId, user.getId())
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         if (booking.getBookingStatus() == BookingStatus.CANCELLED) {
-            throw new RuntimeException("Booking already cancelled");
+            throw new ApiException("Booking already cancelled");
         }
 
         SeatAvailability freedSeat = booking.getSeat();
@@ -171,10 +177,10 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDto cancelByAdmin(Long bookingId) {
 
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         if (booking.getBookingStatus() == BookingStatus.CANCELLED) {
-            throw new RuntimeException("Already cancelled");
+            throw new ApiException("Already cancelled");
         }
 
         SeatAvailability freedSeat = booking.getSeat();

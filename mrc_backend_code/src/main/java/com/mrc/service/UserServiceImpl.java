@@ -10,7 +10,8 @@ import com.mrc.entities.users.UserEntity;
 import com.mrc.entities.users.UserRole;
 import com.mrc.entities.users.UserStatus;
 import com.mrc.repository.UserRepository;
-
+import com.mrc.custom_exceptions.ApiException;
+import com.mrc.custom_exceptions.InvalidInputException;
 import com.mrc.dtos.UserDto;
 
 import lombok.RequiredArgsConstructor;
@@ -29,17 +30,17 @@ public class UserServiceImpl implements UserService
 
 	    // 1️ Validate password match (IMPORTANT)
 	    if (!dto.getPassword().equals(dto.getConfirmPassword())) {
-	        throw new IllegalArgumentException("Password and Confirm Password do not match");
+	        throw new InvalidInputException("Password and Confirm Password do not match");
 	    }
 
 	    // 2️ Check if email exists
 	    if (userRepository.existsByEmail(dto.getEmail())) {
-	        throw new IllegalArgumentException("Email already registered");
+	        throw new ApiException("Email already registered");
 	    }
 
 	    // 3️ Check if phone exists
 	    if (userRepository.existsByPhone(dto.getPhone())) {
-	        throw new IllegalArgumentException("Phone already registered");
+	        throw new ApiException("Phone already registered");
 	    }
 
 	    // 4️ Create entity
