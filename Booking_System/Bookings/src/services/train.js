@@ -18,6 +18,9 @@ export async function getTrains(searchData){
             params.scheduleDate = searchData.scheduleDate;
         }
 
+        // Debug: show exact request URL and params
+        console.log("getTrains -> GET", url, params);
+
         const response = await axios.get(url, {
             params: params,
             headers: {
@@ -25,11 +28,16 @@ export async function getTrains(searchData){
             },
         });
 
-        console.log("API Response:", response.data);
+        console.log("API Response:", response.status, response.data);
         return response.data;
 
     } catch(ex){
-        console.error("API Exception:", ex.response?.data || ex.message);
+        // Provide detailed debugging info
+        console.error("API Exception:", {
+            message: ex.message,
+            status: ex.response?.status,
+            data: ex.response?.data
+        });
         return [];
     }
 }
@@ -37,7 +45,8 @@ export async function getTrains(searchData){
 
 export async function getTrainDetails(id){
     try{
-        const url = `${config.server}/train/${id}`
+        // backend mapping is /trains/{trainId}
+        const url = `${config.server}/trains/${id}`
         const response = await axios.get(url,{
             headers: {
                 token:localStorage.getItem('token'),
