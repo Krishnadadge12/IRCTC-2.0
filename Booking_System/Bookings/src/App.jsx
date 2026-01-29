@@ -7,6 +7,7 @@ import PublicLayout from "./layout/PublicLayout";
 import PrivateLayout from "./layout/PrivateLayout";
 
 import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute'
+import AdminProtectedRoute from './Components/AdminProtectedRoute/AdminProtectedRoute'
 
 import Home from './pages/home/Home'
 import Login from './pages/login/login'
@@ -17,7 +18,16 @@ import RailTicketBookingForm from './pages/BookingForm/BookingForm'
 import BookingConfirmation from './pages/BookingConfirmation/BookingConfirmation'
 import PaymentPage from './pages/Payment/PaymentPage'
 import AboutUs from './pages/AboutUs/AboutUs'
-import TermsAndConditions from './pages/TermsAndConditions/TermsConditions';
+import TermsAndConditions from './pages/TermsAndConditions/TermsConditions'
+import PNRStatus from './pages/PNRStatus/PNRStatus'
+import MyBookings from './pages/MyBookings/MyBookings'
+import Ticket from './pages/Ticket/Ticket'
+import AdminHome from "./pages/Admin/AdminHome";
+import Dashboard from "./pages/Admin/Bookings";
+import TrainPage from "./pages/Admin/TrainPage";
+import SchedulePage from "./pages/Admin/SchedulePage";
+import UserPage from "./pages/Admin/UserPage";
+
 
 function App() {
   return (
@@ -38,6 +48,7 @@ function App() {
           <Route path="/home/register" element={<Register />} />
           <Route path="/home/terms" element={<TermsAndConditions />} />
           <Route path="/home/aboutus" element={<AboutUs />} />
+          <Route path="/home/pnr-status" element={<PNRStatus />} />
         </Route>
 
         {/* ---------- PRIVATE ROUTES (WITH SIDEBAR) ---------- */}
@@ -46,8 +57,18 @@ function App() {
             <Route path="/home/booking" element={<RailTicketBookingForm />} />
             <Route path="/home/confirm" element={<BookingConfirmation />} />
             <Route path="/home/payment" element={<PaymentPage />} />
+            <Route path="/home/ticket" element={<Ticket />} />
+            <Route path="/home/my-bookings" element={<MyBookings />} />
           </Route>
         </Route>
+
+{/* ---------- ADMIN ---------- */}
+        <Route path="/admin/home" element={<AdminHome />} />
+<Route path="/admin/bookings" element={<Dashboard />} />
+<Route path="/admin/trains" element={<TrainPage />} />
+<Route path="/admin/queries" element={<SchedulePage />} />
+<Route path="/admin/users" element={<UserPage />} />
+
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/home/login" replace />} />

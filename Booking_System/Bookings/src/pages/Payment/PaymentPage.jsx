@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom"; // useLocation to get booking data, useNavigate to redirect after payment
+import axios from "axios"; // axios for making API calls
 import "./PaymentPage.css";
 
 function PaymentPage() {
+  // useLocation hook gets the booking data passed from previous page
   const location = useLocation();
+  // useNavigate hook allows us to redirect to ticket page after successful payment
+  const navigate = useNavigate();
+  // data contains booking information (passenger details, fares, etc)
   const data = location.state || {};
+  // loading state to show loading message while processing payment
   const [loading, setLoading] = useState(false);
 
   const payNow = async () => {
+    // If already processing payment, prevent duplicate requests
     if (loading) return;
 
-    // Safety: Razorpay SDK check
+    // Check if Razorpay SDK is loaded in the page
+    // Razorpay SDK must be included in index.html script tags
     if (!window.Razorpay) {
       alert("Razorpay SDK not loaded. Please refresh.");
       return;
@@ -20,32 +27,39 @@ function PaymentPage() {
     try {
       setLoading(true);
 
-      // 1️⃣ Create order
+      // Step 1: Create order on backend with payment amount
+      // This API call creates an order in Razorpay system
       const orderRes = await axios.post(
         "http://localhost:5000/api/payment/create-order",
         { amount: data.totalFare }
       );
 
+      // Get the order details from response
       const order = orderRes.data;
 
-      // 2️⃣ Razorpay options
+      // Step 2: Configure Razorpay payment options
       const options = {
-        key: "rzp_test_S8dz8urvscAFMO",
-        amount: order.amount,
+        key: "rzp_test_S8dz8urvscAFMO", // Razorpay API Key
+        amount: order.amount, // Amount in paise (₹)
         currency: "INR",
         name: "IRCTC 2.0",
         description: "Railway Ticket Booking",
-        order_id: order.id,
+        order_id: order.id, // Order ID from backend
 
+        // Handler called when payment is successful
         handler: async (response) => {
+          // Verify payment on backend to ensure payment was actually successful
           await axios.post(
             "http://localhost:5000/api/payment/verify-payment",
             response
           );
           alert("Payment Successful ✅");
+          // Redirect to ticket page after successful payment
+          navigate('/home/ticket');
           setLoading(false);
         },
 
+        // Modal configuration - what happens when payment is cancelled/dismissed
         modal: {
           ondismiss: () => {
             setLoading(false);
@@ -53,16 +67,18 @@ function PaymentPage() {
           }
         },
 
+        // Pre-fill customer information on Razorpay form
         prefill: {
           name: data.passengerName || "Passenger",
           email: "test@example.com",
           contact: "9999999999"
         },
 
+        // Theme color for Razorpay payment form
         theme: { color: "#0b61a8" }
       };
 
-      // 3️⃣ Open Razorpay
+      // Step 3: Initialize and open Razorpay payment modal
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {

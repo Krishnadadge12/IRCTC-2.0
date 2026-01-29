@@ -35,10 +35,20 @@ React.useEffect(() => {
   }, []);
   //changes in form to be set
   React.useEffect(() => {
+    let data = location.state;
     
-    if (location.state) {
-      const data = location.state;
-
+    // Check sessionStorage if location.state is not available (data from TrainDetails)
+    if (!data) {
+      const storedData = sessionStorage.getItem('bookingData');
+      if (storedData) {
+        data = JSON.parse(storedData);
+        console.log("Retrieved from sessionStorage:", data); // DEBUG
+        sessionStorage.removeItem('bookingData'); // Clear after using
+      }
+    }
+    
+    if (data) {
+      console.log("Prefilling form with:", data); // DEBUG
       setReservationQuota(data.reservationQuota || "");
       setTrainNumber(data.trainNumber || "");
       setJourneyFrom(data.journeyFrom || "");
@@ -52,8 +62,10 @@ React.useEffect(() => {
       }
 
       setPassengers(data.passengers || []);
+    } else {
+      console.log("No prefill data found - location.state:", location.state); // DEBUG
     }
-  }, [location.state]);
+  }, []);
 
   //add passenger details
   const addPassenger = () => {

@@ -15,20 +15,22 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  const currentUser = localStorage.getItem("currentUser");
+  const token = sessionStorage.getItem("token");
+  const currentUser = sessionStorage.getItem("currentUser");
 
   if (token && currentUser) {
     try {
       setUser(JSON.parse(currentUser));
     } catch (error) {
       console.error("Error parsing user data:", error);
-      localStorage.removeItem("currentUser");
-      localStorage.removeItem("token");
+      sessionStorage.removeItem("currentUser");
+      sessionStorage.removeItem("token");
+      setUser(null);
     }
   } else {
-    localStorage.removeItem("currentUser");
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("currentUser");
+    sessionStorage.removeItem("token");
+    setUser(null);
   }
 
   setIsLoading(false);
@@ -37,18 +39,18 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
   setUser(userData);
-  localStorage.setItem("currentUser", JSON.stringify(userData));
+  sessionStorage.setItem("currentUser", JSON.stringify(userData));
 
   if (userData.token) {
-    localStorage.setItem("token", userData.token);
+    sessionStorage.setItem("token", userData.token);
   }
 };
 
 
   const logout = () => {
   setUser(null);
-  localStorage.removeItem("currentUser");
-  localStorage.removeItem("token"); //  IMPORTANT
+  sessionStorage.removeItem("currentUser");
+  sessionStorage.removeItem("token");
 };
 
   // const isAuthenticated = () => {

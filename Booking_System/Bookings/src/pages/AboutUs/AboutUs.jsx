@@ -4,7 +4,6 @@ import "./AboutUs.css";
 function AboutUs() {
   return (
     <div className="about-bg">
-      <div className="about-overlay"></div>
 
       <div className="about-container">
         <h1 className="about-title">About Us</h1>
@@ -15,7 +14,7 @@ function AboutUs() {
           infrastructure across the state of Maharashtra.
         </p>
 
-        <section className="about-section">
+        <section className="about-section1">
           <h3>Who We Are</h3>
           <p>
             Maharashtra Railways Corporation Limited was formed with the vision
@@ -27,7 +26,7 @@ function AboutUs() {
           </p>
         </section>
 
-        <section className="about-section">
+        <section className="about-section1">
           <h3>Our Mission</h3>
           <ul>
             <li>To provide safe, reliable, and efficient rail services</li>
@@ -37,7 +36,7 @@ function AboutUs() {
           </ul>
         </section>
 
-        <section className="about-section">
+        <section className="about-section1">
           <h3>What We Offer</h3>
           <p>
             Through this Railway Ticket Booking System, passengers can easily:
@@ -50,7 +49,7 @@ function AboutUs() {
           </ul>
         </section>
 
-        <section className="about-section">
+        <section className="about-section1">
           <h3>Our Vision</h3>
           <p>
             To become a leading rail infrastructure organization by adopting
@@ -59,7 +58,7 @@ function AboutUs() {
           </p>
         </section>
 
-        <section className="about-section">
+        <section className="about-section1">
           <h3>Commitment to Passengers</h3>
           <p>
             Passenger safety, data security, and service reliability remain our

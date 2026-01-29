@@ -390,11 +390,18 @@ function TrainDetails() {
 
                 <button
                   className="btn-book"
-                  onClick={() =>
-                    navigate('/home/booking', {
-                      state: { selectedTrain }
-                    })
-                  }
+                  onClick={() => {
+                    // Store booking data in sessionStorage to persist through auth redirects
+                    const bookingData = {
+                      journeyFrom: selectedTrain.from,
+                      journeyTo: selectedTrain.to,
+                      trainNumber: selectedTrain.number,
+                      reservationQuota: selectedTrain.quota || '',
+                      passengers: [{ fullName: "", age: "", sex: "", berth: "", phone: "", email: "" }]
+                    };
+                    sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+                    navigate('/home/booking');
+                  }}
                 >
                   Book Now
                 </button>

@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { toast } from 'react-toastify';
+import { Link, useNavigate } from 'react-router-dom'; // Link for navigation, useNavigate for programmatic navigation
+import { useAuth } from '../../context/AuthContext'; // Custom hook to access authentication state
+import { toast } from 'react-toastify'; // For showing toast notifications
 import './Navbar.css';
 
 const Navbar = () => {
+  // isSidebarOpen manages mobile menu visibility
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // Get authentication state (isAuthenticated, user info, logout function) from context
   const { isAuthenticated, user, logout } = useAuth();
+  // useNavigate hook for programmatic navigation after logout
   const navigate = useNavigate();
 
+  // Handle logout: clears user session, shows toast, navigates to home, closes sidebar
   const handleLogout = () => {
-    logout();
-    toast.success('Logged out successfully');
-    navigate('/home');
-    setIsSidebarOpen(false);
+    logout(); // Remove user from session/localStorage
+    toast.success('Logged out successfully'); // Show success notification
+    navigate('/home'); // Redirect to home page
+    setIsSidebarOpen(false); // Close mobile menu if open
   }; 
 
   return (
@@ -35,19 +39,31 @@ const Navbar = () => {
 
         {/* Menu Items */}
         <div className="navbar-menu">
-          <Link className='navbar-link' to={"/home/register"}>
-          Register </Link>
-          <Link className='navbar-link' to={"/home/search"}>Train Search</Link>
-          <Link className='navbar-link' to={"/home/booking"}>Bookings</Link>
-         
-          <Link className='navbar-link' to={"/home/AboutUs"}>AboutUs</Link>
+          {/* Register link - shown only when user is NOT logged in */}
+          {!isAuthenticated && (
+            <Link className='navbar-link' to={"/home/register"}>
+              •Register•
+            </Link>
+          )}
+          {/* Train Search link - shown for all users (logged in or not) */}
+          <Link className='navbar-link' to={"/home/search"}>•Train Search•</Link>
+          {/* Book Ticket link - shown for all users */}
+          <Link className='navbar-link' to={"/home/booking"}>•Book Ticket•</Link>
+          {/* My Bookings link - shown only when user is logged in */}
+          {isAuthenticated && (
+            <Link className='navbar-link' to={"/home/my-bookings"}>•My Bookings•</Link>
+          )}
+          {/* About Us link - shown for all users */}
+          <Link className='navbar-link' to={"/home/AboutUs"}>•About Us•</Link>
         </div>
 
         
 
         {/* Contact, Login/Logout & Hamburger */}
         <div className="navbar-actions">
+          {/* Contact Us button */}
           <button className="navbar-contact-btn">Contact Us</button>
+          {/* Show Logout button if user is logged in, otherwise show Login link */}
           {isAuthenticated ? (
             <button onClick={handleLogout} className="navbar-login-btn">
               Logout
@@ -56,7 +72,7 @@ const Navbar = () => {
             <Link to="/home/login" className="navbar-login-btn">Login</Link>
           )}
 
-          {/* small three-line hamburger, placed right of Login */}
+          {/* Mobile hamburger menu button - toggles sidebar visibility */}
           <button
             onClick={() => setIsSidebarOpen(true)}
             aria-label="Open menu"
@@ -89,9 +105,11 @@ const Navbar = () => {
 
               <nav className="navbar-sidebar-nav">
                 <ul className="navbar-sidebar-list">
+                  {/* Show user info and logout button if authenticated */}
                   {isAuthenticated ? (
                     <>
                       <li className="navbar-sidebar-item">
+                        {/* Display user's name from auth context */}
                         <span style={{ padding: '10px', color: '#4a90e2', fontWeight: 'bold' }}>
                           {user?.fullname || user?.username || 'User'}
                         </span>
@@ -102,14 +120,24 @@ const Navbar = () => {
                     </>
                   ) : (
                     <>
+                      {/* Show login and register links if not authenticated */}
                       <li className="navbar-sidebar-item"><Link to="/home/login" onClick={() => setIsSidebarOpen(false)}>Login</Link></li>
                       <li className="navbar-sidebar-item"><Link to="/home/register" onClick={() => setIsSidebarOpen(false)}>Register</Link></li>
                     </>
                   )}
+                  {/* Search Train link - available to all users */}
                   <li className="navbar-sidebar-item"><Link to="/home/search" onClick={() => setIsSidebarOpen(false)}>Search Train</Link></li>
+                  {/* Book Train link - available to all users */}
                   <li className="navbar-sidebar-item"><Link to="/home/booking" onClick={() => setIsSidebarOpen(false)}>Book Train</Link></li>
+                  {/* My Bookings link - shown only when user is logged in */}
+                  {isAuthenticated && (
+                    <li className="navbar-sidebar-item"><Link to="/home/my-bookings" onClick={() => setIsSidebarOpen(false)}>My Bookings</Link></li>
+                  )}
+                  {/* Cancel Train link - available to all users */}
                   <li className="navbar-sidebar-item"><Link to="/home/cancel" onClick={() => setIsSidebarOpen(false)}>Cancel Train</Link></li>
+                  {/* About Us link - available to all users */}
                   <li className="navbar-sidebar-item"><Link to="/home/AboutUs" onClick={() => setIsSidebarOpen(false)}>About</Link></li>
+                  {/* Contact Us button */}
                   <li className="navbar-sidebar-item"><button onClick={() => setIsSidebarOpen(false)}>Contact Us</button></li>
                 </ul>
 

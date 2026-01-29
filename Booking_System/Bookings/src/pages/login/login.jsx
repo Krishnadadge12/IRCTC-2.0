@@ -77,19 +77,24 @@ const Login = () => {
       const data = await response.json();
 
      
-      // ✅ Save user in AuthContext
+      // ✅ Save user in AuthContext with role
      localStorage.setItem('token', data.jwt);
 
 login({
   email: form.username,
   token: data.jwt,
+  role: data.role || 'user', // Capture role from backend (admin/user/TC)
 });
 
 
       toast.success('Login successful!');
 
+      // Determine redirect based on role
+      const userRole = data.role || 'user';
+      const redirectPath = userRole === 'admin' ? '/admin/home' : '/home';
+
       setTimeout(() => {
-        navigate('/home');
+        navigate(redirectPath);
       }, 500);
 
     } catch (error) {

@@ -1,0 +1,46 @@
+
+.navbar-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-logo-link {
+  display: flex;
+  align-items: center;
+}
+
+.admin-home {
+background: linear-gradient(135deg, rgba(240, 247, 255, 0.9) 0%, rgba(224, 240, 255, 0.8) 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.admin-home h1 {
+  margin-bottom: 40px;
+}
+
+.links-container {
+  display: grid;
+  grid-template-columns: repeat(2, 220px);
+  gap: 25px;
+}
+
+.admin-link {
+  background: #2c3e50;
+  color: white;
+  padding: 25px;
+  text-align: center;
+  font-size: 18px;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.admin-link:hover {
+  background: #1abc9c;
+}
