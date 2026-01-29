@@ -61,8 +61,6 @@ const Navbar = () => {
 
         {/* Contact, Login/Logout & Hamburger */}
         <div className="navbar-actions">
-          {/* Contact Us button */}
-          <button className="navbar-contact-btn">Contact Us</button>
           {/* Show Logout button if user is logged in, otherwise show Login link */}
           {isAuthenticated ? (
             <button onClick={handleLogout} className="navbar-login-btn">

@@ -1,0 +1,85 @@
+/* Admin-like background and centered layout */
+
+.tc-home {
+  background: linear-gradient(135deg, rgba(240, 247, 255, 0.9) 0%, rgba(224, 240, 255, 0.8) 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.tc-home h1 {
+  margin-bottom: 28px;
+}
+
+.links-container {
+  display: grid;
+  grid-template-columns: repeat(2, 220px);
+  gap: 25px;
+}
+
+/* Force single centered card */
+.links-container.single-card {
+  grid-template-columns: 1fr;
+  width: 500px;
+  justify-items: center;
+}
+
+/* Card style - reuses admin-like color */
+.tc-card {
+  background: #2c3e50;
+  color: white;
+  padding: 22px;
+  text-align: center;
+  font-size: 18px;
+  border-radius: 8px;
+  transition: 0.3s;
+  width: 100%;
+}
+
+.tc-card h3 { margin: 0 0 12px 0; }
+
+.tc-card-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.tc-input {
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  min-width: 160px;
+}
+
+.admin-link {
+  display: inline-block;
+  background: #024437;
+  color: white;
+  padding: 10px 14px;
+  text-align: center;
+  font-size: 16px;
+  text-decoration: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-link:disabled { cursor: default; }
+
+.tc-error { color: #ffdddd; margin-top: 8px; }
+
+/* Results table - neutral styling */
+.tc-results { width: 100%; max-width: 980px; margin-top: 24px; }
+.tc-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 6px; overflow: hidden; }
+.tc-table th, .tc-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #eee; }
+
+.pass-list { margin: 0; padding-left: 18px; }
+.tc-empty { color: #666; }
+.tc-note { margin-top: 14px; color: #666; font-size: 13px; text-align: center; }

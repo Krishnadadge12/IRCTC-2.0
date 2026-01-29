@@ -19,6 +19,7 @@ import BookingConfirmation from './pages/BookingConfirmation/BookingConfirmation
 import PaymentPage from './pages/Payment/PaymentPage'
 import AboutUs from './pages/AboutUs/AboutUs'
 import TermsAndConditions from './pages/TermsAndConditions/TermsConditions'
+import TCHome from './pages/TC/TCHome'
 import PNRStatus from './pages/PNRStatus/PNRStatus'
 import MyBookings from './pages/MyBookings/MyBookings'
 import Ticket from './pages/Ticket/Ticket'
@@ -68,6 +69,9 @@ function App() {
 <Route path="/admin/trains" element={<TrainPage />} />
 <Route path="/admin/queries" element={<SchedulePage />} />
 <Route path="/admin/users" element={<UserPage />} />
+
+{/* ---------- TC ---------- */}
+<Route path="/tc" element={<TCHome />} />
 
 
         {/* Fallback */}

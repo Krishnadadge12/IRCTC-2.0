@@ -6,23 +6,15 @@ const About = () => {
     <section className="about-section">
      {/* Footer section of Home page */}
         <div className="about-grid">
-          {/* About MRC */} 
-          <div className="about-card">
-            <h3 >About MRC</h3>
-            <p className="about-description">
-             Maharashtra Railways Corporation provides safe, reliable, and efficient railway services, enhancing passenger convenience through modern infrastructure and digital solutions.
-            </p>
-          </div>
-
           {/* Our Services */} 
           <div className="about-card">
-            <h3>Our Services</h3>
+            <h3>Future Goals</h3>
             <ul className="about-services-list">
-              <li className="about-service-item">• Train Bookings</li>
-              <li className="about-service-item">• PNR status checking</li>
-              <li className="about-service-item">• Train schedule</li>
-              <li className="about-service-item">• Seat availability</li>
-              <li className="about-service-item">• Ticket cancellations</li>
+              <li className="about-service-item">• Boarding Reminder Notifications</li>
+              <li className="about-service-item">• Live Train Tracking</li>
+              <li className="about-service-item">• Journey Planner</li>
+              <li className="about-service-item">• Alternate Train Suggestions</li>
+              <li className="about-service-item">• Delay / Cancellation Alerts</li>
             </ul>
           </div>
 
