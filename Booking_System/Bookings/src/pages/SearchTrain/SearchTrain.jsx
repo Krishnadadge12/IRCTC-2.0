@@ -32,6 +32,16 @@ function SearchTrain() {
     }
 
     try {
+      // Debug: print the params we are going to send
+      console.log('SearchTrain -> calling getTrains with', searchParams);
+      try {
+        // also show how browser will serialize params
+        const qs = new URLSearchParams(
+          Object.fromEntries(Object.entries(searchParams).filter(([k,v]) => v))
+        ).toString();
+        console.log('SearchTrain -> querystring:', qs);
+      } catch (e) { /* ignore URLSearchParams errors in older browsers */ }
+
       const result = await getTrains(searchParams);
       console.log("API RESULT =>", result);
 
