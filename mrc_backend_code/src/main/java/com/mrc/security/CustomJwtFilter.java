@@ -58,7 +58,22 @@ public class CustomJwtFilter extends OncePerRequestFilter {
             String jwt = headerValue.substring(7);
             log.info("JWT found");
 
-            Claims claims = jwtUtils.validateJWT(jwt);
+            if (jwt == null || jwt.isBlank() || !jwt.contains(".")) {
+                log.warn("Invalid JWT format received: {}", jwt);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            log.info("Valid-looking JWT found");
+
+            Claims claims;
+            try {
+                claims = jwtUtils.validateJWT(jwt);
+            } catch (Exception e) {
+                log.warn("JWT validation failed: {}", e.getMessage());
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             String role = claims.get("role", String.class);
             Long userId = claims.get("user_id", Long.class);
