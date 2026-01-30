@@ -9,7 +9,7 @@ import com.mrc.entities.passenger.Passenger;
 
 public interface PassengerRepository extends JpaRepository<Passenger, Long> {
 
-	List<Passenger> findByBookingTrain_Id(Long trainId);
+	List<Passenger> findByBooking_Train_Id(Long trainId);
 	List<Passenger> findByBooking(Booking booking);
 
 }

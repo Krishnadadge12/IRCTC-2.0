@@ -15,6 +15,7 @@ public class TcPassengerResponseDto {
     private String coachNo;
     private String seatNo;
     private String seatLabel;
-
     private String pnr;
+    private Long bookingId; 
+    private String bookingStatus;
 }

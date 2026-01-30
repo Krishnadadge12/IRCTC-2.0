@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class TcController {
 
 	  private final TcService tcService;
-	    private final BookingService bookingService;
+	  private final BookingService bookingService;
 
 	    // TC: View passengers of a train
 	    @GetMapping("/train/{trainId}/passengers")
@@ -31,7 +31,7 @@ public class TcController {
 	        );
 	    }
 
-	    // TC/Admin: Cancel booking
+	    // TC: Cancel booking
 	    @DeleteMapping("/bookings/{bookingId}/cancel")
 	    public ResponseEntity<?> cancelBooking(@PathVariable Long bookingId) {
 	        return ResponseEntity.ok(

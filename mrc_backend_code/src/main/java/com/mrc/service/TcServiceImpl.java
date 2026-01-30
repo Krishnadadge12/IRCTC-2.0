@@ -23,7 +23,7 @@ public class TcServiceImpl implements TcService {
     public List<TcPassengerResponseDto> getPassengersByTrain(Long trainId) {
 
         List<Passenger> passengers =
-                passengerRepository.findByBookingTrain_Id(trainId);
+                passengerRepository.findByBooking_Train_Id(trainId);
 
         if (passengers.isEmpty()) {
             throw new ResourceNotFoundException(
@@ -40,7 +40,9 @@ public class TcServiceImpl implements TcService {
                         p.getCoachNo(),
                         p.getSeatNo(),
                         p.getSeatLabel(),
-                        p.getBooking().getPnr()
+                        p.getBooking().getPnr(),
+                        p.getBooking().getId(), 
+                        p.getBooking().getBookingStatus().name()
                 ))
                 .toList();
     }
