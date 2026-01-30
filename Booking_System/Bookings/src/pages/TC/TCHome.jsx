@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { toast } from 'react-toastify';
 import "./TCHome.css";
 import { getPassengersByTrain, updateBookingStatus, cancelBookingByPassenger } from "../../services/tcService";
 
@@ -8,6 +11,15 @@ const TCHome = () => {
   const [error, setError] = useState("");
   const [passengers, setPassengers] = useState([]);
   const [updatingBooking, setUpdatingBooking] = useState(null);
+  
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    toast.success('Logged out successfully');
+    navigate('/home');
+  };
 
   const handleFetch = async (e) => {
     e.preventDefault();
@@ -89,9 +101,15 @@ const TCHome = () => {
   return (
     <div className="container">
       <div className="tc-home">
-        <div className="navbar-logo-section">
-          <div className="navbar-logo-link" to={'/home'}>
-            <img src="/images/MRC.png" alt="MRC Logo" className="navbar-logo-img" />
+        <div className="tc-top-bar">
+          <div className="navbar-logo-section">
+            <div className="navbar-logo-link" to={'/home'}>
+              <img src="/images/MRC.png" alt="MRC Logo" className="navbar-logo-img" />
+            </div>
+          </div>
+          <div className="tc-user-info">
+            <span className="tc-user-name">Welcome, {user?.fullname || user?.username || 'TC'}</span>
+            <button onClick={handleLogout} className="tc-logout-btn">Logout</button>
           </div>
         </div>
 

@@ -6,16 +6,52 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
+  justify-content: flex-start;
+  padding-top: 20px;
 }
 
-.tc-home h1 {
-  margin-bottom: 28px;
+.tc-top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background: rgba(44, 62, 80, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
 }
 
-.links-container {
-  display: grid;
+.tc-user-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.tc-user-name {
+  color: white;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.tc-logout-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.tc-logout-btn:hover {
+  background: #c0392b;
+}
+
+.tc-logout-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
   grid-template-columns: repeat(2, 220px);
   gap: 25px;
 }

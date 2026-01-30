@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./AdminHome.css";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../../context/AuthContext";
+import { toast } from 'react-toastify';
 
 function AdminHome() {
   const [showModal, setShowModal] = useState(false);
@@ -9,8 +11,14 @@ function AdminHome() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    toast.success('Logged out successfully');
+    navigate('/home');
+  };
 
   const openModal = (e) => {
     if (e && e.preventDefault) e.preventDefault();
@@ -40,13 +48,19 @@ function AdminHome() {
     <div className="container">
       
       <div className="admin-home">
-        <div className="navbar-logo-section">
-          <div className='navbar-logo-link' to={'/home'}>
-            <img 
-              src="/images/MRC.png"
-              alt="MRC Logo" 
-              className="navbar-logo-img"
-            />
+        <div className="admin-top-bar">
+          <div className="navbar-logo-section">
+            <div className='navbar-logo-link' to={'/home'}>
+              <img 
+                src="/images/MRC.png"
+                alt="MRC Logo" 
+                className="navbar-logo-img"
+              />
+            </div>
+          </div>
+          <div className="admin-user-info">
+            <span className="admin-user-name">Welcome, {user?.fullname || user?.username || 'Admin'}</span>
+            <button onClick={handleLogout} className="admin-logout-btn">Logout</button>
           </div>
         </div>
 
