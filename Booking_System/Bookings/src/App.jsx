@@ -3,8 +3,9 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import { AuthProvider } from './context/AuthContext'
 
-import PublicLayout from "./layout/PublicLayout";
-import PrivateLayout from "./layout/PrivateLayout";
+import PublicLayout from "./layout/PublicLayout"
+import PrivateLayout from "./layout/PrivateLayout"
+import AdminLayout from "./layout/AdminLayout"
 
 import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute'
 import AdminProtectedRoute from './Components/AdminProtectedRoute/AdminProtectedRoute'
@@ -23,12 +24,12 @@ import TCHome from './pages/TC/TCHome'
 import PNRStatus from './pages/PNRStatus/PNRStatus'
 import MyBookings from './pages/MyBookings/MyBookings'
 import Ticket from './pages/Ticket/Ticket'
-import AdminHome from "./pages/Admin/AdminHome";
-import Dashboard from "./pages/Admin/Bookings";
-import TrainPage from "./pages/Admin/TrainPage";
-import SchedulePage from "./pages/Admin/SchedulePage";
-import UserPage from "./pages/Admin/UserPage";
-
+import TCProtectedRoute from './Components/TCProtectedRoute/TCProtectedRoute'
+import AdminHome from "./pages/Admin/AdminHome"
+import Dashboard from "./pages/Admin/Bookings"
+import TrainPage from "./pages/Admin/TrainPage"
+import SchedulePage from "./pages/Admin/SchedulePage"
+import UserPage from "./pages/Admin/UserPage"
 
 function App() {
   return (
@@ -36,15 +37,14 @@ function App() {
       <ToastContainer position="top-right" autoClose={2000} theme="colored" />
 
       <Routes>
-        {/* Redirect root */}
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        {/* ---------- ROOT ---------- */}
+        <Route index element={<Navigate to="/home" replace />} />
 
-        {/* ---------- PUBLIC ROUTES (NO SIDEBAR) ---------- */}
+        {/* ---------- PUBLIC ROUTES ---------- */}
         <Route element={<PublicLayout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/home/search" element={<SearchTrain />} />
           <Route path="/home/trains/search" element={<TrainDetails />} />
-          {/*<Route path="/home/train-details" element={<TrainDetails />} />*/}
           <Route path="/home/login" element={<Login />} />
           <Route path="/home/register" element={<Register />} />
           <Route path="/home/terms" element={<TermsAndConditions />} />
@@ -52,7 +52,7 @@ function App() {
           <Route path="/home/pnr-status" element={<PNRStatus />} />
         </Route>
 
-        {/* ---------- PRIVATE ROUTES (WITH SIDEBAR) ---------- */}
+        {/* ---------- USER PROTECTED ROUTES ---------- */}
         <Route element={<ProtectedRoute />}>
           <Route element={<PrivateLayout />}>
             <Route path="/home/booking" element={<RailTicketBookingForm />} />
@@ -63,18 +63,23 @@ function App() {
           </Route>
         </Route>
 
-{/* ---------- ADMIN ---------- */}
-        <Route path="/admin/home" element={<AdminHome />} />
-<Route path="/admin/bookings" element={<Dashboard />} />
-<Route path="/admin/trains" element={<TrainPage />} />
-<Route path="/admin/queries" element={<SchedulePage />} />
-<Route path="/admin/users" element={<UserPage />} />
+        {/* ---------- ADMIN PROTECTED ROUTES ---------- */}
+        <Route element={<AdminProtectedRoute />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="home" element={<AdminHome />} />
+            <Route path="bookings" element={<Dashboard />} />
+            <Route path="trains" element={<TrainPage />} />
+            <Route path="queries" element={<SchedulePage />} />
+            <Route path="users" element={<UserPage />} />
+          </Route>
+        </Route>
 
-{/* ---------- TC ---------- */}
-<Route path="/tc" element={<TCHome />} />
+        {/* ---------- TC ---------- */}
+        <Route element={<TCProtectedRoute />}>
+          <Route path="/tc" element={<TCHome />} />
+        </Route>
 
-
-        {/* Fallback */}
+        {/* ---------- FALLBACK ---------- */}
         <Route path="*" element={<Navigate to="/home/login" replace />} />
       </Routes>
     </AuthProvider>

@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { validateEmail, validateRequired } from '../../utils/validation';
 import FormInput from '../../Components/Form/FormInput';
 import FormButton from '../../Components/Form/FormButton';
+import {jwtDecode} from 'jwt-decode';
+
 import './login.css';
 
 const Login = () => {
@@ -32,7 +34,7 @@ const Login = () => {
  const validateForm = () => {
   const newErrors = {};
 
-  // ✅ Email validation (correct for your utils)
+  //  Email validation (correct for your utils)
   if (!validateEmail(form.username)) {
     newErrors.username = 'Please enter a valid email address.';
   }
@@ -65,7 +67,7 @@ const Login = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: form.username,   // ✅ backend expects email
+          email: form.username,   //  backend expects email
           password: form.password,
         }),
       });
@@ -76,26 +78,35 @@ const Login = () => {
 
       const data = await response.json();
 
-     
-      // ✅ Save user in AuthContext with role
-     localStorage.setItem('token', data.jwt);
+    const decoded = jwtDecode(data.jwt);
+
+console.log("DECODED JWT =>", decoded);
+
+
+
+     console.log("LOGIN RESPONSE =>", data);
 
 login({
   email: form.username,
   token: data.jwt,
-  role: data.role || 'user', // Capture role from backend (admin/user/TC)
+  role: decoded.role, //  extracted from JWT
 });
-
 
       toast.success('Login successful!');
 
-      // Determine redirect based on role
-      const userRole = data.role || 'user';
-      const redirectPath = userRole === 'admin' ? '/admin/home' : '/home';
+// Spring sends ROLE_ADMIN / ROLE_PASSENGERS / ROLE_TC
+const role = decoded.role;
 
-      setTimeout(() => {
-        navigate(redirectPath);
-      }, 500);
+let redirectPath = '/home';
+
+if (role.includes('ADMIN')) {
+  redirectPath = '/admin/home';
+} else if (role.includes('TC')) {
+  redirectPath = '/tc';
+}
+
+navigate(redirectPath);
+
 
     } catch (error) {
       toast.error('Invalid email or password');

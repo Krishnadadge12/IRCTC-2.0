@@ -41,16 +41,19 @@ React.useEffect(() => {
     if (!data) {
       const storedData = sessionStorage.getItem('bookingData');
       if (storedData) {
-        data = JSON.parse(storedData);
-        console.log("Retrieved from sessionStorage:", data); // DEBUG
-        sessionStorage.removeItem('bookingData'); // Clear after using
-      }
+  data = JSON.parse(storedData);
+  console.log("Retrieved from sessionStorage:", data);
+}
     }
     
     if (data) {
       console.log("Prefilling form with:", data); // DEBUG
       setReservationQuota(data.reservationQuota || "");
-      setTrainNumber(data.trainNumber || "");
+      setTrainNumber(
+  data.trainNumber !== undefined && data.trainNumber !== null
+    ? String(data.trainNumber)
+    : ""
+);
       setJourneyFrom(data.journeyFrom || "");
       setJourneyTo(data.journeyTo || "");
 
@@ -62,6 +65,7 @@ React.useEffect(() => {
       }
 
       setPassengers(data.passengers || []);
+      setDepartureTime(data.departureTime || "");
     } else {
       console.log("No prefill data found - location.state:", location.state); // DEBUG
     }
@@ -133,7 +137,7 @@ React.useEffect(() => {
     if (!reservationQuota)
       return toast.error("Please select reservation quota!");
 
-    if (!trainNumber?.trim())
+    if (!String(trainNumber).trim())
       return toast.error("Please enter train name/number!");
 
     if (!journeyFrom?.trim())
@@ -184,10 +188,50 @@ React.useEffect(() => {
       return toast.error("Please accept terms & conditions before proceeding!");
     }
 
-    else {
-      // Navigate to confirmation page with booking data
-      navigate('/home/confirm', { state: bookingData });
+   else {
+  const existingDraft = JSON.parse(
+    sessionStorage.getItem("bookingDraft")
+  );
+
+  if (!existingDraft) {
+    toast.error("Train data missing. Please start booking again.");
+    return;
+  }
+
+  const updatedDraft = {
+    ...existingDraft,
+
+    // 🔑 ENUM (BACKEND EXPECTS THIS)
+    reservationQuota: reservationQuota.toUpperCase(), // GENERAL / TATKAL
+
+    journeyDate: `${year}-${month}-${day}`,
+
+    passengers: passengers.map(p => ({
+      name: p.fullName,
+      age: Number(p.age),
+      gender: p.sex
+    }))
+  };
+
+  sessionStorage.setItem(
+    "bookingDraft",
+    JSON.stringify(updatedDraft)
+  );
+
+  navigate("/home/confirm", {
+    state: {
+      reservationQuota,
+      trainNumber,
+      journeyFrom,
+      journeyTo,
+      date: `${day}-${month}-${year}`,
+      departureTime,
+      passengers
     }
+  });
+}
+
+
   };
 
   
@@ -213,9 +257,7 @@ React.useEffect(() => {
               <option value="">Select Reservation Quota</option>
               <option value="General">General</option>
               <option value="Tatkal">Tatkal</option>
-              <option value="Senior">Senior Citizen</option>
-              <option value="PWD">Physically Disabled</option>
-              <option value="Ladies">Ladies</option>
+              
             </select>
           </div>
 
@@ -358,9 +400,9 @@ React.useEffect(() => {
                   }
                 >
                   <option defaultValue>Select Sex</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  <option value="MALE">MALE</option>
+                  <option value="FEMALE">FEMALE</option>
+                  <option value="OTHER">OTHER</option>
                 </select>
               </div>
 
@@ -449,7 +491,7 @@ React.useEffect(() => {
       </form>
       <ToastContainer position="top-right" />
 
-      {/* old in-React train element removed — portal-based animation is created dynamically on submit */}
+      
     </div>
     </div>
   );

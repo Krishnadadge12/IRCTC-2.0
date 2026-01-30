@@ -14,57 +14,51 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // ✅ Restore auth on refresh
   useEffect(() => {
-  const token = sessionStorage.getItem("token");
-  const currentUser = sessionStorage.getItem("currentUser");
+    const storedUser = sessionStorage.getItem("currentUser");
+    const token = sessionStorage.getItem("token");
 
-  if (token && currentUser) {
-    try {
-      setUser(JSON.parse(currentUser));
-    } catch (error) {
-      console.error("Error parsing user data:", error);
-      sessionStorage.removeItem("currentUser");
-      sessionStorage.removeItem("token");
+    if (storedUser && token) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error("Auth restore failed", err);
+        sessionStorage.clear();
+        setUser(null);
+      }
+    } else {
+      sessionStorage.clear();
       setUser(null);
     }
-  } else {
-    sessionStorage.removeItem("currentUser");
-    sessionStorage.removeItem("token");
-    setUser(null);
-  }
 
-  setIsLoading(false);
-}, []);
+    setIsLoading(false);
+  }, []);
 
-
+  // ✅   Login
   const login = (userData) => {
-  setUser(userData);
-  sessionStorage.setItem("currentUser", JSON.stringify(userData));
-
-  if (userData.token) {
+    setUser(userData);
+    sessionStorage.setItem("currentUser", JSON.stringify(userData));
     sessionStorage.setItem("token", userData.token);
-  }
-};
+  };
 
-
+  // Logout
   const logout = () => {
-  setUser(null);
-  sessionStorage.removeItem("currentUser");
-  sessionStorage.removeItem("token");
-};
-
-  // const isAuthenticated = () => {
-  //   return user !== null;
-  // };
+    setUser(null);
+    sessionStorage.clear();
+  };
 
   const value = {
     user,
     login,
     logout,
-    isAuthenticated: !!user, 
+    isAuthenticated: !!user,
     isLoading,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
-

@@ -1,65 +1,119 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom"; // useLocation to get booking data, useNavigate to redirect after payment
-import axios from "axios"; // axios for making API calls
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import api from "../../services/api";
 import "./PaymentPage.css";
 
 function PaymentPage() {
-  // useLocation hook gets the booking data passed from previous page
   const location = useLocation();
-  // useNavigate hook allows us to redirect to ticket page after successful payment
   const navigate = useNavigate();
-  // data contains booking information (passenger details, fares, etc)
-  const data = location.state || {};
-  // loading state to show loading message while processing payment
+
+  // Get payment data (from BookingConfirmation or fallback)
+  const paymentData =
+    location.state ||
+    JSON.parse(sessionStorage.getItem("paymentData"));
+
+  if (!paymentData || !paymentData.seatFare || !paymentData.passengers) {
+    return (
+      <h2 style={{ textAlign: "center", marginTop: "40px" }}>
+        Payment data missing. Please start booking again.
+      </h2>
+    );
+  }
+
+  const { seatFare, passengers, journeyDate } = paymentData;
+
+  
+  const passengerCount = passengers.length;
+  const seatFarePerPassenger = seatFare;
+  const totalFare = seatFarePerPassenger * passengerCount;
+
   const [loading, setLoading] = useState(false);
 
   const payNow = async () => {
-    // If already processing payment, prevent duplicate requests
     if (loading) return;
 
-    // Check if Razorpay SDK is loaded in the page
-    // Razorpay SDK must be included in index.html script tags
     if (!window.Razorpay) {
       alert("Razorpay SDK not loaded. Please refresh.");
+      return;
+    }
+
+    if (totalFare <= 0) {
+      alert("Invalid fare amount");
       return;
     }
 
     try {
       setLoading(true);
 
-      // Step 1: Create order on backend with payment amount
-      // This API call creates an order in Razorpay system
+      // 🔹 Step 1: Create Razorpay order (Express backend)
       const orderRes = await axios.post(
         "http://localhost:5000/api/payment/create-order",
-        { amount: data.totalFare }
+        { amount: totalFare }
       );
 
-      // Get the order details from response
       const order = orderRes.data;
 
-      // Step 2: Configure Razorpay payment options
+      // 🔹 Step 2: Razorpay options
       const options = {
-        key: "rzp_test_S8dz8urvscAFMO", // Razorpay API Key
-        amount: order.amount, // Amount in paise (₹)
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount, // in paise
         currency: "INR",
-        name: "IRCTC 2.0",
+        name: "MRC",
         description: "Railway Ticket Booking",
-        order_id: order.id, // Order ID from backend
+        order_id: order.id,
 
-        // Handler called when payment is successful
         handler: async (response) => {
-          // Verify payment on backend to ensure payment was actually successful
-          await axios.post(
-            "http://localhost:5000/api/payment/verify-payment",
-            response
-          );
-          alert("Payment Successful ✅");
-          // Redirect to ticket page after successful payment
-          navigate('/home/ticket');
-          setLoading(false);
-        },
+  try {
+    // 🔹 Step 3: Verify payment
+    const verifyRes = await axios.post(
+      "http://localhost:5000/api/payment/verify-payment",
+      response
+    );
 
-        // Modal configuration - what happens when payment is cancelled/dismissed
+    if (verifyRes.data.status !== "Payment verified") {
+      alert("Payment verification failed ❌");
+      return;
+    }
+
+    // 🔹 Step 4: Final booking (Spring Boot)
+    const bookingDraft = JSON.parse(
+      sessionStorage.getItem("bookingDraft")
+    );
+
+    if (!bookingDraft) {
+      alert("Booking data missing ❌");
+      return;
+    }
+
+  
+
+    console.log("BOOKING PAYLOAD =>", bookingDraft);
+
+    
+    const bookingRes = await api.post(
+      "/bookings",
+      bookingDraft
+    );
+
+    // 🔹 CLEANUP (ONLY AFTER SUCCESS)
+    sessionStorage.removeItem("bookingDraft");
+    sessionStorage.removeItem("paymentData");
+
+    alert("Payment Successful ✅");
+
+    navigate("/home/ticket", {
+      state: bookingRes.data
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("Booking failed after payment ❌");
+  } finally {
+    setLoading(false);
+  }
+},
+
         modal: {
           ondismiss: () => {
             setLoading(false);
@@ -67,24 +121,21 @@ function PaymentPage() {
           }
         },
 
-        // Pre-fill customer information on Razorpay form
         prefill: {
-          name: data.passengerName || "Passenger",
-          email: "test@example.com",
-          contact: "9999999999"
+          name: passengers[0]?.fullName || "Passenger",
+          email: passengers[0]?.email || "",
+          contact: passengers[0]?.phone || ""
         },
 
-        // Theme color for Razorpay payment form
         theme: { color: "#0b61a8" }
       };
 
-      // Step 3: Initialize and open Razorpay payment modal
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+      new window.Razorpay(options).open();
+
     } catch (err) {
       console.error(err);
-      setLoading(false);
       alert("Payment failed ❌");
+      setLoading(false);
     }
   };
 
@@ -98,28 +149,22 @@ function PaymentPage() {
 
         <h2 className="header">Payment</h2>
 
-        {/* Passenger Summary */}
+        {/* Summary */}
         <div className="details-box">
-          <p><b>Name:</b> {data.passengerName}</p>
-          <p><b>Age:</b> {data.age}</p>
-          <p><b>Gender:</b> {data.gender}</p>
-          <p><b>Train:</b> {data.trainNo} – {data.trainName}</p>
-          <p><b>Class:</b> {data.classType}</p>
+          <p><b>Passengers:</b> {passengerCount}</p>
+          <p><b>Journey Date:</b> {journeyDate}</p>
         </div>
 
-        {/* Fare Summary */}
+        {/* Fare */}
         <div className="fare-box">
-          <p>Base Fare: ₹{data.baseFare}</p>
-          <p>Reservation Fee: ₹{data.reservationFee}</p>
-          <p>Convenience Fee: ₹{data.convFee}</p>
-          <p>GST: ₹{data.gst}</p>
+          <p><b>Seat Fare (per passenger):</b> ₹{seatFarePerPassenger}</p>
+          <p><b>Passengers:</b> {passengerCount}</p>
           <hr />
           <p className="total">
-            <b>Total Payable: ₹{data.totalFare}</b>
+            <b>Total Payable: ₹{totalFare}</b>
           </p>
         </div>
 
-        {/* Razorpay Button (same position & style) */}
         <button
           className="pay-btn"
           onClick={payNow}
@@ -127,7 +172,7 @@ function PaymentPage() {
         >
           {loading
             ? "Processing Payment..."
-            : `Pay using Razorpay ₹${data.totalFare}`}
+            : `Pay using Razorpay ₹${totalFare}`}
         </button>
 
       </div>

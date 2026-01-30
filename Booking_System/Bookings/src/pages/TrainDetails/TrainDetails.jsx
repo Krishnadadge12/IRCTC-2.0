@@ -25,9 +25,9 @@ function TrainDetails() {
   });
 
   const maharashtraCities = [
-    'Mumbai','Pune','Nagpur','Nashik','Aurangabad','Solapur',
-    'Amravati','Kolhapur','Akola','Jalgaon','Thane','Latur',
-    'Satara','Nanded','Chandrapur'
+    'Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Aurangabad', 'Solapur',
+    'Amravati', 'Kolhapur', 'Akola', 'Jalgaon', 'Thane', 'Latur',
+    'Satara', 'Nanded', 'Chandrapur'
   ];
 
   // Scroll top
@@ -221,129 +221,129 @@ function TrainDetails() {
         {/* Filters and List Container */}
         <div className="list-and-filters">
 
-        {/* Filters Panel */}
-        <div className="filters-panel">
-          <div className="filters-header">
-            <h3>Filters</h3>
-            <button className="reset-filters-btn" onClick={resetExtraFilters}>
-              Reset
+          {/* Filters Panel */}
+          <div className="filters-panel">
+            <div className="filters-header">
+              <h3>Filters</h3>
+              <button className="reset-filters-btn" onClick={resetExtraFilters}>
+                Reset
+              </button>
+            </div>
+
+            {/* Class/Tier Filter */}
+            <div className="filter-group">
+              <h4>Class (Tier)</h4>
+              <div className="filter-options">
+                {["SLEEPER", "AC1", "AC2", "AC3"].map(tier => (
+                  <label key={tier} className="filter-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={extraFilters.classes.includes(tier)}
+                      onChange={() => toggleFilter("classes", tier)}
+                    />
+                    <span>{tier}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Quota Filter */}
+            <div className="filter-group">
+              <h4>Quota</h4>
+              <div className="filter-options">
+                {["GENERAL", "TATKAL"].map(quota => (
+                  <label key={quota} className="filter-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={extraFilters.quotas.includes(quota)}
+                      onChange={() => toggleFilter("quotas", quota)}
+                    />
+                    <span>{quota}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Departure Time Filter */}
+            <div className="filter-group">
+              <h4>Departure Time</h4>
+              <div className="filter-options">
+                {["morning", "afternoon", "night"].map(time => (
+                  <label key={time} className="filter-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={extraFilters.times.includes(time)}
+                      onChange={() => toggleFilter("times", time)}
+                    />
+                    <span className="time-label">
+                      {time === "morning" && "Morning (04:00 - 12:00)"}
+                      {time === "afternoon" && "Afternoon (12:00 - 18:00)"}
+                      {time === "night" && "Night (18:00 - 23:59 & 00:00 - 04:00)"}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="filter-info">
+              Showing {displayTrains.length} of {allTrains.length} trains
+            </div>
+
+            <button className="apply-filters-btn" onClick={applyExtraFilters}>
+              Apply Filters
             </button>
           </div>
 
-          {/* Class/Tier Filter */}
-          <div className="filter-group">
-            <h4>Class (Tier)</h4>
-            <div className="filter-options">
-              {["SLEEPER", "AC1", "AC2", "AC3"].map(tier => (
-                <label key={tier} className="filter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={extraFilters.classes.includes(tier)}
-                    onChange={() => toggleFilter("classes", tier)}
-                  />
-                  <span>{tier}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+          {/* Trains List */}
+          <div className="list-column">
 
-          {/* Quota Filter */}
-          <div className="filter-group">
-            <h4>Quota</h4>
-            <div className="filter-options">
-              {["GENERAL", "TATKAL"].map(quota => (
-                <label key={quota} className="filter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={extraFilters.quotas.includes(quota)}
-                    onChange={() => toggleFilter("quotas", quota)}
-                  />
-                  <span>{quota}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+            <h2>Available Trains ({displayTrains.length})</h2>
+            <hr />
 
-          {/* Departure Time Filter */}
-          <div className="filter-group">
-            <h4>Departure Time</h4>
-            <div className="filter-options">
-              {["morning", "afternoon", "night"].map(time => (
-                <label key={time} className="filter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={extraFilters.times.includes(time)}
-                    onChange={() => toggleFilter("times", time)}
-                  />
-                  <span className="time-label">
-                    {time === "morning" && "Morning (04:00 - 12:00)"}
-                    {time === "afternoon" && "Afternoon (12:00 - 18:00)"}
-                    {time === "night" && "Night (18:00 - 23:59 & 00:00 - 04:00)"}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
+            {displayTrains.length === 0 ? (
+              <p className="no-trains">No trains found</p>
+            ) : (
+              <div className="train-list-vertical">
 
-          <div className="filter-info">
-            Showing {displayTrains.length} of {allTrains.length} trains
-          </div>
+                {displayTrains.map(train => (
 
-          <button className="apply-filters-btn" onClick={applyExtraFilters}>
-            Apply Filters
-          </button>
-        </div>
+                  <div
+                    key={train.trainId}
+                    className="train-card-vertical"
+                  >
 
-        {/* Trains List */}
-        <div className="list-column">
+                    <div className="train-card-header">
 
-          <h2>Available Trains ({displayTrains.length})</h2>
-          <hr />
+                      <div className="train-info-left">
+                        <h3>{train.trainName}</h3>
+                        <p>{train.source} → {train.destination}</p>
+                      </div>
 
-          {displayTrains.length === 0 ? (
-            <p className="no-trains">No trains found</p>
-          ) : (
-            <div className="train-list-vertical">
+                      <div className="train-info-right">
+                        <span>{train.departureTime}</span>
+                        <span style={{ margin: '0 10px' }}>-</span>
+                        <span>{train.arrivalTime}</span>
+                      </div>
 
-              {displayTrains.map(train => (
-
-                <div
-                  key={train.trainId}
-                  className="train-card-vertical"
-                >
-
-                  <div className="train-card-header">
-
-                    <div className="train-info-left">
-                      <h3>{train.trainName}</h3>
-                      <p>{train.source} → {train.destination}</p>
                     </div>
 
-                    <div className="train-info-right">
-                      <span>{train.departureTime}</span>
-                      <span style={{ margin: '0 10px' }}>-</span>
-                      <span>{train.arrivalTime}</span>
+                    <div className="train-card-footer">
+                      <button
+                        className="view-details-btn"
+                        onClick={(e) => handleViewDetails(train, e)}
+                      >
+                        View Details →
+                      </button>
                     </div>
 
                   </div>
 
-                  <div className="train-card-footer">
-                    <button
-                      className="view-details-btn"
-                      onClick={(e) => handleViewDetails(train, e)}
-                    >
-                      View Details →
-                    </button>
-                  </div>
+                ))}
 
-                </div>
+              </div>
+            )}
 
-              ))}
-
-            </div>
-          )}
-
-        </div>
+          </div>
 
         </div>  {/* End of list-and-filters */}
 
@@ -360,7 +360,7 @@ function TrainDetails() {
     return (
       <div className="page-bg-wrapper train-details">
         <div className="container mt-4 page-content-above-overlay">
-          
+
           <div className="train-details-wrapper">
             <button className="btn-back" onClick={handleBackToList}>
               ← Back to List
@@ -389,22 +389,70 @@ function TrainDetails() {
                 )}
 
                 <button
-                  className="btn-book"
-                  onClick={() => {
-                    // Store booking data in sessionStorage to persist through auth redirects
-                    const bookingData = {
-                      journeyFrom: selectedTrain.from,
-                      journeyTo: selectedTrain.to,
-                      trainNumber: selectedTrain.number,
-                      reservationQuota: selectedTrain.quota || '',
-                      passengers: [{ fullName: "", age: "", sex: "", berth: "", phone: "", email: "" }]
-                    };
-                    sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
-                    navigate('/home/booking');
-                  }}
-                >
-                  Book Now
-                </button>
+  className="btn-book"
+  onClick={() => {
+
+    // UI date formatting (DD-MM-YYYY)
+    let formattedDate = "";
+    if (selectedTrain.scheduleDate) {
+      const [y, m, d] = selectedTrain.scheduleDate.split("-");
+      formattedDate = `${d}-${m}-${y}`;
+    }
+
+    // ---------- UI PREFILL ----------
+    const bookingData = {
+      trainNumber: selectedTrain.trainNumber,
+      trainName: selectedTrain.trainName,
+      journeyFrom: selectedTrain.source,
+      journeyTo: selectedTrain.destination,
+      date: formattedDate,
+      departureTime: selectedTrain.departureTime,
+      reservationQuota: "General",
+      passengers: [
+        {
+          fullName: "",
+          age: "",
+          sex: "",
+          berth: "",
+          phone: "",
+          email: ""
+        }
+      ]
+    };
+
+    sessionStorage.setItem(
+      "bookingData",
+      JSON.stringify(bookingData)
+    );
+
+    // ---------- BACKEND DRAFT ----------
+    sessionStorage.setItem(
+      "bookingDraft",
+      JSON.stringify({
+        trainId: selectedTrain.trainId,
+
+        // 🔑 EXACT ENUM VALUES (BACKEND)
+        coachType: selectedTrain.classes?.[0] || "SLEEPER",
+        reservationQuota: "GENERAL",
+
+        source: selectedTrain.source,
+        destination: selectedTrain.destination,
+
+        journeyDate: selectedTrain.scheduleDate,
+
+        departure: `${selectedTrain.scheduleDate}T${selectedTrain.departureTime}`,
+        arrival: `${selectedTrain.scheduleDate}T${selectedTrain.arrivalTime}`,
+
+        passengers: []
+      })
+    );
+
+    navigate("/home/booking");
+  }}
+>
+  Book Now
+</button>
+
 
               </div>
 

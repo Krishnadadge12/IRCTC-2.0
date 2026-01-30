@@ -37,9 +37,10 @@
 
 /* ================= CARD ================== */
 .payment-box {
-  width: 90%;
+  width: 50%;
   margin: 25px auto;
   display: flex;
+  justify-content: space-evenly;
   flex-wrap: wrap;
   background: rgba(255,255,255,0.85);
   border-radius: 14px;
@@ -153,7 +154,7 @@
 
 /* ================= PAY BUTTON ================== */
 .pay-btn {
-  flex-basis: 100%;          /* forces button to next row */
+  flex-basis: 60%;          
   align-self: center;        /* centers in flex container */
   display: inline-block;     /* avoids stretching */
   margin: 30px auto 10px;    /* centered spacing */

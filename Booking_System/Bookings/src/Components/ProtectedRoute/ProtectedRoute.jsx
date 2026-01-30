@@ -1,34 +1,26 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-// Protects routes that require login
-// Supports both nested routes (Outlet) and direct children
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+const ProtectedRoute = () => {
+  const { user, isLoading } = useAuth();
 
-  // Show loading state while checking authentication
-  if (isLoading) {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '50vh',
-        fontSize: '18px'
-      }}>
-        Loading...
-      </div>
-    );
-  }
+  if (isLoading) return null;
 
-  // Redirect to login if not authenticated
-  if (!isAuthenticated) {
+  // Not logged in
+  if (!user) {
     return <Navigate to="/home/login" replace />;
   }
 
-  // If children provided, render them (for direct usage)
-  // Otherwise, render Outlet for nested routes
-  return children ? children : <Outlet />;
+ 
+
+  if (user.role === "ROLE_ADMIN") {
+  return <Navigate to="/admin/home" replace />;
+}
+
+if (user.role === "ROLE_TC") {
+  return <Navigate to="/tc" replace />;
+}
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

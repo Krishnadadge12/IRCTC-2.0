@@ -15,6 +15,7 @@ const About = () => {
               <li className="about-service-item">• Journey Planner</li>
               <li className="about-service-item">• Alternate Train Suggestions</li>
               <li className="about-service-item">• Delay / Cancellation Alerts</li>
+              <li className="about-service-item">• Refund</li>
             </ul>
           </div>
 
@@ -25,12 +26,12 @@ const About = () => {
               <div className="about-contact-item">
           {/* Phone */}
                 <span className="about-contact-icon">📞</span>
-                <a href="tel:+911800111111" className="about-contact-link">+835601915</a>
+                <a href="tel:+911800111111" className="about-contact-link">+8349405471</a>
               </div>
               <div className="about-contact-item">
           {/* Email */}
                 <span className="about-contact-icon">✉</span>
-                <a href="mailto:support@irctc.co.in" className="about-contact-link">support@irctc.co.in</a>
+                <a href="mailto:support@irctc.co.in" className="about-contact-link">support@mrc.co.in</a>
               </div>
               <div className="about-contact-item-start">
           {/* Location */}

@@ -7,6 +7,8 @@ const QuerySection = () => {
     email: '',
     query: ''
   });
+  const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
   const [error, setError] = useState('');
   const MAX_QUERY_LENGTH = 399;
   const remaining = MAX_QUERY_LENGTH - formData.query.length;
@@ -42,6 +44,8 @@ const QuerySection = () => {
     // Here you can add API call to submit the form
     alert('Thank you! Your query has been submitted. We will get back to you via email.');
     setFormData({ email: '', query: '' });
+    setRating(0);
+    setHoveredRating(0);
   };
 
   return (
@@ -82,6 +86,30 @@ const QuerySection = () => {
               </div>
 
               {error && <div className="query-error">{error}</div>}
+            </div>
+
+            <div className="feedback-section">
+              <label className="feedback-label">Rate Your Experience</label>
+              <div className="star-rating">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    className={`star ${star <= (hoveredRating || rating) ? 'filled' : 'empty'}`}
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoveredRating(star)}
+                    onMouseLeave={() => setHoveredRating(0)}
+                    aria-label={`Rate ${star} stars`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+              {rating > 0 && (
+                <div className="rating-display">
+                  You rated: {rating} out of 5 stars
+                </div>
+              )}
             </div>
 
             <div className="query-submit-container">

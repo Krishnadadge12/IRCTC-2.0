@@ -142,7 +142,7 @@
 }
 
 .save {
-  width: 72%;
+  width: 10%;
   background: linear-gradient(90deg,#07305f 0%, #0b61a8 45%, #0ca085 100%) !important;
   border: none !important;
   color: white !important;
@@ -150,6 +150,7 @@
   font-size: 18px;
   border-radius: 10px;
   font-weight: 700;
+  text-align: center;
   transition: transform .16s ease, box-shadow .16s ease;
 }
 

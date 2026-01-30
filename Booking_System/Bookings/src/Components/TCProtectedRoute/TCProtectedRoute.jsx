@@ -1,23 +1,16 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-const AdminProtectedRoute = () => {
+const TCProtectedRoute = () => {
   const { user, isLoading } = useAuth();
 
   if (isLoading) return null;
 
-  // Not logged in
-  if (!user) {
+  if (!user || user.role !== "ROLE_TC") {
     return <Navigate to="/home/login" replace />;
   }
 
-  // Block NON-admins
-  if (user.role !== "ROLE_ADMIN") {
-    return <Navigate to="/home" replace />;
-  }
-
-  // ✅ Admin allowed
   return <Outlet />;
 };
 
-export default AdminProtectedRoute;
+export default TCProtectedRoute;
