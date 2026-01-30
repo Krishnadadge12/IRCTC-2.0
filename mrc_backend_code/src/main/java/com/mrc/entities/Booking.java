@@ -51,9 +51,10 @@ public class Booking extends BaseEntity {
 	@JoinColumn(name="coach_id", nullable = false)
 	private Coach coach;
 	
-	@OneToOne
-	@JoinColumn(name="seat_id", nullable = false)
+	@ManyToOne
+	@JoinColumn(name = "seat_id")
 	private SeatAvailability seat;
+
 	
 	@Column(name="source", length=200)
 	private String source;
@@ -84,7 +85,7 @@ public class Booking extends BaseEntity {
 		    orphanRemoval = true
 		)
 		private List<Passenger> passengers;
-	@Column(name = "pnr", unique = true, length = 15)
+	@Column(name = "pnr", unique = true, length = 20)
 	private String pnr;
 
 	@Column(name = "journey_date", nullable = false)

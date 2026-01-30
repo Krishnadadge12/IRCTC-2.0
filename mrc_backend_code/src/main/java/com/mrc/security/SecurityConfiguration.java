@@ -61,9 +61,11 @@ public class SecurityConfiguration {
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/actuator/**",
-                    "/trains/search"
+                    "/trains/search",
+                    "/terms"
                 ).permitAll()
 
+                .requestMatchers(HttpMethod.GET, "/pnr/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 //queries 
                 .requestMatchers(HttpMethod.POST, "/queries").permitAll()

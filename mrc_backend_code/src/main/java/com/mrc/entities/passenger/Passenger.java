@@ -40,4 +40,12 @@ public class Passenger extends BaseEntity {
     @Column(name = "seat_label", length = 10)
     private String seatLabel;
 
+    @Column(name = "phone", length = 15)
+    private String phone;
+
+    @Column(name = "email", length = 100)
+    private String email;
+
+    @Column(name = "berth_preference")
+    private String berthPreference;
 }

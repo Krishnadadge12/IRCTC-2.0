@@ -13,4 +13,7 @@ public class PassengerDto {
     private String name;
     private Integer age;
     private Gender gender;
+    
+    private String seatNo;
+    private String seatLabel;
 }

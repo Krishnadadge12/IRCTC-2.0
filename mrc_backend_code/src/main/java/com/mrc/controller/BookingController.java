@@ -1,5 +1,7 @@
 package com.mrc.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,7 +29,8 @@ public class BookingController {
             @AuthenticationPrincipal UserEntity user,
             @RequestBody BookingRequestDto dto
     ) {
-    	System.out.println(new BCryptPasswordEncoder().encode("Admin@123"));
+    	 System.out.println("USER => " + user);
+    	    System.out.println("BOOKING DTO => " + dto);
         return ResponseEntity.ok(
                 bookingService.createBooking(user, dto)
                 
@@ -45,4 +48,14 @@ public class BookingController {
                 bookingService.cancelBooking(bookingId, user)
         );
     }
+    
+    @GetMapping("/my")
+    public ResponseEntity<List<BookingResponseDto>> getMyBookings(
+            @AuthenticationPrincipal UserEntity user
+    ) {
+        return ResponseEntity.ok(
+                bookingService.getBookingsForUser(user)
+        );
+    }
+
 }

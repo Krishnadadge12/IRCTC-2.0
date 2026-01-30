@@ -18,27 +18,32 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BookingResponseDto {
 
-    private Long bookingId;
-    private String pnr;
-    private BookingStatus status;
+	  private Long bookingId;
+	    private String pnr;
+	    private String bookingStatus;
+	    private LocalDateTime bookedOn;
 
-    private LocalDate journeyDate;
-    private String source;
-    private String destination;
+	    // TRAIN
+	    private String trainName;
+	    private Long trainNumber;
 
-    private Long trainNo;
-    private String trainName;
+	    // COACH
+	    private String coachType;
+	    private String coachNo;
 
-    private String coachNo;
-    private String seatLabel;
+	    // JOURNEY
+	    private String source;
+	    private String destination;
+	    private LocalDate journeyDate;
+	    private LocalDateTime departure;
+	    private LocalDateTime arrival;
+	    private String duration;
 
-    private TrainQuota quota;
-    private BigDecimal fareAmount;
+	    // FARE
+	    private BigDecimal totalFare;
 
-    private LocalDateTime departure;
-    private LocalDateTime bookedOn;
-
-    private List<PassengerDto> passengers;
+	    // PASSENGERS
+	    private List<PassengerDto> passengers;
 }
 
 //quota //dept time 

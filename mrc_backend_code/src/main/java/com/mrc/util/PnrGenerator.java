@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class PnrGenerator {
 
-    public String generate(Long trainNo, LocalDate journeyDate) {
-        int random = (int) (Math.random() * 9000) + 1000;
+	public String generate(Long trainNo, LocalDate journeyDate) {
+	    return trainNo + "-" +
+	           journeyDate.toString().replace("-", "") +
+	           "-" +
+	           System.currentTimeMillis() % 100000;
+	}
 
-        return trainNo + "-" +
-               journeyDate.toString().replace("-", "").substring(4) +
-               "-" + random;
-    }
 }

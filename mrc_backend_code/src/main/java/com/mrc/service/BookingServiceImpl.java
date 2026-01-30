@@ -41,19 +41,32 @@ public class BookingServiceImpl implements BookingService {
     // ================== CREATE BOOKING ==================
 
     @Override
+    
     public BookingResponseDto createBooking(UserEntity user, BookingRequestDto dto) {
 
-    	if (dto.getJourneyDate().isBefore(LocalDate.now())) {
+        if (dto.getJourneyDate().isBefore(LocalDate.now())) {
             throw new InvalidInputException("Journey date cannot be in the past");
         }
+
         TrainEntity train = trainRepository.findById(dto.getTrainId())
                 .orElseThrow(() -> new ResourceNotFoundException("Train not found"));
 
-        Coach coach = coachRepository.findById(dto.getCoachId())
-                .orElseThrow(() -> new ResourceNotFoundException("Coach not found"));
+        Coach coach = coachRepository
+                .findFirstByTrainAndCoachType(
+                        train,
+                        dto.getCoachType()
+                )
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No coach available for selected type"));
 
-        SeatPrice price = seatPriceRepository.findById(dto.getSeatPriceId())
-                .orElseThrow(() -> new ResourceNotFoundException("Seat price not found"));
+        SeatPrice price = seatPriceRepository
+                .findByTrainAndCoachTypeAndQuota(
+                        train,
+                        dto.getCoachType(),
+                        dto.getReservationQuota()
+                )
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Fare not defined"));
 
         if (!coach.getCoachType().equals(price.getCoachType())) {
             throw new InvalidInputException("Coach type mismatch with fare");
@@ -67,6 +80,7 @@ public class BookingServiceImpl implements BookingService {
                 )
                 .orElse(null);
 
+        //  CREATE BOOKING ONCE
         Booking booking = new Booking();
         booking.setUser(user);
         booking.setTrain(train);
@@ -79,10 +93,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setBookedOn(LocalDateTime.now());
         booking.setTotalFare(price);
         booking.setPnr(
-                pnrGenerator.generate(
-                        train.getTrainNumber(),
-                        dto.getJourneyDate()
-                )
+                pnrGenerator.generate(train.getTrainNumber(), dto.getJourneyDate())
         );
 
         if (seat != null) {
@@ -105,14 +116,7 @@ public class BookingServiceImpl implements BookingService {
 
         Booking savedBooking = bookingRepository.save(booking);
 
-        String seatLabel = null;
-        if (savedBooking.getBookingStatus() == BookingStatus.CONFIRMED) {
-            seatLabel =
-                    savedBooking.getCoach().getCoachNo()
-                    + "-"
-                    + savedBooking.getSeat().getId();
-        }
-
+        // ✅ SAVE PASSENGERS
         List<Passenger> passengerList = new ArrayList<>();
 
         for (PassengerDto pDto : dto.getPassengers()) {
@@ -120,21 +124,24 @@ public class BookingServiceImpl implements BookingService {
             p.setName(pDto.getName());
             p.setAge(pDto.getAge());
             p.setGender(pDto.getGender());
+            p.setBooking(savedBooking);
 
             if (savedBooking.getBookingStatus() == BookingStatus.CONFIRMED) {
                 p.setSeatNo(savedBooking.getSeat().getId().toString());
                 p.setCoachNo(savedBooking.getCoach().getCoachNo());
-                p.setSeatLabel(seatLabel);
+                p.setSeatLabel(
+                        savedBooking.getCoach().getCoachNo() + "-" +
+                        savedBooking.getSeat().getId()
+                );
             }
 
-            p.setBooking(savedBooking);
             passengerList.add(p);
         }
 
         passengerRepository.saveAll(passengerList);
         savedBooking.setPassengers(passengerList);
 
-        //  MAP WHILE TRANSACTION IS OPEN
+        // ✅ RETURN SINGLE BOOKING
         return bookingMapper.toDto(savedBooking);
     }
 
@@ -167,7 +174,7 @@ public class BookingServiceImpl implements BookingService {
             );
         }
 
-        // ✅ SAFE MAPPING
+        //  SAFE MAPPING
         return bookingMapper.toDto(booking);
     }
 
@@ -244,5 +251,14 @@ public class BookingServiceImpl implements BookingService {
         }
 
         passengerRepository.saveAll(passengers);
+    }
+    public List<BookingResponseDto> getBookingsForUser(UserEntity user) {
+
+        List<Booking> bookings =
+                bookingRepository.findByUserOrderByBookedOnDesc(user);
+
+        return bookings.stream()
+                .map(bookingMapper::toDto)
+                .toList();
     }
 }

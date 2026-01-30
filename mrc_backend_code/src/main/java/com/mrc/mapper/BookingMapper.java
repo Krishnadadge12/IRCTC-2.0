@@ -1,6 +1,6 @@
 package com.mrc.mapper;
 
-import java.util.List;
+import java.time.Duration;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -15,49 +15,46 @@ public class BookingMapper {
 
     public BookingResponseDto toDto(Booking booking) {
 
+        //  create dto
         BookingResponseDto dto = new BookingResponseDto();
 
-        
-        // Basic booking info
         dto.setBookingId(booking.getId());
         dto.setPnr(booking.getPnr());
-        dto.setStatus(booking.getBookingStatus());
-        dto.setJourneyDate(booking.getJourneyDate());
+        dto.setBookingStatus(booking.getBookingStatus().name());
+        dto.setBookedOn(booking.getBookedOn());
+
+        // TRAIN
+        dto.setTrainName(booking.getTrain().getTrainName());
+        dto.setTrainNumber(booking.getTrain().getTrainNumber());
+
+        // COACH
+        dto.setCoachType(booking.getCoach().getCoachType().name());
+        dto.setCoachNo(booking.getCoach().getCoachNo());
+
+        // JOURNEY
         dto.setSource(booking.getSource());
         dto.setDestination(booking.getDestination());
-        dto.setBookedOn(booking.getBookedOn());
+        dto.setJourneyDate(booking.getJourneyDate());
         dto.setDeparture(booking.getDeparture());
+        dto.setArrival(booking.getArrival());
 
-        // Train details (SAFE – no lazy collection access)
-        dto.setTrainNo(booking.getTrain().getTrainNumber());
-        dto.setTrainName(booking.getTrain().getTrainName());
+        // DURATION
+        long minutes = Duration.between(
+                booking.getDeparture(),
+                booking.getArrival()
+        ).toMinutes();
+        dto.setDuration((minutes / 60) + "h " + (minutes % 60) + "m");
 
-        // Coach / Seat details
-        if (booking.getCoach() != null) {
-            dto.setCoachNo(booking.getCoach().getCoachNo());
-        }
+        // FARE
+        dto.setTotalFare(booking.getTotalFare().getPrice());
 
-        if (booking.getSeat() != null) {
-            dto.setSeatLabel(
-                booking.getCoach().getCoachNo() + "-" + booking.getSeat().getId()
-            );
-        }
-
-        // Fare / quota
-        if (booking.getTotalFare() != null) {
-            dto.setQuota(booking.getTotalFare().getQuota());
-            dto.setFareAmount(booking.getTotalFare().getPrice());
-        }
-
-
-        // Passengers
-        List<PassengerDto> passengerDtos =
-                booking.getPassengers()
-                       .stream()
-                       .map(this::mapPassenger)
-                       .collect(Collectors.toList());
-
-        dto.setPassengers(passengerDtos);
+        // PASSENGERS
+        dto.setPassengers(
+            booking.getPassengers()
+                   .stream()
+                   .map(this::mapPassenger)
+                   .collect(Collectors.toList())
+        );
 
         return dto;
     }
@@ -67,6 +64,8 @@ public class BookingMapper {
         dto.setName(passenger.getName());
         dto.setAge(passenger.getAge());
         dto.setGender(passenger.getGender());
+        dto.setSeatNo(passenger.getSeatNo());
+        dto.setSeatLabel(passenger.getSeatLabel());
         return dto;
     }
 }

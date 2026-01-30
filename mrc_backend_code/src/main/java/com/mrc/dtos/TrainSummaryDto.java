@@ -34,4 +34,6 @@ public class TrainSummaryDto {
     private List<String> classes;   // 
     private String quota;            //
 
+    private Long coachId;
+    private Long seatPriceId;
 }
