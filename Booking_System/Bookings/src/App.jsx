@@ -26,10 +26,12 @@ import MyBookings from './pages/MyBookings/MyBookings'
 import Ticket from './pages/Ticket/Ticket'
 import TCProtectedRoute from './Components/TCProtectedRoute/TCProtectedRoute'
 import AdminHome from "./pages/Admin/AdminHome"
-import Dashboard from "./pages/Admin/Bookings"
+// import Dashboard from "./pages/Admin/Bookings"
 import TrainPage from "./pages/Admin/TrainPage"
-import SchedulePage from "./pages/Admin/SchedulePage"
+// import SchedulePage from "./pages/Admin/SchedulePage"
 import UserPage from "./pages/Admin/UserPage"
+import TrainBookings from "./pages/Admin/TrainBookings";
+import QueryPage from "./pages/Admin/Query";
 
 function App() {
   return (
@@ -65,14 +67,15 @@ function App() {
 
         {/* ---------- ADMIN PROTECTED ROUTES ---------- */}
         <Route element={<AdminProtectedRoute />}>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route path="home" element={<AdminHome />} />
-            <Route path="bookings" element={<Dashboard />} />
-            <Route path="trains" element={<TrainPage />} />
-            <Route path="queries" element={<SchedulePage />} />
-            <Route path="users" element={<UserPage />} />
+          {/* <Route path="/admin" element={<AdminLayout />}> */}
+            <Route path="/admin/home" element={<AdminHome />} />
+           <Route path="/admin/bookings/:trainId" element={<TrainBookings />} />
+<Route path="/admin/trains" element={<TrainPage />} />
+<Route path="/admin/queries" element={<QueryPage />} />
+<Route path="/admin/users" element={<UserPage />} />
+
           </Route>
-        </Route>
+        {/* </Route> */}
 
         {/* ---------- TC ---------- */}
         <Route element={<TCProtectedRoute />}>

@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { config } from "../../services/config";
 import "./TCHome.css";
+import { getPassengersByTrain, updateBookingStatus, cancelBookingByPassenger } from "../../services/tcService";
 
 const TCHome = () => {
   const [trainId, setTrainId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [bookings, setBookings] = useState([]);
+  const [passengers, setPassengers] = useState([]);
+  const [updatingBooking, setUpdatingBooking] = useState(null);
 
   const handleFetch = async (e) => {
     e.preventDefault();
     setError("");
-    setBookings([]);
+    setPassengers([]);
 
     const trimmed = trainId && trainId.toString().trim();
     if (!trimmed) {
@@ -22,17 +22,67 @@ const TCHome = () => {
 
     try {
       setLoading(true);
-      const url = `${config.server}/api/bookings/train/${encodeURIComponent(trimmed)}`;
-      const res = await axios.get(url);
-      // Expecting an array of bookings
-      setBookings(Array.isArray(res.data) ? res.data : []);
+      const data = await getPassengersByTrain(trimmed);
+      // Map TcPassengerResponseDto to UI-friendly fields
+      const mapped = (Array.isArray(data) ? data : []).map((p) => ({
+        id: p.passengerId || p.id || p._id,
+        name: p.name || "-",
+        age: p.age != null ? p.age : "-",
+        gender: p.gender || "-",
+        coachNo: p.coachNo || "-",
+        seatNo: p.seatNo || "-",
+        seatLabel: p.seatLabel || "-",
+        bookingId: p.bookingId || (p.booking && (p.booking.id || p.booking.bookingId)) || null,
+        status: p.bookingStatus || p.status || (p.booking && p.booking.status) || "CONFIRMED",
+        pnr: p.pnr || "-"
+      }));
+
+      setPassengers(mapped);
     } catch (err) {
       console.error(err);
-      setError(
-        err?.response?.data?.message || "Unable to fetch bookings. Check backend or Train ID."
-      );
+      setError(err?.response?.data?.message || "Unable to fetch passengers. Check backend or Train ID.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (bookingId, passengerId, pnr, newStatus) => {
+    if (!bookingId && !passengerId && !pnr) {
+      setError("Missing booking identifier (bookingId or PNR or passengerId) for this passenger.");
+      return;
+    }
+
+    const previous = [...passengers];
+    setPassengers(previous.map(p => (p.bookingId === bookingId || p.id === passengerId || p.pnr === pnr) ? { ...p, status: newStatus } : p));
+
+    // If user chose CANCELLED, use passengerId-based cancel endpoint (server will handle seat freeing/promotion)
+    const identifier = passengerId || bookingId || pnr;
+    setUpdatingBooking(identifier);
+    try {
+      if (newStatus === 'CANCELLED') {
+        // Prefer cancel by passenger id if available
+        if (passengerId) {
+          await cancelBookingByPassenger(passengerId);
+        } else if (bookingId) {
+          // fallback to bookingId cancel endpoint
+          await updateBookingStatus(bookingId, 'CANCELLED');
+        } else {
+          // try pnr fallback
+          await updateBookingStatus(pnr, 'CANCELLED');
+        }
+      } else {
+        // For other statuses, try normal update (requires backend support)
+        const ident = bookingId || pnr;
+        await updateBookingStatus(ident, newStatus);
+      }
+
+      setError("");
+    } catch (err) {
+      console.error(err);
+      setError(err?.response?.data?.message || "Unable to update booking status.");
+      setPassengers(previous);
+    } finally {
+      setUpdatingBooking(null);
     }
   };
 
@@ -49,7 +99,7 @@ const TCHome = () => {
 
         <div className="links-container single-card">
           <div className="tc-card">
-            <h3>Fetch bookings by Train ID</h3>
+            <h3>Fetch passengers by Train ID</h3>
 
             <form onSubmit={handleFetch} className="tc-card-form">
               <input
@@ -61,7 +111,7 @@ const TCHome = () => {
                 className="tc-input"
                 />
               <button type="submit" className="admin-link" disabled={loading}>
-                {loading ? 'Loading...' : 'Fetch Bookings'}
+                {loading ? 'Loading...' : 'Fetch Passengers'}
               </button>
             </form>
 
@@ -69,37 +119,46 @@ const TCHome = () => {
 
           </div>
         </div>
-
+        <p color="red">Once status is cancelled , it cannot be changed again.</p>
         <div className="tc-results">
-          {bookings.length > 0 ? (
+          {passengers.length > 0 ? (
             <table className="tc-table">
               <thead>
                 <tr>
-                  <th>Booking ID</th>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Age</th>
+                  <th>Gender</th>
+                  <th>Coach</th>
+                  <th>Seat No</th>
+                  <th>Seat Label</th>
                   <th>PNR</th>
-                  <th>Passenger Count</th>
                   <th>Status</th>
-                  <th>Journey Date</th>
-                  <th>Passengers</th>
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((b) => (
-                  <tr key={b._id || b.id || b.pnrNumber || Math.random()}>
-                    <td>{b.id || b.bookingId || b._id || '-'}</td>
-                    <td>{b.pnrNumber || '-'}</td>
-                    <td>{b.passengers ? b.passengers.length : b.totalPassengers || 0}</td>
-                    <td>{b.status || '-'}</td>
-                    <td>{b.departureDate || b.bookingDate || '-'}</td>
+                {passengers.map((p) => (
+                  <tr key={p.id || p.pnr || Math.random()}>
+                    <td>{p.id}</td>
+                    <td>{p.name}</td>
+                    <td>{p.age}</td>
+                    <td>{p.gender}</td>
+                    <td>{p.coachNo}</td>
+                    <td>{p.seatNo}</td>
+                    <td>{p.seatLabel}</td>
+                    <td>{p.pnr}</td>
                     <td>
-                      {b.passengers && b.passengers.length > 0 ? (
-                        <ul className="pass-list">
-                          {b.passengers.map((p, idx) => (
-                            <li key={idx}>{`${p.name || p.fullName || 'Passenger'} (${p.seat || p.coach || ''})`}</li>
-                          ))}
-                        </ul>
+                      {p.status === 'CANCELLED' ? (
+                        <span className="tc-cancelled">CANCELLED</span>
                       ) : (
-                        <em>No passenger data</em>
+                        <select
+                          value={p.status || 'CONFIRMED'}
+                          onChange={(e) => handleStatusChange(p.bookingId, p.id, p.pnr, e.target.value)}
+                          disabled={updatingBooking === (p.bookingId || p.id || p.pnr)}
+                        >
+                          <option value="CONFIRMED" disabled>CONFIRMED</option>
+                          <option value="CANCELLED">CANCELLED</option>
+                        </select>
                       )}
                     </td>
                   </tr>
@@ -107,7 +166,7 @@ const TCHome = () => {
               </tbody>
             </table>
           ) : (
-            <p className="tc-empty">No bookings to display.</p>
+            <p className="tc-empty">No passengers to display.</p>
           )}
         </div>
       </div>
