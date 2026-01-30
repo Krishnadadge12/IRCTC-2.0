@@ -10,6 +10,7 @@ import com.mrc.service.AdminBookingService;
 
 import lombok.RequiredArgsConstructor;
 
+//@CrossOrigin(origins = "http://localhost:5173") //Temporary for testing 
 @RestController
 @RequestMapping("/admin/bookings")
 @RequiredArgsConstructor
