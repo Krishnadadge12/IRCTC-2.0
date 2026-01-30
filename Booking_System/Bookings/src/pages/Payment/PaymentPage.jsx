@@ -8,7 +8,6 @@ function PaymentPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Get payment data (from BookingConfirmation or fallback)
   const paymentData =
     location.state ||
     JSON.parse(sessionStorage.getItem("paymentData"));
@@ -23,15 +22,21 @@ function PaymentPage() {
 
   const { seatFare, passengers, journeyDate } = paymentData;
 
-  
   const passengerCount = passengers.length;
-  const seatFarePerPassenger = seatFare;
-  const totalFare = seatFarePerPassenger * passengerCount;
+  const totalFare = seatFare * passengerCount;
 
   const [loading, setLoading] = useState(false);
 
   const payNow = async () => {
     if (loading) return;
+
+    // ✅ ONLY check presence
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Session expired. Please login again.");
+      navigate("/home/login");
+      return;
+    }
 
     if (!window.Razorpay) {
       alert("Razorpay SDK not loaded. Please refresh.");
@@ -46,7 +51,7 @@ function PaymentPage() {
     try {
       setLoading(true);
 
-      // 🔹 Step 1: Create Razorpay order (Express backend)
+      // Step 1: Create Razorpay order
       const orderRes = await axios.post(
         "http://localhost:5000/api/payment/create-order",
         { amount: totalFare }
@@ -54,65 +59,60 @@ function PaymentPage() {
 
       const order = orderRes.data;
 
-      // 🔹 Step 2: Razorpay options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount, // in paise
+        amount: order.amount,
         currency: "INR",
         name: "MRC",
         description: "Railway Ticket Booking",
         order_id: order.id,
 
         handler: async (response) => {
-  try {
-    // 🔹 Step 3: Verify payment
-    const verifyRes = await axios.post(
-      "http://localhost:5000/api/payment/verify-payment",
-      response
-    );
+          try {
+            // Step 2: Verify payment
+            const verifyRes = await axios.post(
+              "http://localhost:5000/api/payment/verify-payment",
+              response
+            );
 
-    if (verifyRes.data.status !== "Payment verified") {
-      alert("Payment verification failed ❌");
-      return;
-    }
+            if (verifyRes.data.status !== "Payment verified") {
+              alert("Payment verification failed ❌");
+              return;
+            }
 
-    // 🔹 Step 4: Final booking (Spring Boot)
-    const bookingDraft = JSON.parse(
-      sessionStorage.getItem("bookingDraft")
-    );
+            // Step 3: Final booking
+            const bookingDraftStr =
+              sessionStorage.getItem("bookingDraft");
 
-    if (!bookingDraft) {
-      alert("Booking data missing ❌");
-      return;
-    }
+            if (!bookingDraftStr) {
+              alert("Booking data missing ❌");
+              return;
+            }
 
-  
+            const bookingDraft = JSON.parse(bookingDraftStr);
 
-    console.log("BOOKING PAYLOAD =>", bookingDraft);
+            const bookingRes = await api.post(
+              "/bookings",
+              bookingDraft
+            );
 
-    
-    const bookingRes = await api.post(
-      "/bookings",
-      bookingDraft
-    );
+            // Cleanup
+            sessionStorage.removeItem("bookingDraft");
+            sessionStorage.removeItem("paymentData");
 
-    // 🔹 CLEANUP (ONLY AFTER SUCCESS)
-    sessionStorage.removeItem("bookingDraft");
-    sessionStorage.removeItem("paymentData");
+            alert("Payment Successful ✅");
 
-    alert("Payment Successful ✅");
+            navigate("/home/ticket", {
+              state: bookingRes.data
+            });
 
-    navigate("/home/ticket", {
-      state: bookingRes.data
-    });
-
-  } catch (err) {
-    console.error(err);
-    alert("Booking failed after payment ❌");
-  } finally {
-    setLoading(false);
-  }
-},
+          } catch (err) {
+            console.error(err);
+            alert("Booking failed after payment ❌");
+          } finally {
+            setLoading(false);
+          }
+        },
 
         modal: {
           ondismiss: () => {
@@ -149,15 +149,13 @@ function PaymentPage() {
 
         <h2 className="header">Payment</h2>
 
-        {/* Summary */}
         <div className="details-box">
           <p><b>Passengers:</b> {passengerCount}</p>
           <p><b>Journey Date:</b> {journeyDate}</p>
         </div>
 
-        {/* Fare */}
         <div className="fare-box">
-          <p><b>Seat Fare (per passenger):</b> ₹{seatFarePerPassenger}</p>
+          <p><b>Seat Fare (per passenger):</b> ₹{seatFare}</p>
           <p><b>Passengers:</b> {passengerCount}</p>
           <hr />
           <p className="total">

@@ -16,8 +16,9 @@ export const AuthProvider = ({ children }) => {
 
   // ✅ Restore auth on refresh
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("currentUser");
-    const token = sessionStorage.getItem("token");
+    const storedUser = localStorage.getItem("currentUser");
+const token = localStorage.getItem("token");
+
 
     if (storedUser && token) {
       try {
@@ -38,14 +39,14 @@ export const AuthProvider = ({ children }) => {
   // ✅   Login
   const login = (userData) => {
     setUser(userData);
-    sessionStorage.setItem("currentUser", JSON.stringify(userData));
-    sessionStorage.setItem("token", userData.token);
+  localStorage.setItem("currentUser", JSON.stringify(userData));
+  localStorage.setItem("token", userData.token);
   };
 
   // Logout
   const logout = () => {
     setUser(null);
-    sessionStorage.clear();
+    localStorage.clear();
   };
 
   const value = {

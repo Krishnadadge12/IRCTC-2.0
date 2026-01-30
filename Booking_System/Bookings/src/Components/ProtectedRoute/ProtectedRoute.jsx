@@ -11,7 +11,10 @@ const ProtectedRoute = () => {
     return <Navigate to="/home/login" replace />;
   }
 
- 
+  // Only passengers can access these routes
+  if (user.role !== "ROLE_PASSENGERS") {
+    return <Navigate to="/home" replace />;
+  }
 
   if (user.role === "ROLE_ADMIN") {
   return <Navigate to="/admin/home" replace />;
