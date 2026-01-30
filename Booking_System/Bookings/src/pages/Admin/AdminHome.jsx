@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { config } from "../../services/config";
 import "./AdminHome.css";
+import { useNavigate } from 'react-router-dom';
 
 function AdminHome() {
   const [showModal, setShowModal] = useState(false);
   const [trainId, setTrainId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [bookings, setBookings] = useState([]);
+
+
+  const navigate = useNavigate();
 
   const openModal = (e) => {
     if (e && e.preventDefault) e.preventDefault();
@@ -19,10 +20,9 @@ function AdminHome() {
   };
   const closeModal = () => setShowModal(false);
 
-  const handleFetch = async (ev) => {
+  const handleFetch = (ev) => {
     ev.preventDefault();
     setError("");
-    setBookings([]);
 
     const trimmed = trainId && trainId.toString().trim();
     if (!trimmed) {
@@ -30,17 +30,10 @@ function AdminHome() {
       return;
     }
 
-    try {
-      setLoading(true);
-      const url = `${config.server}/api/bookings/train/${encodeURIComponent(trimmed)}`;
-      const res = await axios.get(url);
-      setBookings(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      console.error(err);
-      setError(err?.response?.data?.message || "Unable to fetch bookings. Check backend or Train ID.");
-    } finally {
-      setLoading(false);
-    }
+    // navigate to bookings page for train (TrainBookings page will fetch data)
+    setShowModal(false);
+    setTrainId("");
+    navigate(`/admin/bookings/${encodeURIComponent(trimmed)}`);
   };
 
   return (
@@ -103,34 +96,7 @@ function AdminHome() {
           </div>
         )}
 
-        {/* Results table shown below links when bookings present */}
-        {bookings && bookings.length > 0 && (
-          <div className="bookings-results">
-            <h3>Bookings for Train: {trainId}</h3>
-            <table className="bookings-table">
-              <thead>
-                <tr>
-                  <th>Booking ID</th>
-                  <th>PNR</th>
-                  <th>Passengers</th>
-                  <th>Status</th>
-                  <th>Journey Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookings.map((b) => (
-                  <tr key={b._id || b.id || b.pnrNumber || Math.random()}>
-                    <td>{b.id || b.bookingId || b._id || '-'}</td>
-                    <td>{b.pnrNumber || '-'}</td>
-                    <td>{b.passengers ? b.passengers.length : b.totalPassengers || 0}</td>
-                    <td>{b.status || '-'}</td>
-                    <td>{b.departureDate || b.bookingDate || '-'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+
 
       </div>
     </div>

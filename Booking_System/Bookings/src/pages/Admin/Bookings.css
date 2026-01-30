@@ -1,3 +1,13 @@
+.add-train-btn {
+  width: 500px;
+  background-color: #0a3d62;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
 
 /* -------------------- Bookings Table -------------------- */
 table {
