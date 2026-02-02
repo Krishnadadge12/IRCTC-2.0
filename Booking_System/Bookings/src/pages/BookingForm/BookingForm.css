@@ -1,0 +1,166 @@
+/* ================= BACKGROUND ================== */
+.booking-bg {
+  position: relative;
+  padding: 48px 20px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* use global background image for visual consistency */
+  background-image: url('/images/background_img.jpeg'), url('/images/booking-bg.svg');
+  background-size: cover, contain;
+  background-position: center center;
+}
+
+.bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255,115,0,0.08) 0%,
+    rgba(255,255,255,0.03) 45%,
+    rgba(12,150,130,0.07) 100%
+  );
+  backdrop-filter: blur(2px) saturate(1.05);
+}
+
+.booking-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(10,20,40,0.18);
+  position: relative;
+  z-index: 2;
+}
+
+/* ================= TITLE ================== */
+.booking-title {
+  color: #333;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.booking-subtitle {
+  text-align: center;
+  color: rgba(8,32,63,0.85);
+  margin-top: -6px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+}
+
+.booking-title + .booking-subtitle::before {
+  content: '';
+  display: block;
+  width: 88px;
+  height: 4px;
+  margin: 12px auto 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg,#ff7a00,#ffb347,#0ca085);
+  box-shadow: 0 6px 16px rgba(12,120,80,0.08);
+}
+
+
+/* ================= FORM LAYOUT ================= */
+.r1 {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.r2 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.quota-field {
+  flex: 1 1 45%;
+  min-width: 260px;
+}
+
+/* ================= DATE ================= */
+.date-input {
+  display: flex;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.date-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;     /*  MOST IMPORTANT */
+  border: 2px solid #07305f;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.date-box input {
+  width: 72px;
+  padding: 8px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  text-align: center;
+}
+
+
+.calendar-btn {
+  border: 2px solid #07305f;
+  padding: 8px 12px;
+  font-size: 20px;
+  border-radius: 8px;
+  background: white;
+}
+
+/* ================= PASSENGER CARD ================= */
+.passenger-card {
+  background: rgba(248,251,255,0.95);
+  border: 1px solid rgba(10,90,200,0.08);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  box-shadow: 0 6px 18px rgba(6,18,56,0.06);
+}
+
+.passenger-header {
+  color: #0b5ed7;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+/* ================= BUTTONS ================= */
+.btndanger {
+  margin-left: 20px;
+}
+
+.save {
+  width: 10%;
+  background: linear-gradient(90deg,#07305f 0%, #0b61a8 45%, #0ca085 100%) !important;
+  border: none !important;
+  color: white !important;
+  padding: 12px;
+  font-size: 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-align: center;
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.save:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(255,120,20,0.18);
+}
+
+.save-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
