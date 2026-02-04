@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\LoggingService",
+    "\\LoggingService\\Controllers",
+    "\\LoggingService\\Data",
+    "\\LoggingService\\DTOs",
+    "\\LoggingService\\Entities",
+    "\\LoggingService\\logs",
+    "\\LoggingService\\Migrations",
+    "\\LoggingService\\obj"
+  ],
+  "SelectedNode": "\\LoggingService\\Controllers\\LogsController.cs",
+  "PreviewInSolutionExplorer": false
+}
