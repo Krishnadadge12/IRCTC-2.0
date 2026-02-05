@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\LoggingService\\Controllers",
+    "\\LoggingService\\Data",
+    "\\LoggingService\\DTOs",
+    "\\LoggingService\\Entities",
+    "\\LoggingService\\logs",
+    "\\LoggingService\\Migrations",
+    "\\LoggingService\\obj",
+    "\\LoggingService\\Services"
+  ],
+  "SelectedNode": "\\LoggingService.sln",
+  "PreviewInSolutionExplorer": false
+}
