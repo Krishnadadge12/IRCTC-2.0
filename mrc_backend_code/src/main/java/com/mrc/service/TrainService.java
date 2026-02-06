@@ -11,5 +11,5 @@ public interface TrainService {
     List<TrainSummaryDto> searchTrains(SearchTrainDTO searchDto);
 
     // Get details of a single train (with optional quota)
-    TrainSummaryDto getTrainDetails(Long trainId, String quota);
+    TrainSummaryDto getTrainDetails(Long trainId, String quota, String tier);
 }

@@ -58,9 +58,10 @@ public class SearchTrainsController {
 	 @GetMapping("/{trainId}")
 	 public ResponseEntity<TrainSummaryDto> getTrainDetails(
 	         @PathVariable Long trainId,
-	         @RequestParam(required = false) String quota
+	         @RequestParam(required = false) String quota,
+	         @RequestParam(required = false) String tier
 	 ) {
-	     TrainSummaryDto trainDetail = trainService.getTrainDetails(trainId, quota);
+	     TrainSummaryDto trainDetail = trainService.getTrainDetails(trainId, quota,tier);
 	     return ResponseEntity.ok(trainDetail);
 	 }
 }

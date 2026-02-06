@@ -1,5 +1,6 @@
 package com.mrc.mapper;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.stream.Collectors;
 
@@ -46,8 +47,13 @@ public class BookingMapper {
         dto.setDuration((minutes / 60) + "h " + (minutes % 60) + "m");
 
         // FARE
-        dto.setTotalFare(booking.getTotalFare().getPrice());
+        BigDecimal seatPrice =
+                booking.getTotalFare() != null
+                        ? booking.getTotalFare().getPrice()
+                        : BigDecimal.ZERO;
 
+        dto.setTotalFare(seatPrice);
+        dto.setRazorpayPaymentId(booking.getRazorpayPaymentId()); 
         // PASSENGERS
         dto.setPassengers(
             booking.getPassengers()

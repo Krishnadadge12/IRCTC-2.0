@@ -43,6 +43,7 @@ public class SeatGenerationService {
                 seat.setType(type);
                 seat.setBooked(SeatStatus.AVAILABLE);
                 seat.setQuota(quota);
+                seat.setJourneyDate(coach.getTrain().getScheduleDate());
 
                 seatRepo.save(seat);
             }

@@ -120,7 +120,8 @@ public class TrainServiceImpl implements TrainService {
 
     // ================= TRAIN DETAILS =================
     @Override
-    public TrainSummaryDto getTrainDetails(Long trainId, String quota) {
+    public TrainSummaryDto getTrainDetails(Long trainId, String quota, String tier) {
+
 
         TrainEntity train = trainRepository.findById(trainId)
                 .orElseThrow(() ->
@@ -139,8 +140,12 @@ public class TrainServiceImpl implements TrainService {
 
         if (train.getCoaches() != null && !train.getCoaches().isEmpty()) {
 
-            Coach coach = train.getCoaches().get(0); // default first coach
-            summary.setCoachId(coach.getId());
+        	Coach coach = train.getCoaches().stream()
+        	        .filter(c -> tier != null &&
+        	                c.getCoachType().toString().equalsIgnoreCase(tier))
+        	        .findFirst()
+        	        .orElse(train.getCoaches().get(0)); // fallback
+
 
             TrainQuota q = TrainQuota.valueOf(
                     quota != null ? quota.toUpperCase() : "GENERAL"
