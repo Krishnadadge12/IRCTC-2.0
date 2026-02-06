@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { cancelBookingWithRefund, getCancellationPolicy } from '../../services/cancellation';
 import './MyBookings.css';
 
 const MyBookings = () => {
@@ -8,6 +9,10 @@ const MyBookings = () => {
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [allBookings, setAllBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cancellingBookingId, setCancellingBookingId] = useState(null);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [cancellationMessage, setCancellationMessage] = useState('');
+  const [cancellationError, setCancellationError] = useState('');
 
   // 🔹 Fetch bookings from backend
   useEffect(() => {
@@ -72,6 +77,54 @@ const MyBookings = () => {
     const today = new Date();
     today.setHours(0,0,0,0);
     return departure >= today;
+  };
+
+  // 🔹 Handle cancel booking with refund
+  const handleCancelBooking = async (booking) => {
+    setCancellingBookingId(booking.id);
+    setShowCancelConfirm(true);
+  };
+
+  // 🔹 Confirm and process cancellation with refund
+  const confirmCancellation = async () => {
+    try {
+      setCancellationError('');
+      setCancellationMessage('Processing cancellation and refund...');
+
+      const booking = allBookings.find(b => b.id === cancellingBookingId);
+      const result = await cancelBookingWithRefund(cancellingBookingId, booking.__raw);
+
+      // Update local state
+      const updatedBookings = allBookings.map(b =>
+        b.id === cancellingBookingId
+          ? { ...b, status: 'CANCELLED' }
+          : b
+      );
+      setAllBookings(updatedBookings);
+
+      setCancellationMessage(result.message || 'Booking cancelled and refund initiated successfully!');
+      setShowCancelConfirm(false);
+
+      // Clear message after 5 seconds
+      setTimeout(() => {
+        setCancellationMessage('');
+      }, 5000);
+
+    } catch (err) {
+      console.error("Cancellation error:", err);
+      setCancellationError(err.error || 'Failed to cancel booking. Please try again.');
+      setCancellationMessage('');
+    } finally {
+      setCancellingBookingId(null);
+    }
+  };
+
+  // 🔹 Cancel the confirmation dialog
+  const cancelConfirmation = () => {
+    setShowCancelConfirm(false);
+    setCancellingBookingId(null);
+    setCancellationMessage('');
+    setCancellationError('');
   };
 
   if (loading) {
@@ -199,7 +252,10 @@ const MyBookings = () => {
                   </button>
 
                   {booking.status === 'CONFIRMED' && (
-                    <button className="action-btn cancel-booking">
+                    <button 
+                      className="action-btn cancel-booking"
+                      onClick={() => handleCancelBooking(booking)}
+                    >
                       Cancel Booking
                     </button>
                   )}
@@ -214,6 +270,55 @@ const MyBookings = () => {
           )}
         </div>
       </div>
+
+      {/* 🔹 NOTIFICATION MESSAGES */}
+      {cancellationMessage && (
+        <div className="notification success-notification">
+          <p>{cancellationMessage}</p>
+          <button onClick={() => setCancellationMessage('')} className="close-notification">×</button>
+        </div>
+      )}
+
+      {cancellationError && (
+        <div className="notification error-notification">
+          <p>{cancellationError}</p>
+          <button onClick={() => setCancellationError('')} className="close-notification">×</button>
+        </div>
+      )}
+
+      {/* 🔹 CANCELLATION CONFIRMATION MODAL */}
+      {showCancelConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Cancel Booking?</h2>
+            <p>You are about to cancel your booking. This action will:</p>
+            <ul>
+              <li>✓ Update your booking status to CANCELLED</li>
+              <li>✓ Initiate a refund to your original payment method</li>
+              <li>✓ Refunds typically appear within 5-7 business days</li>
+            </ul>
+
+            <div className="cancellation-note">
+              <p><strong>Note:</strong> Refund amount depends on cancellation timing and may include cancellation charges.</p>
+            </div>
+
+            <div className="modal-actions">
+              <button 
+                className="modal-btn confirm-btn"
+                onClick={confirmCancellation}
+              >
+                Yes, Cancel & Refund
+              </button>
+              <button 
+                className="modal-btn cancel-btn"
+                onClick={cancelConfirmation}
+              >
+                No, Keep Booking
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

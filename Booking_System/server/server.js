@@ -8,7 +8,7 @@ const app = express();
 
 // ===================== MIDDLEWARE =====================
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173", "https://mrc-frontend-rouge.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));

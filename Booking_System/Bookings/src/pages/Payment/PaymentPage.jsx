@@ -92,9 +92,12 @@ function PaymentPage() {
             const bookingDraft = JSON.parse(bookingDraftStr);
 
             const bookingRes = await api.post(
-              "/bookings",
-              bookingDraft
-            );
+  "/bookings",
+  {
+    ...bookingDraft,
+    razorpayPaymentId: response.razorpay_payment_id  
+  }
+);
 
             // Cleanup
             sessionStorage.removeItem("bookingDraft");
@@ -108,6 +111,9 @@ function PaymentPage() {
 
           } catch (err) {
             console.error(err);
+            await axios.post("http://localhost:5137/api/logs", {
+              message: `Booking failed after successful payment | Payment ID: ${response.razorpay_payment_id}`
+         });
             alert("Booking failed after payment ❌");
           } finally {
             setLoading(false);

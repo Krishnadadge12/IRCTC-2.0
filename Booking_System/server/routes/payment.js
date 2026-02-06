@@ -40,7 +40,7 @@ router.post("/create-order", async (req, res) => {
     const { amount } = req.body;
 
     const order = await razorpay.orders.create({
-      amount: amount * 100,
+      amount: amount,
       currency: "INR",
       receipt: `rcpt_${Date.now()}`
     });
@@ -97,6 +97,92 @@ router.post("/verify-payment", (req, res) => {
     res.json({ status: "Payment verified" });
   } else {
     res.status(400).json({ status: "Invalid signature" });
+  }
+});
+
+/**
+ * @swagger
+ * /api/payment/process-refund:
+ *   post:
+ *     summary: Process refund for cancelled booking
+ *     description: Creates a refund for a Razorpay payment using payment ID
+ *     tags:
+ *       - Payment
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               razorpay_payment_id:
+ *                 type: string
+ *                 description: Razorpay payment ID to refund
+ *               amount:
+ *                 type: number
+ *                 description: Amount to refund in paise (optional - full refund if not provided)
+ *               notes:
+ *                 type: object
+ *                 description: Additional notes for refund
+ *     responses:
+ *       200:
+ *         description: Refund initiated successfully
+ *       400:
+ *         description: Invalid payment ID or refund failed
+ *       500:
+ *         description: Server error
+ */
+router.post("/process-refund", async (req, res) => {
+  try {
+    const { razorpay_payment_id, amount, notes } = req.body;
+
+    if (!razorpay_payment_id) {
+      await logMessage(`Refund failed | Reason: Missing payment ID`);
+      return res.status(400).json({ error: "Payment ID is required" });
+    }
+
+    await logMessage(
+      `Process-refund called | Payment ID: ${razorpay_payment_id} | Amount: ${amount || 'full'}`
+    );
+
+    const refundParams = {
+      receipt: `refund_${Date.now()}`
+    };
+
+    // If amount is provided, refund partial amount (in paise)
+    if (amount) {
+      refundParams.amount = amount;
+    }
+
+    // Add notes if provided
+    if (notes) {
+      refundParams.notes = notes;
+    }
+
+    const refund = await razorpay.payments.refund(
+      razorpay_payment_id,
+      refundParams
+    );
+
+    await logMessage(
+      `Refund processed successfully | Payment ID: ${razorpay_payment_id} | Refund ID: ${refund.id} | Amount: ${refund.amount}`
+    );
+
+    res.json({
+      status: "Refund initiated",
+      refund_id: refund.id,
+      amount_refunded: refund.amount,
+      payment_id: razorpay_payment_id
+    });
+
+  } catch (err) {
+    console.error("REFUND ERROR:", err);
+    await logMessage(
+      `Refund processing failed | Message: ${err.message || err.toString()}`
+    );
+    res.status(400).json({
+      error: err.message || "Refund processing failed"
+    });
   }
 });
 
