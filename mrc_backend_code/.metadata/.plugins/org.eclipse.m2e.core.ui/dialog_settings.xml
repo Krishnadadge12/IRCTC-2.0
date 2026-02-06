@@ -2,6 +2,7 @@
 <section name="Workbench">
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
+			<item value="E:\Vaibhavi\Vaibhavi\FRONT-END-SYNCFUSION\NewPull\Booking_System"/>
 			<item value="G:\CDAC\Sunbeam\project\backend-shra\mrc_backend_code"/>
 			<item value="G:\CDAC\Sunbeam\project\backend-shra\healthcare_backend_security_jwt"/>
 		</list>

@@ -37,6 +37,7 @@ public class BookingServiceImpl implements BookingService {
     private final PassengerRepository passengerRepository;
     private final PnrGenerator pnrGenerator;
     private final BookingMapper bookingMapper;
+    private final LoggerClient loggerClient;
 
     // ================== CREATE BOOKING ==================
 
@@ -115,6 +116,10 @@ public class BookingServiceImpl implements BookingService {
         }
 
         Booking savedBooking = bookingRepository.save(booking);
+        loggerClient.log(
+        	    "Booking created. BookingId=" + savedBooking.getId() +
+        	    ", PNR=" + savedBooking.getPnr()
+        	);
 
         // ✅ SAVE PASSENGERS
         List<Passenger> passengerList = new ArrayList<>();
@@ -163,6 +168,10 @@ public class BookingServiceImpl implements BookingService {
         booking.setBookingStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
 
+        loggerClient.log(
+        	    "Booking cancelled by user. BookingId=" + booking.getId()
+        	);
+
         if (freedSeat != null) {
             freedSeat.setBooked(SeatStatus.AVAILABLE);
             seatRepository.save(freedSeat);
@@ -194,6 +203,9 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setBookingStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
+        loggerClient.log(
+        	    "Booking cancelled by admin. BookingId=" + booking.getId()
+        	);
 
         if (freedSeat != null) {
             freedSeat.setBooked(SeatStatus.AVAILABLE);
