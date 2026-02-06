@@ -202,12 +202,12 @@ React.useEffect(() => {
   const updatedDraft = {
     ...existingDraft,
 
-    // 🔑 ENUM (BACKEND EXPECTS THIS)
+    //  ENUM (BACKEND EXPECTS THIS)
     reservationQuota: reservationQuota.toUpperCase(),
 
     journeyDate: `${year}-${month}-${day}`,
 
-    // ✅ VERY IMPORTANT — keep seatPriceId if backend sent it
+    // VERY IMPORTANT — keep seatPriceId if backend sent it
     seatPriceId: existingDraft.seatPriceId,
     seatFare: existingDraft.seatFare,
     passengers: passengers.map(p => ({
@@ -262,8 +262,8 @@ React.useEffect(() => {
               value={reservationQuota}
               onChange={(e) => setReservationQuota(e.target.value)}>
               <option value="">Select Reservation Quota</option>
-              <option value="General">General</option>
-              <option value="Tatkal">Tatkal</option>
+              <option value="GENERAL">GENERAL</option>
+              <option value="TATKAL">TATKAL</option>
               
             </select>
           </div>

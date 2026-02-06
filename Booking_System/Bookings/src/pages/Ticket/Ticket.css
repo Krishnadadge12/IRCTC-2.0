@@ -546,3 +546,12 @@
     justify-content: center;
   }
 }
+.wl-text {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.passengers-table td div {
+  font-size: 0.9rem;
+  margin: 2px 0;
+}

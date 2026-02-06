@@ -125,6 +125,11 @@ function PaymentPage() {
 
             const bookingDraft = JSON.parse(bookingDraftStr);
 
+            if (!bookingDraft.seatPriceId) {
+              alert("Seat price missing. Please restart booking.");
+              setLoading(false);
+              return;
+            }
             console.log("FINAL BOOKING PAYLOAD:", {
               ...bookingDraft,
               seatPriceId,
@@ -135,7 +140,7 @@ function PaymentPage() {
               "/bookings",
               {
                 ...bookingDraft,
-                seatPriceId,
+
                 razorpayPaymentId: response.razorpay_payment_id
               },
               {

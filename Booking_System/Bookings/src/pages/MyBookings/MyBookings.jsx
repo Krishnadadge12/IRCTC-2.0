@@ -42,7 +42,8 @@ const MyBookings = () => {
           totalPassengers: b.passengers.length,
           status: b.bookingStatus,
           bookingDate: b.bookedOn?.split("T")[0],
-        totalPrice: `₹${b.totalFare?.price || 0}`,
+        totalPrice: `₹${b.totalFare ?? 0}`,
+
           passengers: b.passengers.map(p => p.name),
           __raw: b   // 👈 store original booking
         }));

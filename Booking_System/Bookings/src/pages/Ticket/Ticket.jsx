@@ -13,7 +13,7 @@ const Ticket = () => {
 
   const ticketData = state;
 
-  // ADAPTER (BACKEND DTO → UI VIEW MODEL)
+  // ================== ADAPTER (UPDATED — still backend-safe) ==================
   const adaptedTicketData = {
     bookingConfirmationNumber: ticketData.bookingId,
     pnrNumber: ticketData.pnr,
@@ -40,15 +40,35 @@ const Ticket = () => {
       platformNumber: "--"
     },
 
-    passengers: ticketData.passengers.map((p, idx) => ({
-      id: idx + 1,
-      name: p.name,
-      age: p.age,
-      sex: p.gender,
-      seatNumber: p.seatNo || "--",
-      berth: p.seatLabel || "--",
-      bookingStatus: ticketData.bookingStatus
-    })),
+    // 🔥 UPDATED PASSENGER MAPPING (NEAT SEAT/BERTH — backend compatible)
+    passengers: ticketData.passengers.map((p, idx) => {
+
+      const berthMap = {
+        "LB": "Lower Berth",
+        "MB": "Middle Berth",
+        "UB": "Upper Berth",
+        "SL": "Side Lower",
+        "SU": "Side Upper"
+      };
+
+      // Extract berth code from seatLabel (safe regex)
+      const berthCode =
+        p.seatLabel?.match(/(LB|MB|UB|SL|SU)$/)?.[0];
+
+      return {
+        id: idx + 1,
+        name: p.name,
+        age: p.age,
+        sex: p.gender,
+
+        seatNumber: p.seatNo || "WL",
+        coachNo: p.coachNo || "--",
+
+        berthFull: berthCode ? berthMap[berthCode] : "Not Allotted",
+
+        bookingStatus: ticketData.bookingStatus
+      };
+    }),
 
     fare: {
       totalFare: ticketData.totalFare
@@ -60,6 +80,7 @@ const Ticket = () => {
       "Ticket is valid only for the booked journey"
     ]
   };
+  // ================== END ADAPTER ==================
 
   const downloadTicket = () => {
     window.print();
@@ -171,7 +192,7 @@ const Ticket = () => {
               </div>
             </div>
 
-            {/* Passengers */}
+            {/* ================== UPDATED PASSENGER TABLE ================== */}
             <div className="section">
               <h3 className="section-title">Passenger Details</h3>
               <table className="passengers-table">
@@ -181,7 +202,7 @@ const Ticket = () => {
                     <th>Passenger Name</th>
                     <th>Age</th>
                     <th>Sex</th>
-                    <th>Seat/Berth</th>
+                    <th>Seat / Coach / Berth</th>
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -192,7 +213,19 @@ const Ticket = () => {
                       <td>{p.name}</td>
                       <td>{p.age}</td>
                       <td>{p.sex}</td>
-                      <td>{p.seatNumber} ({p.berth})</td>
+
+                      <td>
+                        {p.seatNumber !== "WL" ? (
+                          <>
+                            <div><b>Seat:</b> {p.seatNumber}</div>
+                            <div><b>Coach:</b> {p.coachNo}</div>
+                            <div><b>Berth:</b> {p.berthFull}</div>
+                          </>
+                        ) : (
+                          <span className="wl-text">WL (Waitlist)</span>
+                        )}
+                      </td>
+
                       <td>
                         <span className="status-badge-small confirmed">
                           {p.bookingStatus}
@@ -203,6 +236,7 @@ const Ticket = () => {
                 </tbody>
               </table>
             </div>
+            {/* ================== END UPDATED SECTION ================== */}
 
             {/* Fare */}
             <div className="section">

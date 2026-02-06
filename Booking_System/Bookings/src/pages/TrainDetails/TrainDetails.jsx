@@ -409,88 +409,108 @@ const renderTrainDetails = () => {
                 </select>
               </div>
 
-              {/* --------- BOOK NOW BUTTON (FIXED PAYLOAD) --------- */}
+              
 
               <button
-                className="btn-book"
-                onClick={() => {
+  className="btn-book"
+  onClick={async () => {
 
-                  // UI date formatting (DD-MM-YYYY)
-                  let formattedDate = "";
-                  if (selectedTrain.scheduleDate) {
-                    const [y, m, d] = selectedTrain.scheduleDate.split("-");
-                    formattedDate = `${d}-${m}-${y}`;
-                  }
+    // ---------- UI DATE (DD-MM-YYYY) ----------
+    let formattedDate = "";
+    if (selectedTrain.scheduleDate) {
+      const [y, m, d] = selectedTrain.scheduleDate.split("-");
+      formattedDate = `${d}-${m}-${y}`;
+    }
 
-                  // ---------- UI PREFILL ----------
-                  const bookingData = {
-                    trainNumber: selectedTrain.trainNumber,
-                    trainName: selectedTrain.trainName,
-                    journeyFrom: selectedTrain.source,
-                    journeyTo: selectedTrain.destination,
-                    date: formattedDate,
-                    departureTime: selectedTrain.departureTime,
-                    reservationQuota: selectedQuota,   // ✅ FIX
-                    passengers: [
-                      {
-                        fullName: "",
-                        age: "",
-                        sex: "",
-                        berth: "",
-                        phone: "",
-                        email: ""
-                      }
-                    ]
-                  };
+    // ---------- DATA FOR BOOKING FORM PREFILL ----------
+    const bookingData = {
+      trainNumber: selectedTrain.trainNumber,
+      trainName: selectedTrain.trainName,
+      journeyFrom: selectedTrain.source,
+      journeyTo: selectedTrain.destination,
+      date: formattedDate,
+      departureTime: selectedTrain.departureTime,
+      reservationQuota: selectedQuota,
+      passengers: [
+        {
+          fullName: "",
+          age: "",
+          sex: "",
+          berth: "",
+          phone: "",
+          email: ""
+        }
+      ]
+    };
 
-                  sessionStorage.setItem(
-                    "bookingData",
-                    JSON.stringify(bookingData)
-                  );
+    sessionStorage.setItem("bookingData", JSON.stringify(bookingData));
 
-                 
-const draft = {
-  trainId: selectedTrain.trainId,
+    // ----------- 🔥 VERY IMPORTANT: FETCH CORRECT seatPriceId -----------
+    const fetchCorrectSeatPrice = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-  // MUST match backend ENUM: SLEEPER / AC1 / AC2 / AC3
-  coachType:
-    (selectedClass || selectedTrain.classes?.[0])?.toUpperCase(),
+        const selectedTier =
+  (selectedClass || selectedTrain.classes?.[0])?.toUpperCase();
 
-  // MUST match backend ENUM: GENERAL / TATKAL
-  reservationQuota: selectedQuota,
-
-  // ✅ CRITICAL — this MUST exist in train response from backend
-  seatPriceId:
-    selectedTrain.seatPriceId || selectedTrain.seatFare?.priceId || null,
-
-  source: selectedTrain.source,
-  destination: selectedTrain.destination,
-
-  // Backend expects LocalDate
-  journeyDate: selectedTrain.scheduleDate,
-
-  // Backend expects LocalDateTime
-  departure: `${selectedTrain.scheduleDate}T${selectedTrain.departureTime}`,
-  arrival: `${selectedTrain.scheduleDate}T${selectedTrain.arrivalTime}`,
-
-  passengers: []
-};
-
-console.log("✅ FINAL bookingDraft:", draft);
-sessionStorage.setItem("bookingDraft", JSON.stringify(draft));
-
-console.log("✅ FINAL bookingDraft:", draft);
-
-sessionStorage.setItem("bookingDraft", JSON.stringify(draft));
+const res = await fetch(
+  `http://localhost:8080/trains/${selectedTrain.trainId}?quota=${selectedQuota}&tier=${selectedTier}`,
+  {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  }
+);
 
 
+        const data = await res.json();
+        console.log("Fetched fresh train details:", data);
+        return data.seatPriceId || null;
 
+      } catch (err) {
+        console.error("Failed to fetch seat price", err);
+        return null;
+      }
+    };
 
-                  navigate("/home/booking");
-                }}
-              >
-                Book Now
-              </button>
+    const correctSeatPriceId = await fetchCorrectSeatPrice();
+
+    // ---------- FINAL BOOKING DRAFT (SPRING-FRIENDLY) ----------
+    const draft = {
+      trainId: selectedTrain.trainId,
+
+      // MUST match backend ENUM: SLEEPER / AC1 / AC2 / AC3
+      coachType:
+        (selectedClass || selectedTrain.classes?.[0])?.toUpperCase(),
+
+      // MUST match backend ENUM: GENERAL / TATKAL
+      reservationQuota: selectedQuota,
+
+      // ✅ FIXED — always fresh & correct
+      seatPriceId: correctSeatPriceId,
+
+      source: selectedTrain.source,
+      destination: selectedTrain.destination,
+
+      // Backend expects LocalDate
+      journeyDate: selectedTrain.scheduleDate,
+
+      // Backend expects LocalDateTime → add :00
+      departure: `${selectedTrain.scheduleDate}T${selectedTrain.departureTime}`,
+      arrival: `${selectedTrain.scheduleDate}T${selectedTrain.arrivalTime}`,
+
+      passengers: []
+    };
+
+    console.log("✅ FINAL bookingDraft:", draft);
+    sessionStorage.setItem("bookingDraft", JSON.stringify(draft));
+
+    navigate("/home/booking");
+  }}
+>
+  Book Now
+</button>
+
 
             </div>
           </div>
