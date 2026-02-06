@@ -1,1 +1,10 @@
 /.metadata/
+# Eclipse / STS junk
+mrc_backend_code/.classpath
+mrc_backend_code/.factorypath
+mrc_backend_code/.project
+mrc_backend_code/.settings/
+mrc_backend_code/target/
+
+# Node
+**/node_modules
