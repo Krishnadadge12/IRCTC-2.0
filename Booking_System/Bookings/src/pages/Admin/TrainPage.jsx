@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
-import "./Bookings.css"
+import "./AdminBookings.css";
 import { getAllAdminTrains, updateTrainStatus } from "../../services/adminTrain";
+import { useNavigate } from "react-router-dom";
 
 function TrainPage() {
   const [trains, setTrains] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTrains();
@@ -80,8 +82,9 @@ function TrainPage() {
           </div>
           <button
             className="add-train-btn"
-            onClick={() => alert("Add Train clicked")}
-          >Add New Train</button>
+            onClick={() => navigate("/admin/trains/add")}
+        >Add New Train</button>
+
           {loading && <p>Loading trains...</p>}
           {error && <p style={{ color: "red" }}>{error}</p>}
 

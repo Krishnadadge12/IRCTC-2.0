@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import "./Bookings.css";
+import "./AdminBookings.css";
 
 // Landing page for admin bookings — enter a Train ID to view bookings
 function BookingsLanding() {

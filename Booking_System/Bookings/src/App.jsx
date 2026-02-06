@@ -28,6 +28,7 @@ import TCProtectedRoute from './Components/TCProtectedRoute/TCProtectedRoute'
 import AdminHome from "./pages/Admin/AdminHome"
 // import Dashboard from "./pages/Admin/Bookings"
 import TrainPage from "./pages/Admin/TrainPage"
+import AdminAddTrain from "./pages/Admin/AdminAddTrain"
 // import SchedulePage from "./pages/Admin/SchedulePage"
 import UserPage from "./pages/Admin/UserPage"
 import TrainBookings from "./pages/Admin/TrainBookings";
@@ -71,6 +72,7 @@ function App() {
             <Route path="/admin/home" element={<AdminHome />} />
            <Route path="/admin/bookings/:trainId" element={<TrainBookings />} />
 <Route path="/admin/trains" element={<TrainPage />} />
+<Route path="/admin/trains/add" element={<AdminAddTrain />} />
 <Route path="/admin/queries" element={<QueryPage />} />
 <Route path="/admin/users" element={<UserPage />} />
 

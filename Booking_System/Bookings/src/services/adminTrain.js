@@ -1,6 +1,7 @@
 import axios from "axios";
 import { config } from "./config";
 
+const BASE_URL = "http://localhost:8080/admin/trains";
 function authHeader() {
   const token = localStorage.getItem("token");
   return {
@@ -16,6 +17,17 @@ export async function getAllAdminTrains() {
   });
   return res.data;
 }
+// POST /admin/trains
+export const addTrain = (train) => {
+  return axios.post(
+    BASE_URL,
+    train,
+    {
+      headers: authHeader(),
+    }
+  ).then(res => res.data);
+};
+
 
 // PATCH /admin/trains/{id}/status?status=...
 export async function updateTrainStatus(id, status) {

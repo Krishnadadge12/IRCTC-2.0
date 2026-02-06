@@ -41,7 +41,7 @@ function QueryPage() {
       const data = await getAllQueries();
       // Map server DTO to UI-friendly fields
       const mapped = data.map((q) => ({
-        // backend QueryResponseDto uses field `queryId`
+        // backend QueryResponseDto uses field queryId
         id: q.queryId || q.q_id || q.qId || q.id || q._id,
         email: q.email || "-",
         message: q.message || "-",

@@ -1,4 +1,4 @@
-  import React, { useState } from 'react';
+import React, { useState } from 'react';
   import { RatingComponent } from '@syncfusion/ej2-react-inputs';
   import './QuerySection.css';
 
@@ -50,7 +50,7 @@
       //   return;
       // }
       // if (formData.query.length > MAX_QUERY_LENGTH) {
-      //   setError(`Query cannot exceed ${MAX_QUERY_LENGTH} characters.`);
+      //   setError(Query cannot exceed ${MAX_QUERY_LENGTH} characters.);
       //   return;
       // }
 
@@ -62,15 +62,29 @@
       // Here you can add API call to submit the form
       try {
         // QUERY
-         if (hasQuery) {
-         if (!formData.email) {
-          setError("Email is required to submit query.");
-          return;
-        }
-          // Call Spring Boot query API here
-        // await submitQueryAPI({ email: formData.email, query: formData.query });
-        alert("Query submitted successfully.");
-      }
+        if (hasQuery) {
+  if (!formData.email) {
+    setError("Email is required to submit query.");
+    return;
+  }
+
+  // Add this fetch API call to actually submit to backend
+  const queryResp = await fetch("http://localhost:8080/queries", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      email: formData.email,
+      message: formData.query  // <-- important: 'message' must match backend DTO
+    })
+  });
+
+  if (!queryResp.ok) throw new Error("Failed to submit query");
+
+  alert("Query submitted successfully.");
+}
+
 
        // FEEDBACK
        if (ratingTouched === true) {
