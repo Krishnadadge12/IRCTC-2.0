@@ -1,1 +1,12 @@
 /.metadata/
+# Visual Studio / VS Code junk
+LoggingService/.vs/
+LoggingService/LoggingService/bin/
+LoggingService/LoggingService/obj/
+
+# Eclipse / STS junk
+mrc_backend_code/.metadata/
+mrc_backend_code/target/
+
+# Node
+**/node_modules

@@ -15,14 +15,14 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Slf4j
+
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 	// depcy
 	private final UserRepository userRepository;
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		//invoke dao's method	
-		log.info("************ load user by username **********");
+		
 		UserEntity userEntity=userRepository.findByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException("Email doesn't exist"));
 		//=> user by email exists 

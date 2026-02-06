@@ -44,7 +44,7 @@ public class UserController {
    
 	@PostMapping("/login")
 	public ResponseEntity<?> authenticateUser(@RequestBody @Valid AuthRequest dto) {
-		System.out.println("in log in " + dto);
+		//System.out.println("in log in " + dto);
 
 		/*
 		 * 1. Invoke AuthenticationManager's authenticate method
@@ -58,8 +58,10 @@ public class UserController {
 		 * UserNamePasswordAuthenticationToken(Object email,Object password)
 		 */
 		Authentication fullyAuthenticated = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
-		System.out.println("is user authenticated "+fullyAuthenticated.isAuthenticated());//true
-		System.out.println(fullyAuthenticated.getPrincipal().getClass());//user details object - UserEntity
+		//calls DAOAuthenticationProvider->CustomUserDetailsServiceImpl.loadUserByUsername(email)->returns user->spring checks password using PasswordEncoder->return Authentication object
+		//fullyAuthenticated has-> principal:userEntity, cred:null, isAuthenticated=true,authorities=[ROLE_PASSENGERS];
+//		System.out.println("is user authenticated "+fullyAuthenticated.isAuthenticated());//true
+//		System.out.println(fullyAuthenticated.getPrincipal().getClass());//user details object - UserEntity
 		//downcast Principal (Object -> UserEntity)
 		UserEntity userEntity=(UserEntity)fullyAuthenticated.getPrincipal();
 		

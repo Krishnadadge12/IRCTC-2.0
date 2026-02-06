@@ -44,6 +44,7 @@ public class BookingResponseDto {
 
 	    // PASSENGERS
 	    private List<PassengerDto> passengers;
+	    private String razorpayPaymentId;
 }
 
 //quota //dept time 

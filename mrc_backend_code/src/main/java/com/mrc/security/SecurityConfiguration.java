@@ -35,7 +35,7 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ LET SPRING BUILD AUTH MANAGER AUTOMATICALLY
+    // LET SPRING BUILD AUTH MANAGER AUTOMATICALLY
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration
@@ -93,7 +93,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() { //explicit configuration.
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));

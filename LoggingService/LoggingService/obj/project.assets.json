@@ -4168,19 +4168,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Admin\\.nuget\\packages\\": {}
+    "C:\\Users\\HP\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Vaibhavi\\Vaibhavi\\FRONT-END-SYNCFUSION\\cursor\\cursor2\\LoggingService\\LoggingService\\LoggingService.csproj",
+      "projectUniqueName": "C:\\CDAC\\PROJECT\\finalBackend\\IRCTC-2.0\\LoggingService\\LoggingService\\LoggingService.csproj",
       "projectName": "LoggingService",
-      "projectPath": "E:\\Vaibhavi\\Vaibhavi\\FRONT-END-SYNCFUSION\\cursor\\cursor2\\LoggingService\\LoggingService\\LoggingService.csproj",
-      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "E:\\Vaibhavi\\Vaibhavi\\FRONT-END-SYNCFUSION\\cursor\\cursor2\\LoggingService\\LoggingService\\obj\\",
+      "projectPath": "C:\\CDAC\\PROJECT\\finalBackend\\IRCTC-2.0\\LoggingService\\LoggingService\\LoggingService.csproj",
+      "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
+      "outputPath": "C:\\CDAC\\PROJECT\\finalBackend\\IRCTC-2.0\\LoggingService\\LoggingService\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -4200,7 +4205,13 @@
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net8.0": {
@@ -4248,7 +4259,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

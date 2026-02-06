@@ -92,5 +92,7 @@ public class Booking extends BaseEntity {
 	private LocalDate journeyDate;
 	@Column(name = "waitlist_no")
 	private Integer waitlistNo;
+	@Column(name = "razorpay_payment_id")
+	private String razorpayPaymentId;
 
 }

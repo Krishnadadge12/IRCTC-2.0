@@ -92,6 +92,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setArrival(dto.getArrival());
         booking.setJourneyDate(dto.getJourneyDate());
         booking.setBookedOn(LocalDateTime.now());
+        booking.setRazorpayPaymentId(dto.getRazorpayPaymentId());
         booking.setTotalFare(price);
         booking.setPnr(
                 pnrGenerator.generate(train.getTrainNumber(), dto.getJourneyDate())

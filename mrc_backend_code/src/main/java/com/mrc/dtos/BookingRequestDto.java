@@ -37,4 +37,5 @@ public class BookingRequestDto {
     private LocalDateTime arrival;
     @NotNull
     private List<PassengerDto> passengers;
+    private String razorpayPaymentId;
 }

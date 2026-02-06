@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
+
 public class CustomJwtFilter extends OncePerRequestFilter {
 
     private final JWTUtils jwtUtils;
@@ -39,13 +39,13 @@ public class CustomJwtFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        //  BYPASS JWT FOR PUBLIC ENDPOINTS
+        //  BYPASS JWT FOR PUBLIC ENDPOINTS i.e for login/register do not check jwt
         if (
             path.startsWith("/users/login") ||
             path.startsWith("/users/register") ||
             path.startsWith("/swagger-ui") ||
             path.startsWith("/v3/api-docs") ||
-            path.startsWith("/actuator")
+            path.startsWith("/actuator") //monitoring health etc, could be used in K8S
         ) {
             filterChain.doFilter(request, response);
             return;
@@ -56,21 +56,21 @@ public class CustomJwtFilter extends OncePerRequestFilter {
 
         if (headerValue != null && headerValue.startsWith("Bearer ")) {
             String jwt = headerValue.substring(7);
-            log.info("JWT found");
+            
 
             if (jwt == null || jwt.isBlank() || !jwt.contains(".")) {
-                log.warn("Invalid JWT format received: {}", jwt);
-                filterChain.doFilter(request, response);
+                
+                filterChain.doFilter(request, response);//invoke next filter or invoke resource
                 return;
             }
 
-            log.info("Valid-looking JWT found");
+            
 
             Claims claims;
             try {
-                claims = jwtUtils.validateJWT(jwt);
+                claims = jwtUtils.validateJWT(jwt); //userId, Role etc
             } catch (Exception e) {
-                log.warn("JWT validation failed: {}", e.getMessage());
+                
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -83,7 +83,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
                     .orElseThrow(() -> new RuntimeException("User not found from JWT"));
 
             // principal = UserEntity
-            UsernamePasswordAuthenticationToken auth =
+            UsernamePasswordAuthenticationToken auth = //for isAuthenticated==true only
                     new UsernamePasswordAuthenticationToken(
                             user,
                             null,
@@ -91,22 +91,22 @@ public class CustomJwtFilter extends OncePerRequestFilter {
                     );
 
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            log.info("Security context populated");
+            SecurityContextHolder.getContext().setAuthentication(auth); //after this hasAuthority(...) etc starts working
+            
         }
 
         filterChain.doFilter(request, response);
     }
     
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-
-        return path.startsWith("/users/login")
-            || path.startsWith("/users/register")
-            || path.startsWith("/swagger-ui")
-            || path.startsWith("/v3/api-docs")
-            || path.startsWith("/actuator");
-    }
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) {
+//        String path = request.getRequestURI();
+//
+//        return path.startsWith("/users/login")
+//            || path.startsWith("/users/register")
+//            || path.startsWith("/swagger-ui")
+//            || path.startsWith("/v3/api-docs")
+//            || path.startsWith("/actuator");
+//    }
 
 }

@@ -28,10 +28,7 @@ public class UserServiceImpl implements UserService
 	
 	public UserEntity registerUser(UserDto dto) {
 
-	    // 1️ Validate password match (IMPORTANT)
-	    if (!dto.getPassword().equals(dto.getConfirmPassword())) {
-	        throw new InvalidInputException("Password and Confirm Password do not match");
-	    }
+	   
 
 	    // 2️ Check if email exists
 	    if (userRepository.existsByEmail(dto.getEmail())) {

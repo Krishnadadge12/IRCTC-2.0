@@ -18,21 +18,21 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@Slf4j
+
 public class JWTUtils {
 	//To inject a value in Spring bean (value based D.I) 
-	@Value("${jwt.secret.key}")//SpEL - spring expression language
+	@Value("${jwt.secret.key}")//in application.properties
 	private String secretKey;
 	//To inject exp time
-	@Value("${jwt.expiration.time}")
+	@Value("${jwt.expiration.time}")//in application.properties
 	private long expTime;
 	//symmetric secret key - HMAC-SHA256
 	private SecretKey key;
 	
 	@PostConstruct
 	public void myInit() {
-		key=Keys.hmacShaKeyFor(secretKey.getBytes());
-		log.info("exp time {} key {}",expTime,key);
+		key=Keys.hmacShaKeyFor(secretKey.getBytes());//Creates a new SecretKey instance for use with HMAC-SHA algorithms based on the specified key byte array
+		
 		
 	}
 	
@@ -50,14 +50,22 @@ public class JWTUtils {
 				.signWith(key)
 				.compact(); //generate token string				
 	}
+	//payload: sent to frontend after login in the response entity of UserController
+//	{
+//		  "sub": "user@example.com",
+//		  "iat": 1675340000000,
+//		  "exp": 1675343600000,
+//		  "user_id": 5,
+//		  "role": "ROLE_PASSENGERS"
+//		}
 
 	// validate token
-	public Claims validateJWT(String jwt)
+	public Claims validateJWT(String jwt) //checks sign and expiry, if invalid throws exception
 	{
 		 return Jwts.parser() //parse JWT token
-				.verifyWith(key) //same secret key for verification
+				.verifyWith(key) //same secret key for verification which was prev used for signing
 				.build()
-				.parseSignedClaims(jwt)
+				.parseSignedClaims(jwt) //userId and role
 				.getPayload();
 		 
 				
