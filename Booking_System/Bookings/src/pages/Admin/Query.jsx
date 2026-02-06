@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import { getAllQueries, updateQueryStatus, resolveQuery } from "../../services/adminQuery";
+import {
+  GridComponent,
+  ColumnsDirective,
+  ColumnDirective,
+  Page
+} from "@syncfusion/ej2-react-grids";
+import {
+  ChartComponent,
+  SeriesCollectionDirective,
+  SeriesDirective,
+  Inject,
+  ColumnSeries,
+  Category
+} from "@syncfusion/ej2-react-charts";
 import "./AdminHome.css";
 
 function QueryPage() {
@@ -11,8 +25,13 @@ function QueryPage() {
 
   const STATUSES = ["PENDING", "RESOLVED"];
 
+  const [ratings, setRatings] = useState([]);
+  const [ratingSummary, setRatingSummary] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+
   useEffect(() => {
     fetchQueries();
+    fetchRatingAnalysis();
   }, []);
 
   async function fetchQueries() {
@@ -34,6 +53,20 @@ function QueryPage() {
       setError(err?.response?.data?.message || err?.message || "Unable to fetch queries");
     } finally {
       setLoading(false);
+    }
+  }
+
+   async function fetchRatingAnalysis() {
+    try {
+      const all = await fetch("http://localhost:5137/api/feedback-rating/all").then(r => r.json());
+      const summary = await fetch("http://localhost:5137/api/feedback-rating/summary").then(r => r.json());
+      const avg = await fetch("http://localhost:5137/api/feedback-rating/average").then(r => r.json());
+
+      setRatings(all);
+      setRatingSummary(summary);
+      setAverageRating(avg);
+    } catch (err) {
+      console.error("Rating analysis fetch failed", err);
     }
   }
 
@@ -134,6 +167,40 @@ function QueryPage() {
           </div>
         )}
 
+   {/* ================= FEEDBACK ANALYSIS ================= */}
+         <hr style={{ margin: "40px 0" }} />
+
+       <h2>⭐ User Rating Analysis</h2>
+        <h3>Average Rating: {averageRating}</h3>
+           <ChartComponent primaryXAxis={{ valueType: "Category" }}>
+          <Inject services={[ColumnSeries, Category]} />
+
+         <SeriesCollectionDirective>
+           <SeriesDirective
+      dataSource={ratingSummary}
+      xName="rating"
+      yName="count"
+      type="Column"
+      columnWidth={0.35}
+      columnSpacing={0.2}
+    />
+          </SeriesCollectionDirective>
+        </ChartComponent>
+        {/* <h3 style={{ marginTop: 30 }}>All Ratings</h3> */}
+
+       {/* <GridComponent
+  dataSource={ratings}
+  allowPaging={true}
+  pageSettings={{ pageSize: 5 }}
+>
+  <Inject services={[Page]} />
+
+  <ColumnsDirective>
+    <ColumnDirective field="email" headerText="Email" width="200" />
+    <ColumnDirective field="rating" headerText="Rating" width="100" />
+    <ColumnDirective field="createdAt" headerText="Date" width="180" />
+  </ColumnsDirective>
+</GridComponent> */}
       </div>
     </div>
   );

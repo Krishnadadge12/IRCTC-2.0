@@ -189,29 +189,35 @@ React.useEffect(() => {
     }
 
    else {
-  const existingDraft = JSON.parse(
-    sessionStorage.getItem("bookingDraft")
-  );
+  const existingDraftRaw = sessionStorage.getItem("bookingDraft");
 
-  if (!existingDraft) {
+  if (!existingDraftRaw) {
     toast.error("Train data missing. Please start booking again.");
+    navigate("/home");
     return;
   }
+
+  const existingDraft = JSON.parse(existingDraftRaw);
 
   const updatedDraft = {
     ...existingDraft,
 
     // 🔑 ENUM (BACKEND EXPECTS THIS)
-    reservationQuota: reservationQuota.toUpperCase(), // GENERAL / TATKAL
+    reservationQuota: reservationQuota.toUpperCase(),
 
     journeyDate: `${year}-${month}-${day}`,
 
+    // ✅ VERY IMPORTANT — keep seatPriceId if backend sent it
+    seatPriceId: existingDraft.seatPriceId,
+    seatFare: existingDraft.seatFare,
     passengers: passengers.map(p => ({
       name: p.fullName,
       age: Number(p.age),
       gender: p.sex
     }))
   };
+
+  console.log("🔹 FINAL bookingDraft before confirm:", updatedDraft);
 
   sessionStorage.setItem(
     "bookingDraft",
@@ -230,6 +236,7 @@ React.useEffect(() => {
     }
   });
 }
+
 
 
   };

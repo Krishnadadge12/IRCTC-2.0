@@ -11,6 +11,8 @@ function TrainDetails() {
   const [displayTrains, setDisplayTrains] = useState([]);
   const [selectedTrain, setSelectedTrain] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+const [selectedClass, setSelectedClass] = useState(null);
+const [selectedQuota, setSelectedQuota] = useState("GENERAL");
 
   const [searchParams, setSearchParams] = useState({
     source: '',
@@ -353,116 +355,151 @@ function TrainDetails() {
   );
 
   // ---------- DETAILS PAGE ----------
-  const renderTrainDetails = () => {
+  // ----------- DETAILS PAGE -----------
+const renderTrainDetails = () => {
 
-    if (!selectedTrain) return null;
+  if (!selectedTrain) return null;
 
-    return (
-      <div className="page-bg-wrapper train-details">
-        <div className="container mt-4 page-content-above-overlay">
+  return (
+    <div className="page-bg-wrapper train-details">
+      <div className="container mt-4 page-content-above-overlay">
 
-          <div className="train-details-wrapper">
-            <button className="btn-back" onClick={handleBackToList}>
-              ← Back to List
-            </button>
+        <div className="train-details-wrapper">
+          <button className="btn-back" onClick={handleBackToList}>
+            ← Back to List
+          </button>
 
-            <div className="container-train-details">
+          <div className="container-train-details">
+            <div className="card">
 
-              <div className="card">
+              <h2>{selectedTrain.trainName}</h2>
+              <p>Train #{selectedTrain.trainNumber}</p>
 
-                <h2>{selectedTrain.trainName}</h2>
-                <p>Train #{selectedTrain.trainNumber}</p>
+              <hr />
 
-                <hr />
+              <p><b>From:</b> {selectedTrain.source}</p>
+              <p><b>To:</b> {selectedTrain.destination}</p>
+              <p><b>Departure:</b> {selectedTrain.departureTime}</p>
+              <p><b>Arrival:</b> {selectedTrain.arrivalTime}</p>
+              <p><b>Duration:</b> {selectedTrain.duration}</p>
+              {selectedTrain.scheduleDate && <p><b>Date:</b> {selectedTrain.scheduleDate}</p>}
 
-                <p><b>From:</b> {selectedTrain.source}</p>
-                <p><b>To:</b> {selectedTrain.destination}</p>
-                <p><b>Departure:</b> {selectedTrain.departureTime}</p>
-                <p><b>Arrival:</b> {selectedTrain.arrivalTime}</p>
-                <p><b>Duration:</b> {selectedTrain.duration}</p>
-                {selectedTrain.scheduleDate && <p><b>Date:</b> {selectedTrain.scheduleDate}</p>}
-                {selectedTrain.classes && selectedTrain.classes.length > 0 && (
-                  <p><b>Classes:</b> {selectedTrain.classes.join(", ")}</p>
-                )}
-                {selectedTrain.quota && (
-                  <p><b>Quota:</b> {selectedTrain.quota}</p>
-                )}
+              {/* --------- NEW (LOGIC ONLY — UI STILL SIMPLE) --------- */}
 
-                <button
-  className="btn-book"
-  onClick={() => {
-
-    // UI date formatting (DD-MM-YYYY)
-    let formattedDate = "";
-    if (selectedTrain.scheduleDate) {
-      const [y, m, d] = selectedTrain.scheduleDate.split("-");
-      formattedDate = `${d}-${m}-${y}`;
-    }
-
-    // ---------- UI PREFILL ----------
-    const bookingData = {
-      trainNumber: selectedTrain.trainNumber,
-      trainName: selectedTrain.trainName,
-      journeyFrom: selectedTrain.source,
-      journeyTo: selectedTrain.destination,
-      date: formattedDate,
-      departureTime: selectedTrain.departureTime,
-      reservationQuota: "General",
-      passengers: [
-        {
-          fullName: "",
-          age: "",
-          sex: "",
-          berth: "",
-          phone: "",
-          email: ""
-        }
-      ]
-    };
-
-    sessionStorage.setItem(
-      "bookingData",
-      JSON.stringify(bookingData)
-    );
-
-    // ---------- BACKEND DRAFT ----------
-    sessionStorage.setItem(
-      "bookingDraft",
-      JSON.stringify({
-        trainId: selectedTrain.trainId,
-
-        // 🔑 EXACT ENUM VALUES (BACKEND)
-        coachType: selectedTrain.classes?.[0] || "SLEEPER",
-        reservationQuota: "GENERAL",
-
-        source: selectedTrain.source,
-        destination: selectedTrain.destination,
-
-        journeyDate: selectedTrain.scheduleDate,
-
-        departure: `${selectedTrain.scheduleDate}T${selectedTrain.departureTime}`,
-        arrival: `${selectedTrain.scheduleDate}T${selectedTrain.arrivalTime}`,
-
-        passengers: []
-      })
-    );
-
-    navigate("/home/booking");
-  }}
->
-  Book Now
-</button>
-
-
+              <div style={{ marginTop: "10px" }}>
+                <b>Select Class:</b>
+                <select
+                  value={selectedClass || selectedTrain.classes?.[0]}
+                  onChange={(e) => setSelectedClass(e.target.value)}
+                >
+                  {selectedTrain.classes?.map(cls => (
+                    <option key={cls} value={cls}>{cls}</option>
+                  ))}
+                </select>
               </div>
+
+              <div style={{ marginTop: "10px" }}>
+                <b>Select Quota:</b>
+                <select
+                  value={selectedQuota}
+                  onChange={(e) => setSelectedQuota(e.target.value)}
+                >
+                  <option value="GENERAL">GENERAL</option>
+                  <option value="TATKAL">TATKAL</option>
+                </select>
+              </div>
+
+              {/* --------- BOOK NOW BUTTON (FIXED PAYLOAD) --------- */}
+
+              <button
+                className="btn-book"
+                onClick={() => {
+
+                  // UI date formatting (DD-MM-YYYY)
+                  let formattedDate = "";
+                  if (selectedTrain.scheduleDate) {
+                    const [y, m, d] = selectedTrain.scheduleDate.split("-");
+                    formattedDate = `${d}-${m}-${y}`;
+                  }
+
+                  // ---------- UI PREFILL ----------
+                  const bookingData = {
+                    trainNumber: selectedTrain.trainNumber,
+                    trainName: selectedTrain.trainName,
+                    journeyFrom: selectedTrain.source,
+                    journeyTo: selectedTrain.destination,
+                    date: formattedDate,
+                    departureTime: selectedTrain.departureTime,
+                    reservationQuota: selectedQuota,   // ✅ FIX
+                    passengers: [
+                      {
+                        fullName: "",
+                        age: "",
+                        sex: "",
+                        berth: "",
+                        phone: "",
+                        email: ""
+                      }
+                    ]
+                  };
+
+                  sessionStorage.setItem(
+                    "bookingData",
+                    JSON.stringify(bookingData)
+                  );
+
+                 
+const draft = {
+  trainId: selectedTrain.trainId,
+
+  // MUST match backend ENUM: SLEEPER / AC1 / AC2 / AC3
+  coachType:
+    (selectedClass || selectedTrain.classes?.[0])?.toUpperCase(),
+
+  // MUST match backend ENUM: GENERAL / TATKAL
+  reservationQuota: selectedQuota,
+
+  // ✅ CRITICAL — this MUST exist in train response from backend
+  seatPriceId:
+    selectedTrain.seatPriceId || selectedTrain.seatFare?.priceId || null,
+
+  source: selectedTrain.source,
+  destination: selectedTrain.destination,
+
+  // Backend expects LocalDate
+  journeyDate: selectedTrain.scheduleDate,
+
+  // Backend expects LocalDateTime
+  departure: `${selectedTrain.scheduleDate}T${selectedTrain.departureTime}`,
+  arrival: `${selectedTrain.scheduleDate}T${selectedTrain.arrivalTime}`,
+
+  passengers: []
+};
+
+console.log("✅ FINAL bookingDraft:", draft);
+sessionStorage.setItem("bookingDraft", JSON.stringify(draft));
+
+console.log("✅ FINAL bookingDraft:", draft);
+
+sessionStorage.setItem("bookingDraft", JSON.stringify(draft));
+
+
+
+
+                  navigate("/home/booking");
+                }}
+              >
+                Book Now
+              </button>
 
             </div>
           </div>
-
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
+
 
   return showDetails ? renderTrainDetails() : renderTrainList();
 }

@@ -40,7 +40,7 @@ router.post("/create-order", async (req, res) => {
     const { amount } = req.body;
 
     const order = await razorpay.orders.create({
-      amount: amount,
+      amount: amount * 100, // Convert to paise for razorpay
       currency: "INR",
       receipt: `rcpt_${Date.now()}`
     });
@@ -94,11 +94,13 @@ router.post("/verify-payment", (req, res) => {
     .digest("hex");
 
   if (expectedSignature === razorpay_signature) {
-    res.json({ status: "Payment verified" });
+    return res.json({ verified: true });
   } else {
-    res.status(400).json({ status: "Invalid signature" });
+    return res.status(400).json({ verified: false });
   }
 });
+
+
 
 /**
  * @swagger

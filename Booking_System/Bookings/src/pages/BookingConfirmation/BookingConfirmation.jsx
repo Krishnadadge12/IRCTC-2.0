@@ -30,38 +30,42 @@ function BookingConfirmation() {
   }, []);
 
   const goToPayment = () => {
-    const bookingDraft = JSON.parse(
-      sessionStorage.getItem("bookingDraft")
-    );
+  const bookingDraft = JSON.parse(
+    sessionStorage.getItem("bookingDraft")
+  );
 
-    if (!bookingDraft) {
-      alert("Booking data missing");
-      return;
-    }
+  if (!bookingDraft) {
+    alert("Booking data missing. Restart booking.");
+    return;
+  }
 
-    /**
-     * ✅ TEMPORARY seat fare
-     * In production this comes from backend calculation
-     */
-    const seatFare = bookingDraft.seatFare || 450;
+  if (!bookingDraft.seatPriceId) {
+    alert("Seat price missing from train data. Restart booking.");
+    return;
+  }
 
-    // ✅ Prepare payment payload
-    const paymentData = {
-      seatFare,
-      passengers,
-      journeyDate: bookingDraft.journeyDate
-    };
-
-    // ✅ Save for refresh safety
-    sessionStorage.setItem(
-      "paymentData",
-      JSON.stringify(paymentData)
-    );
-
-    navigate("/home/payment", {
-      state: paymentData
-    });
+  // FINAL payment payload (MINIMAL & CORRECT)
+  const paymentData = {
+    seatPriceId: bookingDraft.seatPriceId,
+    passengers,
+    journeyDate: bookingDraft.journeyDate
   };
+
+  console.log("💳 FINAL paymentData:", paymentData);
+
+  sessionStorage.setItem(
+    "paymentData",
+    JSON.stringify(paymentData)
+  );
+
+  navigate("/home/payment", {
+    state: paymentData
+  });
+};
+
+
+
+
 
   return (
     <div className="confirmation-bg">

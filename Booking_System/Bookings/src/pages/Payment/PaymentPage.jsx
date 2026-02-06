@@ -12,7 +12,12 @@ function PaymentPage() {
     location.state ||
     JSON.parse(sessionStorage.getItem("paymentData"));
 
-  if (!paymentData || !paymentData.seatFare || !paymentData.passengers) {
+  // --------- VALIDATION (CORRECT THIS TIME) ----------
+  if (
+    !paymentData ||
+    !paymentData.seatPriceId ||
+    !paymentData.passengers
+  ) {
     return (
       <h2 style={{ textAlign: "center", marginTop: "40px" }}>
         Payment data missing. Please start booking again.
@@ -20,17 +25,49 @@ function PaymentPage() {
     );
   }
 
-  const { seatFare, passengers, journeyDate } = paymentData;
-
+  const { seatPriceId, passengers, journeyDate } = paymentData;
   const passengerCount = passengers.length;
-  const totalFare = seatFare * passengerCount;
 
+  const [seatFare, setSeatFare] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // --------- SCROLL TO TOP ----------
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  // --------- 🔥 IMPORTANT: GET FARE FROM BACKEND ----------
+  useEffect(() => {
+    const fetchFare = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get(
+          `http://localhost:8080/trains/seat-fare/${seatPriceId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        console.log("Fetched fare:", res.data);
+        setSeatFare(res.data.price);
+      } catch (err) {
+        console.error("Failed to fetch fare:", err);
+        alert("Could not fetch seat fare. Please restart booking.");
+        navigate("/home");
+      }
+    };
+
+    fetchFare();
+  }, [seatPriceId, navigate]);
+
+  const totalFare = seatFare * passengerCount;
 
   const payNow = async () => {
     if (loading) return;
 
-    // ✅ ONLY check presence
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Session expired. Please login again.");
@@ -43,15 +80,10 @@ function PaymentPage() {
       return;
     }
 
-    if (totalFare <= 0) {
-      alert("Invalid fare amount");
-      return;
-    }
-
     try {
       setLoading(true);
 
-      // Step 1: Create Razorpay order
+      // --------- STEP 1: CREATE RAZORPAY ORDER ----------
       const orderRes = await axios.post(
         "http://localhost:5000/api/payment/create-order",
         { amount: totalFare }
@@ -69,35 +101,49 @@ function PaymentPage() {
 
         handler: async (response) => {
           try {
-            // Step 2: Verify payment
+            // --------- STEP 2: VERIFY PAYMENT ----------
             const verifyRes = await axios.post(
               "http://localhost:5000/api/payment/verify-payment",
               response
             );
 
-            if (verifyRes.data.status !== "Payment verified") {
+            if (!verifyRes.data.verified) {
               alert("Payment verification failed ❌");
+              setLoading(false);
               return;
             }
 
-            // Step 3: Final booking
+            // --------- STEP 3: FINAL BOOKING ----------
             const bookingDraftStr =
               sessionStorage.getItem("bookingDraft");
 
             if (!bookingDraftStr) {
               alert("Booking data missing ❌");
+              setLoading(false);
               return;
             }
 
             const bookingDraft = JSON.parse(bookingDraftStr);
 
+            console.log("FINAL BOOKING PAYLOAD:", {
+              ...bookingDraft,
+              seatPriceId,
+              razorpayPaymentId: response.razorpay_payment_id
+            });
+
             const bookingRes = await api.post(
-  "/bookings",
-  {
-    ...bookingDraft,
-    razorpayPaymentId: response.razorpay_payment_id  
-  }
-);
+              "/bookings",
+              {
+                ...bookingDraft,
+                seatPriceId,
+                razorpayPaymentId: response.razorpay_payment_id
+              },
+              {
+                headers: {
+                  "Idempotency-Key": response.razorpay_payment_id
+                }
+              }
+            );
 
             // Cleanup
             sessionStorage.removeItem("bookingDraft");
@@ -111,9 +157,6 @@ function PaymentPage() {
 
           } catch (err) {
             console.error(err);
-            await axios.post("http://localhost:5137/api/logs", {
-              message: `Booking failed after successful payment | Payment ID: ${response.razorpay_payment_id}`
-         });
             alert("Booking failed after payment ❌");
           } finally {
             setLoading(false);
@@ -145,39 +188,41 @@ function PaymentPage() {
     }
   };
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
-
   return (
     <div className="wrapper">
       <div className="payment-box">
 
         <h2 className="header">Payment</h2>
 
-        <div className="details-box">
-          <p><b>Passengers:</b> {passengerCount}</p>
-          <p><b>Journey Date:</b> {journeyDate}</p>
-        </div>
+        {seatFare === null ? (
+          <h3 style={{ textAlign: "center", marginTop: "40px" }}>Loading fare...</h3>
+        ) : (
+          <>
+            <div className="details-box">
+              <p><b>Passengers:</b> {passengerCount}</p>
+              <p><b>Journey Date:</b> {journeyDate}</p>
+            </div>
 
-        <div className="fare-box">
-          <p><b>Seat Fare (per passenger):</b> ₹{seatFare}</p>
-          <p><b>Passengers:</b> {passengerCount}</p>
-          <hr />
-          <p className="total">
-            <b>Total Payable: ₹{totalFare}</b>
-          </p>
-        </div>
+            <div className="fare-box">
+              <p><b>Seat Fare (per passenger):</b> ₹{seatFare}</p>
+              <p><b>Passengers:</b> {passengerCount}</p>
+              <hr />
+              <p className="total">
+                <b>Total Payable: ₹{totalFare}</b>
+              </p>
+            </div>
 
-        <button
-          className="pay-btn"
-          onClick={payNow}
-          disabled={loading}
-        >
-          {loading
-            ? "Processing Payment..."
-            : `Pay using Razorpay ₹${totalFare}`}
-        </button>
+            <button
+              className="pay-btn"
+              onClick={payNow}
+              disabled={loading}
+            >
+              {loading
+                ? "Processing Payment..."
+                : `Pay using Razorpay ₹${totalFare}`}
+            </button>
+          </>
+        )}
 
       </div>
     </div>

@@ -1,130 +1,182 @@
-import React, { useState } from 'react';
-import './QuerySection.css';
+  import React, { useState } from 'react';
+  import { RatingComponent } from '@syncfusion/ej2-react-inputs';
+  import './QuerySection.css';
 
-// QuerySection component for user support / contact queries
-const QuerySection = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    query: ''
-  });
-  const [rating, setRating] = useState(0);
-  const [hoveredRating, setHoveredRating] = useState(0);
-  const [error, setError] = useState('');
-  const MAX_QUERY_LENGTH = 399;
-  const remaining = MAX_QUERY_LENGTH - formData.query.length;
+  // QuerySection component for user support / contact queries
+  const QuerySection = () => {
+    const [formData, setFormData] = useState({
+      email: '',
+      query: '',
+      rating: 0
+    });
+    const [error, setError] = useState('');
+    const MAX_QUERY_LENGTH = 399;
+    const token = localStorage.getItem("token");
+    const isLoggedIn = !!token;
+    const remaining = MAX_QUERY_LENGTH - formData.query.length;
+     // 🔑 tracks if user ACTUALLY clicked rating
+  const [ratingTouched, setRatingTouched] = useState(false);
 
-  // Handles input value changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    let val = value;
-    if (name === 'query' && val.length > MAX_QUERY_LENGTH) {
-      val = val.slice(0, MAX_QUERY_LENGTH);
-    }
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: val
-    }));
-    if (error) setError('');
-  };
+    // Handles input value changes
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      let val = value;
+      if (name === 'query' && val.length > MAX_QUERY_LENGTH) {
+        val = val.slice(0, MAX_QUERY_LENGTH);
+      }
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: val
+      }));
+      if (error) setError('');
+    };
 
-  // Handles form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError('');
-    if (!formData.email || !formData.query) {
-      setError('Please fill in both email and query.');
+    // Handles form submission
+    const handleSubmit = async(e) => {
+      e.preventDefault();
+      console.log("SUBMIT CLICKED");
+      setError('');
+
+      const hasQuery = formData.query.trim().length > 0;
+      const hasRating = ratingTouched; //formData.rating > 0;
+
+      // ❌ Nothing entered
+    if (!hasQuery && !hasRating) {
+      setError("Please enter a query or give feedback.");
       return;
     }
-    if (formData.query.length > MAX_QUERY_LENGTH) {
-      setError(`Query cannot exceed ${MAX_QUERY_LENGTH} characters.`);
-      return;
+      // if (!formData.email || !formData.query) {
+      //   setError('Please fill in both email and query.');
+      //   return;
+      // }
+      // if (formData.query.length > MAX_QUERY_LENGTH) {
+      //   setError(`Query cannot exceed ${MAX_QUERY_LENGTH} characters.`);
+      //   return;
+      // }
+
+    //   if (formData.rating === 0) {
+    // setError('Please select a rating.');
+    // return;
+    // }
+      console.log('Form submitted:', formData);
+      // Here you can add API call to submit the form
+      try {
+        // QUERY
+         if (hasQuery) {
+         if (!formData.email) {
+          setError("Email is required to submit query.");
+          return;
+        }
+          // Call Spring Boot query API here
+        // await submitQueryAPI({ email: formData.email, query: formData.query });
+        alert("Query submitted successfully.");
+      }
+
+       // FEEDBACK
+       if (ratingTouched === true) {
+        if (!isLoggedIn) {
+          alert("Login first to submit feedback");
+          return;
+        }
+        console.log("CALLING API...");
+        await fetch('http://localhost:5137/api/feedback-rating', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            rating: formData.rating
+          })
+        });
+       alert("Thank you for your feedback ⭐");
     }
+      setFormData({ email: '', query: '',rating: 0 });
+      setRatingTouched(false); 
+      } catch (err) {
+        console.error(err);
+        setError('Something went wrong. Please try again.');
+      }
+    };
 
-    console.log('Form submitted:', formData);
-    // Here you can add API call to submit the form
-    alert('Thank you! Your query has been submitted. We will get back to you via email.');
-    setFormData({ email: '', query: '' });
-    setRating(0);
-    setHoveredRating(0);
-  };
+    return (
+      <section className="query-section">
+        <div className="query-container">
+          <div className="query-box">
+            <h2 className="query-title">YOUR QUERY</h2>
 
-  return (
-    <section className="query-section">
-      <div className="query-container">
-        <div className="query-box">
-          <h2 className="query-title">YOUR QUERY</h2>
-
-          <form onSubmit={handleSubmit} className="query-form">
-            <div className="query-form-grid">
-              <div>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Your Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="query-input"
-                />
-              </div>
-            </div>
-
-            <div>
-              <textarea
-                name="query"
-                placeholder="Type Your Query (max 399 chars)"
-                value={formData.query}
-                onChange={handleChange}
-                required
-                rows="5"
-                className="query-textarea"
-                maxLength={MAX_QUERY_LENGTH}
-              ></textarea>
-
-              <div className={`query-char-count ${remaining <= 40 ? 'warning' : ''}`}>
-                {remaining} characters remaining
-              </div>
-
-              {error && <div className="query-error">{error}</div>}
-            </div>
-
-            <div className="feedback-section">
-              <label className="feedback-label">Rate Your Experience</label>
-              <div className="star-rating">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    className={`star ${star <= (hoveredRating || rating) ? 'filled' : 'empty'}`}
-                    onClick={() => setRating(star)}
-                    onMouseEnter={() => setHoveredRating(star)}
-                    onMouseLeave={() => setHoveredRating(0)}
-                    aria-label={`Rate ${star} stars`}
-                  >
-                    ★
-                  </button>
-                ))}
-              </div>
-              {rating > 0 && (
-                <div className="rating-display">
-                  You rated: {rating} out of 5 stars
+            <form onSubmit={handleSubmit} className="query-form">
+              <div className="query-form-grid">
+                <div>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Your Email (required for query)"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="query-input"
+                  />
                 </div>
-              )}
-            </div>
+              </div>
 
-            <div className="query-submit-container">
-              <button
-                type="submit"
-                className="query-submit-btn"
-              >
-                Submit
-              </button>
-            </div>
-          </form>
+              <div>
+                <textarea
+                  name="query"
+                  placeholder="Type Your Query (max 399 chars)"
+                  value={formData.query}
+                  onChange={handleChange}
+                  rows="5"
+                  className="query-textarea"
+                  maxLength={MAX_QUERY_LENGTH}
+                ></textarea>
+
+                <div className={`query-char-count ${remaining <= 40 ? 'warning' : ''}`}>
+                  {remaining} characters remaining
+                </div>
+
+                {error && <div className="query-error">{error}</div>}
+              </div>
+
+              <div className="query-rating">
+                <label>Rate your experience</label>
+              <RatingComponent
+                // value={formData.rating}
+                min={0}
+                max={5}
+                step={1}
+                value={ratingTouched ? formData.rating : 0}// to allow deselect
+                valueChanged={(e) =>{
+                  if (!isLoggedIn) {
+                    alert("Login first to give feedback");
+                    return;
+                  }
+                  setRatingTouched(true);
+                setFormData(prev => ({
+                ...prev,
+                rating: e.value
+              })) 
+              }}
+              />
+              {!isLoggedIn && (
+             <div className="query-login-warning">
+            🔒 Login to give rating / feedback
+               </div>
+          )}
+              </div>
+
+              <div className="query-submit-container">
+                <button
+                  type="submit"
+                  className="query-submit-btn"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
-    </section>
-  );
-};
+      </section>
+    );
+  };
 
-export default QuerySection;
+  export default QuerySection;
