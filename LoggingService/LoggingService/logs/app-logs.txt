@@ -83,3 +83,4 @@
 2026-02-05T16:02:30.9145374Z | Verify-payment called | Order ID: order_SCWUXAWcfdXKeY | Payment ID: pay_SCWUdin33mldhj
 2026-02-05T16:02:30.9299820Z | Payment verified | Order ID: order_SCWUXAWcfdXKeY | Payment ID: pay_SCWUdin33mldhj
 2026-02-05T16:02:30.9925788Z | Booking created. BookingId=11, PNR=1102-20260206-50967
+2026-02-06T09:44:53.6349749Z | Booking failed after successful payment | Payment ID: pay_SCoatBni3PIrfp

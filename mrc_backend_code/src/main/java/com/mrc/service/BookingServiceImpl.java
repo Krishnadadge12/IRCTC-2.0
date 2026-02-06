@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mrc.custom_exceptions.ApiException;
@@ -42,46 +44,47 @@ public class BookingServiceImpl implements BookingService {
     // ================== CREATE BOOKING ==================
 
     @Override
-    
     public BookingResponseDto createBooking(UserEntity user, BookingRequestDto dto) {
 
+        // ---------- 1) BASIC VALIDATION ----------
         if (dto.getJourneyDate().isBefore(LocalDate.now())) {
             throw new InvalidInputException("Journey date cannot be in the past");
         }
 
+        // ---------- 2) FETCH TRAIN ----------
         TrainEntity train = trainRepository.findById(dto.getTrainId())
                 .orElseThrow(() -> new ResourceNotFoundException("Train not found"));
 
+        // ---------- 3) VALIDATE SEAT PRICE ----------
+        SeatPrice price = seatPriceRepository.findById(dto.getSeatPriceId())
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid seat price"));
+
+        if (!price.getTrain().equals(train) ||
+            !price.getCoachType().equals(dto.getCoachType()) ||
+            !price.getQuota().equals(dto.getReservationQuota())) {
+            throw new InvalidInputException("Seat price mismatch with request");
+        }
+
+        // ---------- 4) FETCH COACH ----------
         Coach coach = coachRepository
-                .findFirstByTrainAndCoachType(
-                        train,
-                        dto.getCoachType()
-                )
+                .findFirstByTrainAndCoachType(train, dto.getCoachType())
                 .orElseThrow(() ->
                         new ResourceNotFoundException("No coach available for selected type"));
 
-        SeatPrice price = seatPriceRepository
-                .findByTrainAndCoachTypeAndQuota(
-                        train,
-                        dto.getCoachType(),
-                        dto.getReservationQuota()
-                )
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Fare not defined"));
+        // ---------- 5) HOW MANY SEATS NEEDED? ----------
+        int requiredSeats = dto.getPassengers().size();
 
-        if (!coach.getCoachType().equals(price.getCoachType())) {
-            throw new InvalidInputException("Coach type mismatch with fare");
-        }
-
-        SeatAvailability seat = seatRepository
-                .findFirstByCoachAndBookedAndQuota(
+        // ---------- 6) LOCK & FETCH AVAILABLE SEATS ----------
+        List<SeatAvailability> seats = seatRepository
+                .findAvailableSeatsForUpdate(
                         coach,
                         SeatStatus.AVAILABLE,
-                        price.getQuota()
-                )
-                .orElse(null);
+                        dto.getReservationQuota(),
+                        dto.getJourneyDate(),
+                        PageRequest.of(0, requiredSeats)
+                );
 
-        //  CREATE BOOKING ONCE
+        // ---------- 7) CREATE BOOKING (ONCE) ----------
         Booking booking = new Booking();
         booking.setUser(user);
         booking.setTrain(train);
@@ -98,13 +101,22 @@ public class BookingServiceImpl implements BookingService {
                 pnrGenerator.generate(train.getTrainNumber(), dto.getJourneyDate())
         );
 
-        if (seat != null) {
-            seat.setBooked(SeatStatus.BOOKED);
-            seatRepository.save(seat);
+        // ---------- 8) CONFIRMED OR WAITLIST ----------
+        if (seats.size() >= requiredSeats) {
 
-            booking.setSeat(seat);
+            // Mark required seats as booked
+            for (int i = 0; i < requiredSeats; i++) {
+                seats.get(i).setBooked(SeatStatus.BOOKED);
+            }
+            seatRepository.saveAll(seats.subList(0, requiredSeats));
+
             booking.setBookingStatus(BookingStatus.CONFIRMED);
+
+            // 🔥 IMPORTANT: attach a seat to booking for cancellation logic
+            booking.setSeat(seats.get(0));
+
         } else {
+
             int waitlistNo =
                     bookingRepository.countByTrainAndJourneyDateAndBookingStatus(
                             train,
@@ -116,28 +128,36 @@ public class BookingServiceImpl implements BookingService {
             booking.setWaitlistNo(waitlistNo);
         }
 
+        // ---------- 9) SAVE BOOKING ----------
         Booking savedBooking = bookingRepository.save(booking);
-        loggerClient.log(
-        	    "Booking created. BookingId=" + savedBooking.getId() +
-        	    ", PNR=" + savedBooking.getPnr()
-        	);
 
-        // ✅ SAVE PASSENGERS
+        loggerClient.log(
+            "Booking created. BookingId=" + savedBooking.getId() +
+            ", PNR=" + savedBooking.getPnr()
+        );
+
+        // ---------- 10) SAVE PASSENGERS ----------
         List<Passenger> passengerList = new ArrayList<>();
 
-        for (PassengerDto pDto : dto.getPassengers()) {
+        for (int i = 0; i < dto.getPassengers().size(); i++) {
+
+            PassengerDto pDto = dto.getPassengers().get(i);
             Passenger p = new Passenger();
+
             p.setName(pDto.getName());
             p.setAge(pDto.getAge());
             p.setGender(pDto.getGender());
             p.setBooking(savedBooking);
 
-            if (savedBooking.getBookingStatus() == BookingStatus.CONFIRMED) {
-                p.setSeatNo(savedBooking.getSeat().getId().toString());
-                p.setCoachNo(savedBooking.getCoach().getCoachNo());
+            if (savedBooking.getBookingStatus() == BookingStatus.CONFIRMED
+                    && i < seats.size()) {
+
+                SeatAvailability assignedSeat = seats.get(i);
+
+                p.setSeatNo(assignedSeat.getId().toString());
+                p.setCoachNo(coach.getCoachNo());
                 p.setSeatLabel(
-                        savedBooking.getCoach().getCoachNo() + "-" +
-                        savedBooking.getSeat().getId()
+                        coach.getCoachNo() + "-" + assignedSeat.getId()
                 );
             }
 
@@ -147,7 +167,7 @@ public class BookingServiceImpl implements BookingService {
         passengerRepository.saveAll(passengerList);
         savedBooking.setPassengers(passengerList);
 
-        // ✅ RETURN SINGLE BOOKING
+        // ---------- 11) RETURN DTO ----------
         return bookingMapper.toDto(savedBooking);
     }
 
@@ -170,8 +190,8 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.save(booking);
 
         loggerClient.log(
-        	    "Booking cancelled by user. BookingId=" + booking.getId()
-        	);
+            "Booking cancelled by user. BookingId=" + booking.getId()
+        );
 
         if (freedSeat != null) {
             freedSeat.setBooked(SeatStatus.AVAILABLE);
@@ -184,16 +204,15 @@ public class BookingServiceImpl implements BookingService {
             );
         }
 
-        //  SAFE MAPPING
         return bookingMapper.toDto(booking);
     }
 
     // ================== CANCEL BY ADMIN ==================
 
-    @Override
     public BookingResponseDto cancelByAdmin(Long bookingId) {
 
-        Booking booking = bookingRepository.findById(bookingId)
+        Booking booking = bookingRepository
+                .findByIdForUpdate(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         if (booking.getBookingStatus() == BookingStatus.CANCELLED) {
@@ -204,9 +223,10 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setBookingStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
+
         loggerClient.log(
-        	    "Booking cancelled by admin. BookingId=" + booking.getId()
-        	);
+            "Booking cancelled by admin. BookingId=" + booking.getId()
+        );
 
         if (freedSeat != null) {
             freedSeat.setBooked(SeatStatus.AVAILABLE);
@@ -219,23 +239,24 @@ public class BookingServiceImpl implements BookingService {
             );
         }
 
-        // ✅ SAFE MAPPING
         return bookingMapper.toDto(booking);
     }
 
     // ================== WAITLIST PROMOTION ==================
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void promoteWaitlist(
             TrainEntity train,
             LocalDate journeyDate,
             SeatAvailability freedSeat
     ) {
+
         Booking wlBooking = bookingRepository
-            .findFirstByTrainAndJourneyDateAndBookingStatusAndTotalFare_QuotaOrderByBookedOnAsc(
-                train,
-                journeyDate,
-                BookingStatus.WAITLIST,
-                freedSeat.getQuota()
+            .findFirstWaitlistForUpdate(
+                    train,
+                    journeyDate,
+                    BookingStatus.WAITLIST,
+                    freedSeat.getQuota()
             )
             .orElse(null);
 
@@ -265,6 +286,10 @@ public class BookingServiceImpl implements BookingService {
 
         passengerRepository.saveAll(passengers);
     }
+
+    // ================== GET BOOKINGS FOR USER ==================
+
+    @Override
     public List<BookingResponseDto> getBookingsForUser(UserEntity user) {
 
         List<Booking> bookings =

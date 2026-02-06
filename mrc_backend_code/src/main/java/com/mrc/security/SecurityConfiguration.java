@@ -69,7 +69,7 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 //queries 
                 .requestMatchers(HttpMethod.POST, "/queries").permitAll()
-
+                .requestMatchers(HttpMethod.GET, "/trains/seat-fare/**").permitAll()
                 // BOOKINGS
                 .requestMatchers(HttpMethod.POST, "/bookings/**")
                 .hasAuthority("ROLE_PASSENGERS")
@@ -95,7 +95,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() { //explicit configuration.
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of("http://localhost:5173","https://mrc-frontend-rouge.vercel.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

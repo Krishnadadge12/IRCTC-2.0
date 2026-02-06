@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mrc.dtos.SearchTrainDTO;
@@ -55,8 +56,11 @@ public class SearchTrainsController {
 	 * */
 	 
 	 @GetMapping("/{trainId}")
-	    public ResponseEntity<TrainSummaryDto> getTrainDetails(@PathVariable Long trainId) {
-	        TrainSummaryDto trainDetail = trainService.getTrainDetails(trainId);
-	        return ResponseEntity.ok(trainDetail);
-	    }
+	 public ResponseEntity<TrainSummaryDto> getTrainDetails(
+	         @PathVariable Long trainId,
+	         @RequestParam(required = false) String quota
+	 ) {
+	     TrainSummaryDto trainDetail = trainService.getTrainDetails(trainId, quota);
+	     return ResponseEntity.ok(trainDetail);
+	 }
 }

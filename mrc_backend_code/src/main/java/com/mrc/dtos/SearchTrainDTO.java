@@ -20,4 +20,6 @@ public class SearchTrainDTO {
 	 private String destination;
 	 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  //
 	 private LocalDate scheduleDate;
+	 private String quota;       // GENERAL / TATKAL
+	 private String travelClass; // SLEEPER / AC1 / AC2 / AC3
 }

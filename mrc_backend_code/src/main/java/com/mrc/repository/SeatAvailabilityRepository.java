@@ -3,9 +3,14 @@ package com.mrc.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Lock;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 import com.mrc.dtos.SeatAvailabilityDto;
@@ -33,6 +38,26 @@ public interface SeatAvailabilityRepository  extends JpaRepository<SeatAvailabil
 		        @Param("status") SeatStatus status
 		);
 
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "5000"))
 
-	Optional<SeatAvailability> findFirstByCoachAndBookedAndQuota(Coach coach, SeatStatus available, TrainQuota quota);
+	@Query("""
+	SELECT s FROM SeatAvailability s 
+	WHERE s.coach = :coach 
+	AND s.booked = :status 
+	AND s.quota = :quota
+	AND s.journeyDate = :journeyDate
+	ORDER BY s.id
+	""")
+	List<SeatAvailability> findAvailableSeatsForUpdate(
+	        @Param("coach") Coach coach,
+	        @Param("status") SeatStatus status,
+	        @Param("quota") TrainQuota quota,
+	        @Param("journeyDate") LocalDate journeyDate,
+	        Pageable pageable
+	);
+
+
+
+	
 }

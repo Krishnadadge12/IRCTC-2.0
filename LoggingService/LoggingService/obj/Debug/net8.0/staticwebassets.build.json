@@ -1,11 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "L2uTnmAVXWIyNvG2VpKbZP53kWTGi8z16QGpaBs692Y=",
-  "Source": "LoggingService",
-  "BasePath": "_content/LoggingService",
-  "Mode": "Default",
-  "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
-}
+{"Version":1,"Hash":"fhbN1gsP+b2nFAwLdF3gWH2lP8lNIVBiwzg7y1ajq3E=","Source":"LoggingService","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}

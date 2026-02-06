@@ -10,32 +10,40 @@ import com.mrc.entities.train.TrainQuota;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
 @Getter
 @Setter
 public class BookingRequestDto {
 
-	 @NotNull
+    @NotNull
     private Long trainId;
-	 @NotNull
-	    private Tier coachType;           
 
-	    @NotNull
-	    private TrainQuota reservationQuota;
-	 @NotNull
+    @NotNull
+    private Tier coachType;           
+
+    @NotNull
+    private TrainQuota reservationQuota;
+
+    @NotNull
     private Long seatPriceId;
-	 @NotNull
+
+    @NotNull
     private String source;
-	 @NotNull
+
+    @NotNull
     private String destination;
 
     @NotNull
     private LocalDate journeyDate;
+
     @NotNull
     private LocalDateTime departure;
+
     @NotNull
     private LocalDateTime arrival;
+
     @NotNull
     private List<PassengerDto> passengers;
+
+    // OPTIONAL (after payment)
     private String razorpayPaymentId;
 }

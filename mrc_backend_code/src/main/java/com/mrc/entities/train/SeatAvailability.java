@@ -1,5 +1,7 @@
 package com.mrc.entities.train;
 
+import java.time.LocalDate;
+
 import com.mrc.entities.BaseEntity;
 
 import jakarta.persistence.AttributeOverride;
@@ -10,7 +12,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,4 +44,8 @@ public class SeatAvailability extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "quota", nullable = false)
     private TrainQuota quota;
+
+  
+    @Column(name = "journey_date", nullable = true)
+    private LocalDate journeyDate;
 }

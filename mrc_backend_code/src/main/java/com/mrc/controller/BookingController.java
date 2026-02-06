@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.mrc.dtos.BookingRequestDto;
@@ -29,8 +29,7 @@ public class BookingController {
             @AuthenticationPrincipal UserEntity user,
             @RequestBody BookingRequestDto dto
     ) {
-    	 System.out.println("USER => " + user);
-    	    System.out.println("BOOKING DTO => " + dto);
+    	 
         return ResponseEntity.ok(
                 bookingService.createBooking(user, dto)
                 
@@ -53,9 +52,14 @@ public class BookingController {
     public ResponseEntity<List<BookingResponseDto>> getMyBookings(
             @AuthenticationPrincipal UserEntity user
     ) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+
         return ResponseEntity.ok(
                 bookingService.getBookingsForUser(user)
         );
     }
+
 
 }
