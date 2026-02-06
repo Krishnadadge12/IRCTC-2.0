@@ -2,6 +2,8 @@ package com.mrc.dtos;
 
 import java.time.LocalDate;
 
+import com.mrc.entities.users.Gender;
+import com.mrc.entities.users.IdProof;
 import com.mrc.entities.users.UserRole;
 import com.mrc.entities.users.UserStatus;
 
@@ -20,6 +22,9 @@ public class AdminUserResponseDto {
     private String firstName;
     private String lastName;
     private LocalDate dob;
+    private String email;
     private String phone;
+    private Gender gender;
+    private IdProof idProof;
     private UserStatus status;
 }

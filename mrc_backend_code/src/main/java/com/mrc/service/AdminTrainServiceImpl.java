@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mrc.custom_exceptions.ApiException;
 import com.mrc.custom_exceptions.ResourceNotFoundException;
 import com.mrc.dtos.AdminTrainResponseDto;
+import com.mrc.dtos.TrainRequestDto;
+import com.mrc.dtos.TrainResponseDto;
 import com.mrc.entities.train.TrainEntity;
 import com.mrc.entities.train.TrainStatus;
 import com.mrc.mapper.AdminTrainMapper;
@@ -22,6 +24,42 @@ public class AdminTrainServiceImpl implements AdminTrainService {
 
     private final TrainRepository repo;
     private final AdminTrainMapper mapper;
+    
+    @Override
+    public TrainResponseDto addTrain(TrainRequestDto dto) {
+
+        TrainEntity train = new TrainEntity();
+        train.setTrainNumber(dto.getTrainNumber());
+        train.setTrainName(dto.getTrainName());
+        train.setSource(dto.getSource());
+        train.setDestination(dto.getDestination());
+        train.setDepartureTime(dto.getDepartureTime());
+        train.setArrivalTime(dto.getArrivalTime());
+        train.setScheduleDate(dto.getScheduleDate());
+        train.setTrainStatus(dto.getTrainStatus() != null ? dto.getTrainStatus() : TrainStatus.SCHEDULED);
+
+        // If coaches are provided
+        if (dto.getCoaches() != null) {
+            dto.getCoaches().forEach(c -> {
+                c.setTrain(train); // set train reference
+            });
+            train.setCoaches(dto.getCoaches());
+        }
+
+        TrainEntity saved = repo.save(train);
+
+        return new TrainResponseDto(
+                saved.getId(),
+                saved.getTrainNumber(),
+                saved.getTrainName(),
+                saved.getSource(),
+                saved.getDestination(),
+                saved.getDepartureTime(),
+                saved.getArrivalTime(),
+                saved.getScheduleDate(),
+                saved.getTrainStatus()
+        );
+    }
 
     @Override
     public List<AdminTrainResponseDto> getAll() {
@@ -45,4 +83,3 @@ public class AdminTrainServiceImpl implements AdminTrainService {
         return mapper.toDto(t);
     }
 }
-

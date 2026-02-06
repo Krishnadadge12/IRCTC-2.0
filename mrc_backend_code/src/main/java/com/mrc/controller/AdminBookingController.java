@@ -29,7 +29,7 @@ public class AdminBookingController {
     }
 
     //  ADMIN: Cancel booking (status change only)
-    @PatchMapping("/{bookingId}/cancel")
+    @PatchMapping("/{bookingId}/status")
     public ResponseEntity<AdminBookingResponseDto> cancelBooking(
             @PathVariable Long bookingId
     ) {

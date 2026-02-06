@@ -1,3 +1,5 @@
+
+
 package com.mrc.controller;
 
 import java.util.List;
@@ -9,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mrc.dtos.AdminUserResponseDto;
-import com.mrc.entities.users.UserEntity;
-import com.mrc.entities.users.UserStatus;
-import com.mrc.repository.UserRepository;
+
 import com.mrc.service.AdminUserService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,19 +22,19 @@ public class AdminUserController {
 
     private final AdminUserService service;
 
-    // ✅ Get all users
+    //  Get all users
     @GetMapping
     public List<AdminUserResponseDto> getAllUsers() {
         return service.getAllUsers();
     }
 
-    // ✅ Block user
+    //  Block user
     @PatchMapping("/{id}/block")
     public AdminUserResponseDto blockUser(@PathVariable Long id) {
         return service.blockUser(id);
     }
 
-    // ✅ Unblock user
+    //  Unblock user
     @PatchMapping("/{id}/unblock")
     public AdminUserResponseDto unblockUser(@PathVariable Long id) {
         return service.unblockUser(id);

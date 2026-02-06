@@ -33,7 +33,10 @@ public class AdminUserServiceImpl implements AdminUserService {
                         u.getFirstName(),
                         u.getLastName(),
                         u.getDob(),
+                        u.getEmail(),
                         u.getPhone(),
+                        u.getGender(),
+                        u.getIdProof(),
                         u.getUserStatus()
                 ))
                 .toList();
@@ -59,7 +62,10 @@ public class AdminUserServiceImpl implements AdminUserService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getDob(),
+                user.getEmail(),
                 user.getPhone(),
+                user.getGender(),
+                user.getIdProof(),
                 user.getUserStatus()
         );
     }
@@ -84,9 +90,11 @@ public class AdminUserServiceImpl implements AdminUserService {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getDob(),
+                user.getEmail(),
                 user.getPhone(),
+                user.getGender(),
+                user.getIdProof(),
                 user.getUserStatus()
         );
     }
 }
-

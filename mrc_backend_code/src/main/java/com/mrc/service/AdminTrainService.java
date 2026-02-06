@@ -3,7 +3,8 @@ package com.mrc.service;
 import java.util.List;
 
 import com.mrc.dtos.AdminTrainResponseDto;
-
+import com.mrc.dtos.TrainRequestDto;
+import com.mrc.dtos.TrainResponseDto;
 import com.mrc.entities.train.TrainStatus;
 
 public interface AdminTrainService {
@@ -12,4 +13,5 @@ public interface AdminTrainService {
 
 	AdminTrainResponseDto updateStatus(Long id, TrainStatus status);
 
+	 TrainResponseDto addTrain(TrainRequestDto dto); //added
 }
