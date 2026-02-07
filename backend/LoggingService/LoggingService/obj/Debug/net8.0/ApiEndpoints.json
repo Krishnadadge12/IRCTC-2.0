@@ -1,0 +1,84 @@
+[
+  {
+    "ContainingType": "LoggingService.Controllers.FeedbackRatingController",
+    "Method": "Create",
+    "RelativePath": "api/feedback-rating",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "LoggingService.DTOs.CreateFeedbackRatingDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LoggingService.Controllers.FeedbackRatingController",
+    "Method": "GetAll",
+    "RelativePath": "api/feedback-rating/all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LoggingService.Controllers.FeedbackRatingController",
+    "Method": "GetAverage",
+    "RelativePath": "api/feedback-rating/average",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LoggingService.Controllers.FeedbackRatingController",
+    "Method": "GetSummary",
+    "RelativePath": "api/feedback-rating/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LoggingService.Controllers.LogsController",
+    "Method": "CreateLog",
+    "RelativePath": "api/logs",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "LoggingService.DTOs.CreateLogDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LoggingService.Controllers.LogsController",
+    "Method": "GetLogsFromDatabase",
+    "RelativePath": "api/logs/db",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "LoggingService.Controllers.LogsController",
+    "Method": "GetLogsFromFile",
+    "RelativePath": "api/logs/file",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
