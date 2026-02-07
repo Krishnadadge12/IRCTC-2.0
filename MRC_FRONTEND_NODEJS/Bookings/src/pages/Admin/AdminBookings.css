@@ -1,0 +1,114 @@
+.add-train-btn {
+  width: 500px;
+  background-color: #0a3d62;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+/* -------------------- Bookings Table -------------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 15px;
+}
+
+thead {
+  background: #0a3d62;
+  color: white;
+}
+
+th, td {
+  padding: 15px;
+  text-align: left;
+  font-size: 15px;
+}
+
+.card{
+  margin-top: 10px;
+}
+
+/* -------------------- AddTrain Page Form -------------------- */
+.container-addTrain {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 25px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+}
+
+.container-addTrain h2 {
+  text-align: center;
+  color: #0a3d62;
+  margin-bottom: 25px;
+}
+
+form div {
+  margin-bottom: 15px;
+}
+
+form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+form input,
+form select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+button[type="submit"] {
+  width: 100%;
+  background-color: #0a3d62;
+  color: white;
+  padding: 12px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #062a45;
+}
+
+p {
+  color: red;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+}
+.back-btn {
+  background-color: #fff;
+  color: #0a3d62;
+  border: 1px solid #0a3d62;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
